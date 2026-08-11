@@ -1,12 +1,28 @@
 from pathlib import Path
 import base64
 import gzip
+import hashlib
 import json
 
 parts_dir = Path(__file__).parent / "bizarre-parts"
 parts = sorted(parts_dir.glob("part-*.txt"))
 if not parts:
     raise SystemExit("Bizarre Update payload parts are missing")
+expected_hashes = {
+    "part-01.txt": "ad9f7abc50587fab95f7b35e20cec94becb5051d5da8283aa3fb1572dcc2bed5",
+    "part-02.txt": "da751d96f8aa6fd46266f80e4211f39087009718943623ec67ee47eb01f28b76",
+    "part-03.txt": "96b4a34346637f6bb68472723b9ce23eea1536193ad2366c98974fa9e06fbf5e",
+    "part-04.txt": "32abee4716096d60d14b0dacad212e11b23d6a7ad38de736b437bbf4294e7bd9",
+    "part-05.txt": "b4fb342d3b9ca8e2ef5940ebee7167e90ead69dfb90dfde956e5c7fa594ad0a1",
+    "part-06.txt": "13c635906c5953be7d60508e60d493a9affd27c23276d82be9ff2590c82e2d16",
+    "part-07.txt": "b341a5341d193d9068275f08b376556e7667a7868502db4986af77b0f525512e",
+    "part-08.txt": "26daadccc853d212f41f4c3bfb94f5d7000d19d5e2be1ec9c875ead93b9fb25b",
+}
+for part in parts:
+    actual = hashlib.sha256(part.read_bytes()).hexdigest()
+    expected = expected_hashes.get(part.name)
+    if expected != actual:
+        raise SystemExit(f"Bizarre payload integrity failure: {part.name} expected {expected}, got {actual}")
 encoded = "".join(p.read_text().strip() for p in parts)
 items = json.loads(gzip.decompress(base64.b64decode(encoded)).decode())
 expected = [
