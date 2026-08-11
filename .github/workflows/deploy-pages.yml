@@ -37,6 +37,9 @@ jobs:
       - name: Verify Itemization Expansion runtime
         run: node scripts/verify-itemization-expansion.mjs
 
+      - name: Verify Shop and Portrait V2
+        run: node scripts/verify-shop-portrait-v2.mjs
+
       - name: Align Spartan verifier with locked weapon slot
         run: |
           node - <<'NODE'
