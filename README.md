@@ -4,7 +4,7 @@ Standalone recovered Riftbound client and live deployment source.
 
 Current base release: **v0.3.0 — Cursed Child**
 
-Current patch stack: **Build Expansion**, layered over **The Bizarre Update, Part 2**
+Current patch stack: **Full Catalog Armory**, layered over **Build Expansion** and **The Bizarre Update, Part 2**
 
 ## Deployment
 
@@ -19,7 +19,7 @@ Runtime verification:
 - `node scripts/verify-bizarre-update.mjs`
 - `node scripts/verify-build-expansion.mjs`
 
-Build Expansion removes weapon rolls, starts every new run weaponless, adds a six-slot inventory and floor Item Shop, provides 120 data-driven items with smart recipes and 32 unique Legendary passives, and splits offensive progression into Attack Strength and Attack Power.
+Build Expansion removes weapon rolls, starts every new run weaponless, adds a six-slot inventory, provides 120 data-driven items with smart recipes and 32 unique Legendary passives, and splits offensive progression into Attack Strength and Attack Power. The Full Catalog Armory makes every item available on every floor in a deterministic three-pane shop with category browsing, search, recommendations, interactive component trees, clickable upgrade paths, and exact smart-build pricing.
 
 ## Updating Riftbound
 

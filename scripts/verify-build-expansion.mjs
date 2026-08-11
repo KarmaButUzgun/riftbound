@@ -17,6 +17,8 @@ const bundle = await readFile(bundlePath, "utf8");
 const css = await readFile(cssPath, "utf8");
 const requiredMarkers = [
   "RIFTBOUND ARMORY",
+  "ALL ITEMS · ALWAYS AVAILABLE",
+  "COMPONENT TREE",
   "RIFT_ITEM_CATALOG",
   "RIFT_RECIPE_PLAN",
   "RIFT_BUY_ITEM",
@@ -34,7 +36,7 @@ for (const marker of requiredMarkers) assert.ok(bundle.includes(marker), `produc
 assert.ok(!bundle.includes("Attack Potency"), "removed Attack Potency terminology survived");
 assert.ok(!bundle.includes("label:`Weapon Type`"), "Weapon Type is still a roll wheel");
 assert.ok(!bundle.includes("label:`Weapon`,glyph:`⟊`"), "Weapon is still a roll wheel");
-for (const marker of [".build-expansion-shop", ".rift-inventory-grid", ".rift-recipe-tree", ".rift-item-icon", ".scaling-hybrid", ".build-item-vfx"]) {
+for (const marker of [".build-expansion-shop", ".full-catalog-armory", ".league-shop-layout", ".shop-category-rail", ".catalog-icon-grid", ".rift-recipe-graph", ".rift-inventory-grid", ".rift-item-icon", ".scaling-hybrid", ".build-item-vfx"]) {
   assert.ok(css.includes(marker), `production stylesheet is missing ${marker}`);
 }
 
@@ -49,7 +51,7 @@ const hook = `globalThis.__RIFTBOUND_BUILD_TEST__={
   RIFT_ACTION_SCALING,RIFT_SCALING_LABEL,RIFT_OFFENSE_TIER,RIFT_DAMAGE_SCALING,RIFT_BEGIN_ITEM_ACTION,
   RIFT_ITEM_PROC_ONCE,RIFT_ITEM_TRIGGER,RIFT_HAS_PASSIVE,RIFT_ASSIGN_AI_BUILD,RIFT_MOVE_AUDIT,
   RIFT_FILTER_WEAPON_ACTIONS,RIFT_APPLY_COMBAT_STATE,RIFT_PREPARE_COMBAT_ITEMS,
-  RIFT_ITEM_ICON,RIFT_ITEM_DETAIL,RIFT_BUILD_SUMMARY,RIFT_SCALING_BADGE,RIFT_ITEM_INTEL
+  RIFT_ITEM_ICON,RIFT_RECIPE_NODE,RIFT_RECIPE_VIEW,RIFT_CATALOG_TILE,RIFT_ITEM_DETAIL,RIFT_BUILD_SUMMARY,RIFT_SCALING_BADGE,RIFT_ITEM_INTEL
 };`;
 
 const packageExisted = existsSync(packagePath);
@@ -123,6 +125,9 @@ try {
   assert.equal(api.RIFT_ITEM_INTEL({fighter:fresh}).type,"div","Battle Intel item surface failed to construct");
   assert.equal(api.RIFT_SCALING_BADGE({action:{type:"strike"},fighter:fresh}).type,"span","scaling badge failed to construct");
   assert.equal(api.RIFT_ITEM_DETAIL({item:catalog[0],fighter:fresh,plan:api.RIFT_RECIPE_PLAN(fresh,catalog[0].id),onBuy(){}}).type,"aside","item detail surface failed to construct");
+  assert.equal(api.RIFT_RECIPE_NODE({itemId:"riftsteel-sabre",fighter:fresh,onSelect(){},root:true}).type,"div","interactive recipe node failed to construct");
+  assert.equal(api.RIFT_RECIPE_VIEW({item:api.RIFT_ITEM("riftsteel-sabre"),fighter:fresh,onSelect(){}}).type,"section","recipe graph failed to construct");
+  assert.equal(api.RIFT_CATALOG_TILE({item:catalog[0],fighter:fresh,selected:false,recommended:false,onSelect(){}}).type,"button","catalog tile failed to construct");
 
   const weaponRun = makeRun(fresh);
   const weaponBuy = api.RIFT_BUY_ITEM(weaponRun, "iron-edge");
@@ -226,9 +231,21 @@ try {
 
   const offerF1 = api.RIFT_SHOP_OFFERS(1, makeFighter());
   const offerF12 = api.RIFT_SHOP_OFFERS(12, makeFighter());
-  assert.ok(offerF1.length >= 12 && offerF12.length >= 12);
-  assert.ok(offerF1.every((item) => ["Common", "Uncommon"].includes(item.rarity)), "floor-one shop leaked late-tier items");
-  assert.ok(offerF12.some((item) => item.rarity === "Legendary"), "late shop has no Legendary path");
+  const offerF50 = api.RIFT_SHOP_OFFERS(50, makeFighter());
+  const catalogIds = catalog.map((item) => item.id);
+  assert.deepEqual(offerF1.map((item) => item.id), catalogIds, "floor-one shop does not expose the complete catalog");
+  assert.deepEqual(offerF12.map((item) => item.id), catalogIds, "mid-run shop differs from the complete catalog");
+  assert.deepEqual(offerF50.map((item) => item.id), catalogIds, "late-run shop differs from the complete catalog");
+  assert.deepEqual(api.RIFT_SHOP_OFFERS(1, makeFighter()).map((item) => item.id), catalogIds, "shop catalog order is random");
+  assert.deepEqual(new Set(offerF1.map((item) => item.rarity)), new Set(api.RIFT_ITEM_CATALOG.map((item) => item.rarity)), "floor-one shop hides item tiers");
+  const ownedOfferFighter = makeFighter();
+  ownedOfferFighter.inventory[1] = api.RIFT_ITEM_INSTANCE(firstLegend.id, firstLegend.price);
+  api.RIFT_NORMALIZE_FIGHTER_BUILD(ownedOfferFighter);
+  assert.ok(api.RIFT_SHOP_OFFERS(1, ownedOfferFighter).some((item) => item.id === firstLegend.id), "owned Legendary disappeared from the browsable catalog");
+  const legacyOfferRun = makeRun();
+  legacyOfferRun.shopOffers = [catalog[0], catalog[1]];
+  api.RIFT_NORMALIZE_RUN_BUILD(legacyOfferRun);
+  assert.deepEqual(legacyOfferRun.shopOffers, [], "legacy random offers survived save normalization");
 
   const rewindRun = makeRun();
   rewindRun.phase = "combat";
