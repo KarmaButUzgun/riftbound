@@ -16,7 +16,6 @@ const jsMarker="/* Riftbound Shop Performance V7 · render and compositor optimi
 const cssMarker="/* Riftbound Shop Performance V7 · low-churn catalog compositing */";
 assert.ok(bundle.includes(jsMarker),"Shop Performance V7 runtime marker missing");
 assert.ok(css.includes(cssMarker),"Shop Performance V7 stylesheet marker missing");
-assert.ok(bundle.indexOf(jsMarker)>bundle.indexOf("/* Riftbound Legendary Portrait Rework V5 · bespoke canon-faithful high-rarity art */"),"Shop Performance V7 must execute after V5 portrait logic");
 for(const needle of [
   "RIFT_CATALOG_TILE_MEMO=(0,r.memo)(RIFT_CATALOG_TILE",
   "RIFT_ITEM_DETAIL_MEMO=(0,r.memo)(RIFT_ITEM_DETAIL",
@@ -35,11 +34,14 @@ for(const needle of [
 
 const tileStart=bundle.lastIndexOf("RIFT_CATALOG_TILE=function RIFT_CATALOG_TILE(");
 const shopStart=bundle.indexOf("RIFT_ITEM_SHOP=function RIFT_ITEM_SHOP(",tileStart);
+const perfStart=bundle.indexOf(jsMarker,tileStart);
 assert.ok(tileStart>=0&&shopStart>tileStart,"final tile/shop boundaries missing");
-const tileBlock=bundle.slice(tileStart,shopStart);
+assert.ok(perfStart>tileStart&&perfStart<shopStart,"V7 memo runtime is not installed between the final catalog tile and production shop");
+const tileBlock=bundle.slice(tileStart,perfStart);
 assert.ok(tileBlock.includes("onMouseEnter:event=>onHover?.(item.id,event),onMouseLeave:"),"catalog hover enter/leave behavior missing");
 assert.ok(!tileBlock.includes("onMouseMove:event=>onHover?.(item.id,event)"),"catalog tile still writes hover state on every mousemove");
 assert.ok(tileBlock.includes("onAuxClick:event=>{if(event.button!==1)return"),"middle-click quick-buy regressed while optimizing tile rendering");
+assert.ok(tileBlock.includes("onQuickBuy"),"V7 is not wrapping the V5 quick-buy capable final tile");
 
 for(const needle of [
   ".armory-viewport-v2{backdrop-filter:none!important}",
