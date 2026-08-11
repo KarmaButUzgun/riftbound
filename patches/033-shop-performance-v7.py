@@ -22,9 +22,11 @@ def replace_once(text,old,new,label):
     if count!=1: raise SystemExit(f'Shop Performance V7: {label} expected once, found {count}')
     return text.replace(old,new,1)
 
+# This bundle intentionally retains earlier shop implementations. V7 always targets the last
+# override, which is the V2/V5 production shop that actually owns the UI at runtime.
 shop_anchor='RIFT_ITEM_SHOP=function RIFT_ITEM_SHOP({run,onCommit}){'
-if bundle.count(shop_anchor)!=1: raise SystemExit(f'Shop Performance V7: final shop anchor expected once, found {bundle.count(shop_anchor)}')
-shop_anchor_pos=bundle.index(shop_anchor)
+shop_anchor_pos=bundle.rfind(shop_anchor)
+if shop_anchor_pos<0: raise SystemExit('Shop Performance V7: final shop override missing')
 tile_start=bundle.rfind('RIFT_CATALOG_TILE=function RIFT_CATALOG_TILE(',0,shop_anchor_pos)
 if tile_start<0: raise SystemExit('Shop Performance V7: final catalog tile override missing')
 detail_start=bundle.rfind('RIFT_ITEM_DETAIL=function RIFT_ITEM_DETAIL(',0,tile_start)
@@ -41,8 +43,8 @@ detail=replace_once(
 )
 bundle=bundle[:detail_start]+detail+bundle[tile_start:]
 
-# Re-resolve final tile/shop boundaries after the detail splice.
-shop_anchor_pos=bundle.index(shop_anchor)
+# Re-resolve final boundaries after the detail splice.
+shop_anchor_pos=bundle.rfind(shop_anchor)
 tile_start=bundle.rfind('RIFT_CATALOG_TILE=function RIFT_CATALOG_TILE(',0,shop_anchor_pos)
 tile_end=shop_anchor_pos
 
@@ -58,10 +60,12 @@ tile=replace_once(
 bundle=bundle[:tile_start]+tile+bundle[tile_end:]
 
 # Memo wrappers must be initialized after the final V5 tile/detail functions exist, but before
-# the shop function is invoked. The original functions remain available for existing verifiers.
-bundle=bundle.replace(shop_anchor,runtime+'\n'+shop_anchor,1)
-shop_start=bundle.index(shop_anchor)
-shop_end=bundle.index('function Ea(',shop_start)
+# the final shop function is invoked. Insert at that exact production seam, never via global replace.
+shop_anchor_pos=bundle.rfind(shop_anchor)
+bundle=bundle[:shop_anchor_pos]+runtime+'\n'+bundle[shop_anchor_pos:]
+shop_start=bundle.rfind(shop_anchor)
+shop_end=bundle.find('function Ea(',shop_start)
+if shop_end<0: raise SystemExit('Shop Performance V7: final shop boundary missing')
 shop=bundle[shop_start:shop_end]
 
 shop=replace_once(
