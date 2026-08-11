@@ -14,7 +14,7 @@ for path in (bundle_path, css_path, ui_path, style_path):
 
 bundle = bundle_path.read_text()
 css = css_path.read_text()
-ui = ui_path.read_text().strip()
+ui = ui_path.read_text().strip().replace("120 UNIQUE PORTRAITS", "EVERY ITEM · UNIQUE PORTRAITS")
 styles = style_path.read_text().strip()
 js_marker = "/* Riftbound Shop + Portrait Rework V2 · final runtime overrides */"
 css_marker = "/* Riftbound Shop + Portrait Rework V2 · fullscreen vertical shop + individually profiled portraits */"
@@ -45,4 +45,4 @@ print(" - Escape, backdrop close, and Return to Floor cleanly release body scrol
 print(" - recipe component double-click buys directly with duplicate-purchase and single-click selection guards")
 print(" - hover tooltips are cursor-aware and clamped inside the viewport")
 print(" - all item portraits use cached per-item composition profiles plus reference-specific Legendary motifs")
-print(" - catalog sections use content-visibility containment to keep the 120-item shop responsive")
+print(" - catalog sections use content-visibility containment to keep the full item pool responsive")
