@@ -19,6 +19,9 @@ const requiredMarkers = [
   "RIFTBOUND ARMORY",
   "ALL ITEMS · ALWAYS AVAILABLE",
   "COMPONENT TREE",
+  "OPEN ARMORY",
+  "RETURN TO FLOOR",
+  "armory-viewport",
   "RIFT_ITEM_CATALOG",
   "RIFT_RECIPE_PLAN",
   "RIFT_BUY_ITEM",
@@ -36,9 +39,15 @@ for (const marker of requiredMarkers) assert.ok(bundle.includes(marker), `produc
 assert.ok(!bundle.includes("Attack Potency"), "removed Attack Potency terminology survived");
 assert.ok(!bundle.includes("label:`Weapon Type`"), "Weapon Type is still a roll wheel");
 assert.ok(!bundle.includes("label:`Weapon`,glyph:`⟊`"), "Weapon is still a roll wheel");
-for (const marker of [".build-expansion-shop", ".full-catalog-armory", ".league-shop-layout", ".shop-category-rail", ".catalog-icon-grid", ".rift-recipe-graph", ".rift-inventory-grid", ".rift-item-icon", ".scaling-hybrid", ".build-item-vfx"]) {
+for (const marker of [".build-expansion-shop", ".full-catalog-armory", ".armory-launcher", ".armory-viewport", "html.rift-armory-open", ".league-shop-layout", ".shop-category-rail", ".shop-mobile-tabs", ".catalog-icon-grid", ".rift-recipe-graph", ".rift-inventory-grid", ".rift-item-icon", ".scaling-hybrid", ".build-item-vfx"]) {
   assert.ok(css.includes(marker), `production stylesheet is missing ${marker}`);
 }
+assert.match(css, /\.armory-viewport\s*\{[^}]*position:\s*fixed[^}]*inset:\s*0[^}]*overflow:\s*hidden/s, "Armory does not own and contain the viewport");
+assert.match(css, /\.armory-is-open \.league-shop-layout\s*\{[^}]*min-height:\s*0[^}]*overflow:\s*hidden/s, "Armory workbench can escape its viewport row");
+assert.ok(bundle.includes('role:`dialog`,"aria-modal":true'), "Armory fullscreen shell is not an accessible modal dialog");
+assert.ok(bundle.includes('event.key===`Escape`'), "Armory is missing its Escape close path");
+assert.ok(bundle.includes('classList.add(`rift-armory-open`)'), "Armory does not lock the background document");
+assert.ok(bundle.includes('BUILD EXPANSION · FULL CATALOG'), "obsolete rotating-offer count survived in the intermission header");
 
 const exportMarker = "export{xs as default};";
 assert.equal(bundle.split(exportMarker).length - 1, 1, "could not identify the production export marker");

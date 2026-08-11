@@ -19,7 +19,7 @@ Runtime verification:
 - `node scripts/verify-bizarre-update.mjs`
 - `node scripts/verify-build-expansion.mjs`
 
-Build Expansion removes weapon rolls, starts every new run weaponless, adds a six-slot inventory, provides 120 data-driven items with smart recipes and 32 unique Legendary passives, and splits offensive progression into Attack Strength and Attack Power. The Full Catalog Armory makes every item available on every floor in a deterministic three-pane shop with category browsing, search, recommendations, interactive component trees, clickable upgrade paths, and exact smart-build pricing.
+Build Expansion removes weapon rolls, starts every new run weaponless, adds a six-slot inventory, provides 120 data-driven items with smart recipes and 32 unique Legendary passives, and splits offensive progression into Attack Strength and Attack Power. The Full Catalog Armory makes every item available on every floor in a deterministic three-pane shop with category browsing, search, recommendations, interactive component trees, clickable upgrade paths, and exact smart-build pricing. Its compact intermission entrance opens a viewport-owned Armory, so the game page stays fixed while the catalog, item details, recipes, and loadout use independent contained panes.
 
 ## Updating Riftbound
 
