@@ -12,9 +12,14 @@ const instrumentedPath=resolve(dirname(bundlePath),"page-reference-lore-v6-test.
 if(!existsSync(bundlePath))throw new Error(`Build output is missing at ${gameRoot}. Run scripts/build-site.sh first.`);
 const bundle=await readFile(bundlePath,"utf8");
 const marker="/* Riftbound Reference Lore Rewrite V6 · in-world copy for every external artifact */";
+const catalogAnchor="const RIFT_ITEM_CATALOG = (() => {";
+const freezeAnchor="const byId = new Map(items.map(item => [item.id, item]));";
+const applyNeedle="for(const RIFT_REFERENCE_LORE_ITEM of items)";
 assert.ok(bundle.includes(marker),"Reference Lore V6 runtime marker missing");
-assert.ok(bundle.indexOf(marker)>bundle.indexOf("/* Riftbound Legendary Portrait Rework V5 · bespoke canon-faithful high-rarity art */"),"Reference Lore V6 does not execute after V5");
-for(const bannedSource of ["A reference artifact translated into Riftbound rules without losing the behavior that made it famous.","A reference-forged component whose mechanic follows its fiction.","A high-specialization component made to be built around, not merely equipped."])assert.ok(!bundle.slice(bundle.indexOf(marker)).includes(bannedSource),`V6 payload contains stale generic lore: ${bannedSource}`);
+assert.ok(bundle.indexOf(marker)<bundle.indexOf(catalogAnchor),"V6 lore map must exist before catalog construction begins");
+assert.ok(bundle.includes(applyNeedle),"V6 pre-freeze application loop missing");
+assert.ok(bundle.indexOf(applyNeedle)<bundle.indexOf(freezeAnchor),"V6 lore must be applied before catalog objects freeze");
+for(const bannedSource of ["A reference artifact translated into Riftbound rules without losing the behavior that made it famous.","A reference-forged component whose mechanic follows its fiction.","A high-specialization component made to be built around, not merely equipped."])assert.ok(!bundle.slice(bundle.indexOf(marker),bundle.indexOf(catalogAnchor)).includes(bannedSource),`V6 authored map contains stale generic lore: ${bannedSource}`);
 
 const exportMarker="export{xs as default};";
 assert.equal(bundle.split(exportMarker).length-1,1,"bundle export seam changed");
@@ -36,6 +41,7 @@ try{
     const lore=api.RIFT_REFERENCE_LORE_V6[item.id];
     assert.equal(typeof lore,"string",`${item.id} missing authored lore`);
     assert.equal(item.lore,lore,`${item.id} final catalog lore does not use V6 copy`);
+    assert.ok(Object.isFrozen(item),`${item.id} catalog immutability regressed`);
     assert.ok(lore.length>=70,`${item.id} lore is too thin to feel item-specific`);
     assert.ok(lore.length<=240,`${item.id} lore is too long for the item detail surface`);
     assert.ok(!banned.test(lore),`${item.id} breaks the no-fourth-wall lore rule: ${lore}`);
@@ -46,7 +52,7 @@ try{
   for(const id of ["sparda-devil-sword","gauntlet-of-six-stones","master-sword-awakened","frostmourne-soulsteel","necronomicon-ex-mortis","black-pearl-compass","duelist-sensor","odm-harness"]){
     const item=referenced.find(entry=>entry.id===id);assert.ok(item,`${id} missing from reference catalog`);assert.equal(item.lore,api.RIFT_REFERENCE_LORE_V6[id]);
   }
-  console.log(`Reference Lore V6 verified: ${referenced.length} externally-referenced items have unique, item-specific in-world lore with no reference/translation/fourth-wall boilerplate.`);
+  console.log(`Reference Lore V6 verified: ${referenced.length} externally-referenced items have unique, item-specific in-world lore authored before the immutable catalog freeze.`);
 }finally{
   delete globalThis.__RIFTBOUND_REFERENCE_LORE_V6_TEST__;
   await rm(instrumentedPath,{force:true});
