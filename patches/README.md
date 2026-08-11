@@ -22,3 +22,5 @@ Use numeric prefixes so patch order is explicit, for example:
 - `030-boss-update.py`
 
 Patches should be deterministic and fail loudly if their expected source anchors are missing. This keeps deployments reproducible and prevents silent corruption of the recovered bundle.
+
+Large patches may keep readable runtime and stylesheet payloads in a named `*-parts/` directory. The parent patch must validate the exact manifest before injection. `016-build-expansion.py`, for example, composes the catalog, item rules, UI, and styles from `build-expansion-parts/` while keeping every bundle edit anchor-checked.
