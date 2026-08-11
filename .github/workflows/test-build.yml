@@ -18,9 +18,6 @@ jobs:
       - name: Build exact patch stack
         run: bash scripts/build-site.sh
 
-      - name: Audit reference item lore
-        run: node scripts/audit-reference-items.mjs
-
       - name: Verify Bizarre Update runtime
         run: node scripts/verify-bizarre-update.mjs
 
@@ -41,6 +38,9 @@ jobs:
 
       - name: Verify Legendary Portrait V5 and middle-click quick-buy
         run: node scripts/verify-legendary-portrait-v5.mjs
+
+      - name: Verify Reference Lore V6
+        run: node scripts/verify-reference-lore-v6.mjs
 
       - name: Align Spartan verifier with locked weapon slot
         run: |
