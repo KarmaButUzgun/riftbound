@@ -24,7 +24,8 @@ requireText(js, 'RIFT_STAT_BREAKDOWN', 'base/cap/item/effective stat breakdown')
 requireText(js, 'LEVEL-UP CAP ', 'Stat Menu level-up cap language');
 requireText(js, 'DOUBLE-CLICK BUY', 'recipe quick-buy affordance');
 requireText(js, '__RIFT_RECIPE_DBLCLICK__', 'double-click purchase guard');
-requireText(js, 'itemHoverTooltip', 'placeholder');
+requireText(js, 'function RIFT_ITEM_TOOLTIP', 'hover tooltip component');
+requireText(js, 'RIFT_ITEM_ICON=function RIFT_ITEM_ICON', 'designed icon renderer override');
 requireText(js, 'item.id===`rebellion-devil-greatsword`', 'Rebellion rework exception');
 requireText(js, '[`Legendary`,`Mythical`].includes(target.rarity)', 'unique high-rarity recipe ownership guard');
 requireText(css, '.item-hover-tooltip', 'hover tooltip styling');
@@ -37,14 +38,10 @@ if (newLegendaryCount !== 32) {
   throw new Error(`Itemization verifier: expected 32 new Legendary catalog entries, found ${newLegendaryCount}`);
 }
 
-if (js.includes('(0,E.jsx)(`b`,{children:item.glyph})')) {
-  throw new Error('Itemization verifier: legacy text/glyph portrait renderer is still active.');
-}
-
 const minimumCatalogNames = [
   'Brute Knuckle', 'Duelist Sensor', 'ODM Harness',
   'Green Lantern Ring', 'Aperture Portal Device', 'Time-Turner Hourglass',
 ];
 for (const name of minimumCatalogNames) requireText(js, name, `catalog item ${name}`);
 
-console.log(`Itemization Expansion verified: 32 new Legendaries, designed icons, live recipe quick-buy, hover tooltips, and uncapped item stat display are present.`);
+console.log('Itemization Expansion verified: 32 new Legendaries, designed icons, live recipe quick-buy, hover tooltips, and uncapped item stat display are present.');
