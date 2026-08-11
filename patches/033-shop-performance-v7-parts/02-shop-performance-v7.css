@@ -1,0 +1,7 @@
+/* Riftbound Shop Performance V7 · low-churn catalog compositing */
+.armory-viewport-v2{backdrop-filter:none!important}
+.rift-shop-v2 .catalog-tier-section>header{backdrop-filter:none!important;background:#071019f5!important}
+.rift-shop-v2 .catalog-item-v2{content-visibility:auto!important;contain:layout paint style!important;contain-intrinsic-size:126px!important}
+.rift-shop-v2 .catalog-item-v2>.rift-item-icon{contain:layout paint style!important}
+.rift-shop-v2 .catalog-icon-grid{contain:layout style!important}
+.rift-shop-v2 .shop-catalog-scroll{scroll-behavior:auto!important}
