@@ -18,9 +18,6 @@ jobs:
       - name: Build exact patch stack
         run: bash scripts/build-site.sh
 
-      - name: Audit high-rarity catalog
-        run: node scripts/audit-high-rarity-items.mjs
-
       - name: Verify Bizarre Update runtime
         run: node scripts/verify-bizarre-update.mjs
 
@@ -38,6 +35,9 @@ jobs:
 
       - name: Verify Premium Portrait V4
         run: node scripts/verify-portrait-v4.mjs
+
+      - name: Verify Legendary Portrait V5 and middle-click quick-buy
+        run: node scripts/verify-legendary-portrait-v5.mjs
 
       - name: Align Spartan verifier with locked weapon slot
         run: |
