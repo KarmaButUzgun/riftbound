@@ -4,7 +4,7 @@ Standalone recovered Riftbound client and live deployment source.
 
 Current base release: **v0.3.0 — Cursed Child**
 
-Current patch stack: **LAN Co-op Alpha**, layered over **Combat Loadout HUD**, **Spartan Blood**, **Full Catalog Armory**, **Build Expansion**, and **The Bizarre Update, Part 2**.
+Current patch stack: **Itemization Expansion + Combat UI Reflow**, layered over **LAN Co-op Alpha**, **Combat Loadout HUD**, **Spartan Blood**, **Full Catalog Armory**, **Build Expansion**, and **The Bizarre Update, Part 2**.
 
 ## Deployment
 
@@ -18,14 +18,19 @@ Runtime verification:
 
 - `node scripts/verify-bizarre-update.mjs`
 - `node scripts/verify-build-expansion.mjs`
+- `node scripts/verify-itemization-expansion.mjs`
 - `node scripts/verify-spartan-blood.mjs`
 - `node scripts/verify-coop-network.mjs`
 
-Build Expansion removes weapon rolls, starts every new run weaponless, adds a six-slot inventory, provides 125 data-driven items with smart recipes, 35 unique Legendary passives, and one Mythical capstone, and splits offensive progression into Attack Strength and Attack Power. The Full Catalog Armory makes every item available on every floor in a deterministic three-pane shop with category browsing, search, recommendations, interactive component trees, clickable upgrade paths, and exact smart-build pricing. Its compact intermission entrance opens a viewport-owned Armory, so the game page stays fixed while the catalog, item details, recipes, and loadout use independent contained panes.
+Build Expansion removes weapon rolls, starts every new run weaponless, adds a six-slot inventory, and splits offensive progression into Attack Strength and Attack Power. The current item catalog contains **181 data-driven items**, **67 Legendary items/passive identities**, and **one Mythical capstone** after the Itemization Expansion. The expansion adds exactly 32 new fiction-reference Legendaries plus 24 new lower-rarity components, reworks existing Common/Uncommon/Epic identities while preserving Rebellion, and broadens recipe routes around physical, AP, hybrid, crit, status, movement, defense, sustain, summon, Stand, Devil, weapon, Ultimate, cooldown, and tactical builds.
+
+The Full Catalog Armory makes every item available on every floor in a deterministic three-pane shop. The Itemization Expansion upgrades that workflow with designed non-text item portraits, immediate hover tooltips, explicit passive trigger/cooldown language, live component trees, guarded double-click component purchasing, fast purchase feedback, and recipe/inventory updates without leaving the build view. Level-Up/Affinity caps now describe natural progression only; item bonuses are uncapped equipment contributions, and the UI separates Base, Level-Up Cap, Item Bonus, and Effective Stat values.
+
+Recent combat UI reflow work targets comfortable play at normal browser zoom: fighter sheets use width instead of long vertical stacks, loadouts/anomaly sit in a compact horizontal ribbon, tactical formation is a roster rail, the battlefield shell places movement/minimap and field state beside the arena, and the action deck stays a stable 4×2 layout. Weaponless fighters retain a visible locked weapon-action slot so move positions do not reshuffle when a weapon is equipped.
 
 Spartan Blood adds its Mythic race and two Mythical powers, three dedicated weapon slots, capped weapon reforging, Flair and style systems, Devil Combo progression, differentiated Devil Triggers, weapon-specific combat laws, and the full Judgement Cut time-stop finisher. The update also includes purpose-built AI, migration-safe saves, battle history, battlefield models, responsive combat controls, and red or violet cinematic effects.
 
-The Combat Loadout HUD uses the former anomaly-only column for universal player and selected-opponent six-slot item rails. Spartan Blood weapon switching happens through the player rail while retaining full-action and Combo bonus-action rules; dedicated switch cards no longer clutter the move grid.
+The Combat Loadout HUD uses the former anomaly-only space for universal player and selected-opponent six-slot item rails. Spartan Blood weapon switching happens through the player rail while retaining full-action and Combo bonus-action rules; dedicated switch cards no longer clutter the move grid.
 
 ## LAN Co-op Alpha
 
@@ -46,10 +51,10 @@ The command rebuilds the current patch stack and starts the local host. It print
 
 Open the **CO-OP** control in the lower-right corner, choose **HOST RUN**, send the six-character room code to the partner, then have both players ready up. Session credentials are stored only in each browser and the room itself lives in host memory.
 
-This first network milestone provides the complete LAN transport/lobby/state-authority layer and exposes the current Riftbound run to that bridge. Normal GitHub Pages play stays single-player because the co-op UI only activates when the local server answers `/api/health`. The next resolver stage connects remote intents to a separately owned allied fighter so two players can independently act inside the same roguelike combat state.
+This first network milestone provides the LAN transport/lobby/state-authority layer and exposes the current Riftbound run to that bridge. Normal GitHub Pages play stays single-player because the co-op UI only activates when the local server answers `/api/health`. The next resolver stage connects remote intents to a separately owned allied fighter so two players can independently act inside the same roguelike combat state.
 
 ## Updating Riftbound
 
-Normal updates should be added as deterministic patch files under `patches/` rather than replacing the full archive. This lets new powers, mechanics, balancing, bug fixes, visual effects, and network integration deploy without repeatedly uploading the full game.
+Normal updates should be added as deterministic patch files under `patches/` rather than replacing the full archive. This lets new powers, mechanics, balancing, bug fixes, visual effects, UI work, and network integration deploy without repeatedly uploading the full game.
 
 Browser saves remain local to the deployed site's origin. LAN room state is intentionally ephemeral in the Alpha host.
