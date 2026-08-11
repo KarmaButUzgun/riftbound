@@ -32,16 +32,23 @@ def replace_once(old,new,label):
     if count!=1: raise SystemExit(f'Legendary Portrait V5: {label} expected once, found {count}')
     bundle=bundle.replace(old,new,1)
 
-replace_once(
-    'RIFT_CATALOG_TILE=function RIFT_CATALOG_TILE({item,fighter,selected,recommended,onSelect,onHover,pulse=false}){',
-    'RIFT_CATALOG_TILE=function RIFT_CATALOG_TILE({item,fighter,selected,recommended,onSelect,onQuickBuy,onHover,pulse=false}){',
-    'catalog tile quick-buy prop'
-)
-replace_once(
-    'style:{"--tile-accent":item.accent},onClick:()=>onSelect(item.id),onMouseEnter:',
-    'style:{"--tile-accent":item.accent},onClick:()=>onSelect(item.id),onMouseDown:event=>{if(event.button===1)event.preventDefault()},onAuxClick:event=>{if(event.button!==1)return;event.preventDefault();event.stopPropagation();onQuickBuy?.(item.id,event)},onMouseEnter:',
-    'catalog tile auxclick handler'
-)
+old_signature='RIFT_CATALOG_TILE=function RIFT_CATALOG_TILE({item,fighter,selected,recommended,onSelect,onHover,pulse=false}){'
+new_signature='RIFT_CATALOG_TILE=function RIFT_CATALOG_TILE({item,fighter,selected,recommended,onSelect,onQuickBuy,onHover,pulse=false}){'
+replace_once(old_signature,new_signature,'catalog tile quick-buy prop')
+
+# Older injected shop code contains a visually similar button-prop sequence. Anchor the
+# mutation inside the final V2 RIFT_CATALOG_TILE override instead of globally counting it.
+tile_start=bundle.find(new_signature)
+if tile_start<0: raise SystemExit('Legendary Portrait V5: final catalog tile start missing after signature update')
+tile_end=bundle.find('RIFT_ITEM_SHOP=function RIFT_ITEM_SHOP(',tile_start)
+if tile_end<0: raise SystemExit('Legendary Portrait V5: final catalog tile boundary missing')
+tile_prop='style:{"--tile-accent":item.accent},onClick:()=>onSelect(item.id),onMouseEnter:'
+tile_prop_pos=bundle.find(tile_prop,tile_start,tile_end)
+if tile_prop_pos<0: raise SystemExit('Legendary Portrait V5: final catalog tile button props missing')
+if bundle.find(tile_prop,tile_prop_pos+1,tile_end)>=0: raise SystemExit('Legendary Portrait V5: final catalog tile button props are not unique inside function')
+new_tile_prop='style:{"--tile-accent":item.accent},onClick:()=>onSelect(item.id),onMouseDown:event=>{if(event.button===1)event.preventDefault()},onAuxClick:event=>{if(event.button!==1)return;event.preventDefault();event.stopPropagation();onQuickBuy?.(item.id,event)},onMouseEnter:'
+bundle=bundle[:tile_prop_pos]+new_tile_prop+bundle[tile_prop_pos+len(tile_prop):]
+
 old_quick='const quickBuy=id=>{const item=RIFT_ITEM(id);if(!item)return;const now=Date.now(),guard=globalThis.__RIFT_RECIPE_DBLCLICK_V2__||{};if(guard.id===id&&now-guard.time<420)return;globalThis.__RIFT_RECIPE_DBLCLICK_V2__={id,time:now};const next=P(run),result=RIFT_BUY_ITEM(next,id);flash(result,id);if(result.ok){onCommit(next);setSelectedId(id)}};'
 new_quick='const executeQuickBuy=(id,{selectAfter=false,dedupe=false}={})=>{const item=RIFT_ITEM(id);if(!item)return null;if(dedupe){const now=Date.now(),guard=globalThis.__RIFT_RECIPE_DBLCLICK_V2__||{};if(guard.id===id&&now-guard.time<420)return null;globalThis.__RIFT_RECIPE_DBLCLICK_V2__={id,time:now}}const next=P(run),result=RIFT_BUY_ITEM(next,id);flash(result,id);if(result.ok){onCommit(next);if(selectAfter)setSelectedId(id)}return result};const quickBuy=id=>executeQuickBuy(id,{selectAfter:true,dedupe:true});const catalogQuickBuy=id=>executeQuickBuy(id,{selectAfter:false,dedupe:false});'
 replace_once(old_quick,new_quick,'shared quick-buy purchase pipeline')
