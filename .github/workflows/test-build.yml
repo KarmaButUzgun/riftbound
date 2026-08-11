@@ -24,6 +24,9 @@ jobs:
       - name: Verify Build Expansion runtime
         run: node scripts/verify-build-expansion.mjs
 
+      - name: Verify Spartan Blood runtime
+        run: node scripts/verify-spartan-blood.mjs
+
       - name: Upload built site
         uses: actions/upload-artifact@v4
         with:

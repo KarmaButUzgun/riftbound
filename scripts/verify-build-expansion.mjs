@@ -83,9 +83,12 @@ try {
   assert.equal(new Set(catalog.map((item) => item.id)).size, catalog.length, "item IDs are not unique");
   assert.equal(new Set(catalog.map((item) => item.icon)).size, catalog.length, "item icon identities are not unique");
   assert.deepEqual(new Set(catalog.map((item) => item.category)), new Set(["Weapon", "Defense", "Armor", "Relic", "Magic", "Physical", "Utility"]));
-  assert.deepEqual(new Set(catalog.map((item) => item.rarity)), new Set(["Common", "Uncommon", "Rare", "Epic", "Legendary"]));
+  assert.deepEqual(new Set(catalog.map((item) => item.rarity)), new Set(["Common", "Uncommon", "Rare", "Epic", "Legendary", "Mythical"]));
   const legendary = catalog.filter((item) => item.rarity === "Legendary");
-  assert.equal(legendary.length, 32, "expected 32 build-defining Legendary items");
+  const mythical = catalog.filter((item) => item.rarity === "Mythical");
+  assert.equal(legendary.length, 35, "expected 35 build-defining Legendary items after the Spartan Blood expansion");
+  assert.equal(mythical.length, 1, "expected Sparda to define the capped Mythical item tier");
+  assert.equal(mythical[0].id, "sparda-devil-sword");
   assert.equal(new Set(legendary.map((item) => item.passiveId)).size, legendary.length, "Legendary passives must be individually keyed");
   assert.ok(legendary.every((item) => item.recipe.length >= 2 && item.passive && item.lore && item.reference && item.cooldown > 0));
   assert.ok(legendary.every((item) => bundle.split(item.passiveId).length - 1 >= 2), "a Legendary passive has catalog text but no runtime hook");
