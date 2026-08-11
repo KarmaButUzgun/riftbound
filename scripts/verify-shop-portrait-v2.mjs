@@ -8,6 +8,7 @@ if (!fs.existsSync(jsPath) || !fs.existsSync(cssPath)) throw new Error('Shop V2 
 const js = fs.readFileSync(jsPath, 'utf8');
 const css = fs.readFileSync(cssPath, 'utf8');
 const requireText = (haystack, needle, label) => { if (!haystack.includes(needle)) throw new Error(`Shop V2 verifier: missing ${label}: ${needle}`); };
+const rejectText = (haystack, needle, label) => { if (haystack.includes(needle)) throw new Error(`Shop V2 verifier: stale ${label}: ${needle}`); };
 const requireOrder = (haystack, first, second, label) => { const a=haystack.indexOf(first),b=haystack.indexOf(second); if(a<0||b<0||a>=b) throw new Error(`Shop V2 verifier: invalid order for ${label}`); };
 
 const marker = '/* Riftbound Shop + Portrait Rework V2 · final runtime overrides */';
@@ -29,6 +30,8 @@ requireText(js, 'data-art-id', 'per-item portrait identity');
 requireText(js, 'art-atmosphere', 'maximalist atmosphere layer');
 requireText(js, 'art-foreground', 'maximalist foreground layer');
 requireText(js, 'art-spark', 'maximalist spark layer');
+requireText(js, 'EVERY ITEM · UNIQUE PORTRAITS', 'full-pool portrait copy');
+rejectText(js, '120 UNIQUE PORTRAITS', 'pre-expansion item count copy');
 
 requireText(js, 'armory-viewport armory-viewport-v2', 'fullscreen shop viewport');
 requireText(js, 'rift-armory-open-v2', 'body scroll/input lock lifecycle');
