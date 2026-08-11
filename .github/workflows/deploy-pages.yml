@@ -28,6 +28,9 @@ jobs:
       - name: Build Riftbound
         run: bash scripts/build-site.sh
 
+      - name: Verify Bizarre Update runtime
+        run: node scripts/verify-bizarre-update.mjs
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:

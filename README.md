@@ -4,6 +4,8 @@ Standalone recovered Riftbound client and live deployment source.
 
 Current base release: **v0.3.0 — Cursed Child**
 
+Current patch stack: **The Bizarre Update, Part 2**
+
 ## Deployment
 
 The repository keeps `riftbound-standalone-v0.3.0.zip` as an immutable recovered base. GitHub Actions extracts that archive, applies every Python patch in `patches/` in filename order, and publishes only the playable static files (`index.html`, `entry.js`, and `assets/`).
@@ -11,6 +13,8 @@ The repository keeps `riftbound-standalone-v0.3.0.zip` as an immutable recovered
 Workflow: `.github/workflows/deploy-pages.yml`
 
 Build script: `scripts/build-site.sh`
+
+Runtime verification: `node scripts/verify-bizarre-update.mjs`
 
 ## Updating Riftbound
 
