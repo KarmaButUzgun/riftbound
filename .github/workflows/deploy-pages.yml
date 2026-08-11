@@ -31,6 +31,9 @@ jobs:
       - name: Verify Bizarre Update runtime
         run: node scripts/verify-bizarre-update.mjs
 
+      - name: Verify Build Expansion runtime
+        run: node scripts/verify-build-expansion.mjs
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
