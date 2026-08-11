@@ -33,6 +33,9 @@ jobs:
       - name: Verify Literal Portrait V3
         run: node scripts/verify-portrait-v3.mjs
 
+      - name: Verify Premium Portrait V4
+        run: node scripts/verify-portrait-v4.mjs
+
       - name: Align Spartan verifier with locked weapon slot
         run: |
           node - <<'NODE'
