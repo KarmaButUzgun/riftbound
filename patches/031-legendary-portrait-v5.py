@@ -20,9 +20,17 @@ if js_marker in bundle or css_marker in css: raise SystemExit('Legendary Portrai
 profile_count=len(re.findall(r"^  '[^']+':P\(",ui,re.M))
 if profile_count!=68: raise SystemExit(f'Legendary Portrait V5: expected 68 bespoke high-rarity profiles, found {profile_count}')
 
+# The production bundle is minified and already owns tiny identifiers such as L.
+# Namespace the authoring aliases before injection so V5 can never collide with base code.
+runtime_ui=ui.replace('const L=RIFT_CANON_L,P=RIFT_CANON_P;','const RIFT_V5_L=RIFT_CANON_L,RIFT_V5_P=RIFT_CANON_P;')
+runtime_ui=re.sub(r'\bP\(', 'RIFT_V5_P(', runtime_ui)
+runtime_ui=re.sub(r'\bL\(', 'RIFT_V5_L(', runtime_ui)
+if 'const L=RIFT_CANON_L,P=RIFT_CANON_P;' in runtime_ui or ':P(' in runtime_ui:
+    raise SystemExit('Legendary Portrait V5: helper namespace rewrite failed')
+
 anchor='function Ea('
 if bundle.count(anchor)!=1: raise SystemExit(f'Legendary Portrait V5: late runtime anchor expected once, found {bundle.count(anchor)}')
-bundle=bundle.replace(anchor,ui+'\n'+anchor,1)
+bundle=bundle.replace(anchor,runtime_ui+'\n'+anchor,1)
 
 # Catalog middle-click quick-buy. This deliberately reuses RIFT_BUY_ITEM instead of
 # introducing a parallel purchase path, so shard, recipe, slot, and ownership rules stay centralized.
