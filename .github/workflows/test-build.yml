@@ -1,0 +1,19 @@
+name: Test Riftbound Build
+
+on:
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Build exact patch stack
+        run: bash scripts/build-site.sh
