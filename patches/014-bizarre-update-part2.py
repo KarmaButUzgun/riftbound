@@ -45,7 +45,14 @@ if names != expected:
     raise SystemExit(f"Unexpected Bizarre payload manifest: {names!r}")
 for item in items:
     name = item["name"]
+    code = item["code"]
+    if name == "019-bizarre-visuals.py":
+        old = """old='''${t.fighter.statuses.infinity?`infinity`:``} ${n.elevation?`elevated`:``}`'''\nnew='''${t.fighter.statuses.infinity?`infinity`:``} ${t.fighter.statuses.soulSeparated?`soul-body`:``} ${t.fighter.statuses.geLifeform?`ge-lifeform`:``} ${t.fighter.statuses.geScorpion?`ge-scorpion`:``} ${n.elevation?`elevated`:``}`'''"""
+        new = """old='''${t.fighter.statuses.infinity?`infinity`:``} ${t.fighter.statuses.rikaCompanion?`rika-companion ${t.fighter.statuses.rikaFull?`rika-full`:`rika-partial`}`:``} ${n.elevation?`elevated`:``}`'''\nnew='''${t.fighter.statuses.infinity?`infinity`:``} ${t.fighter.statuses.rikaCompanion?`rika-companion ${t.fighter.statuses.rikaFull?`rika-full`:`rika-partial`}`:``} ${t.fighter.statuses.soulSeparated?`soul-body`:``} ${t.fighter.statuses.geLifeform?`ge-lifeform`:``} ${t.fighter.statuses.geScorpion?`ge-scorpion`:``} ${n.elevation?`elevated`:``}`'''"""
+        if old not in code:
+            raise SystemExit("Bizarre production compatibility source anchor missing in 019")
+        code = code.replace(old, new, 1)
     print(f"== Bizarre subpatch: {name} ==")
     namespace = {"__name__": "__main__", "__file__": name}
-    exec(compile(item["code"], name, "exec"), namespace, namespace)
+    exec(compile(code, name, "exec"), namespace, namespace)
 print("Bizarre Update Part 2 payload applied successfully")
