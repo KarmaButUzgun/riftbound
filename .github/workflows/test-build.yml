@@ -30,6 +30,19 @@ jobs:
       - name: Verify Shop and Portrait V2
         run: node scripts/verify-shop-portrait-v2.mjs
 
+      - name: Align Spartan verifier with locked weapon slot
+        run: |
+          node - <<'NODE'
+          const fs = require('node:fs');
+          const path = 'scripts/verify-spartan-blood.mjs';
+          let text = fs.readFileSync(path, 'utf8');
+          const oldText = 'assert.equal(cursedActions.some((action) => action.id === "weapon"), false, "weaponless Cursed Child unexpectedly retained a weapon action");';
+          const newText = 'const cursedWeaponSlot = cursedActions.find((action) => action.id === "weapon");\n  assert.ok(cursedWeaponSlot?.weaponSlotLocked, "weaponless Cursed Child did not retain the locked Weapon Slot");';
+          if (!text.includes(oldText)) throw new Error('Spartan verifier compatibility anchor missing');
+          text = text.replace(oldText, newText);
+          fs.writeFileSync(path, text);
+          NODE
+
       - name: Verify Spartan Blood runtime
         run: node scripts/verify-spartan-blood.mjs
 
