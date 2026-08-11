@@ -19,16 +19,22 @@ for (const marker of [
   "Spartan Blood", "Human of Sparta", "Devil of Sparta", "Rebellion", "Ebony & Ivory", "Yamato", "Beowulf", "Mirage Edge", "Sparda",
   "RIFT_SPARTAN_ON_HIT", "RIFT_SPARTAN_RESOLVE_ACTION", "RIFT_SPARTAN_REFORGE", "RIFT_SPARTAN_JUDGEMENT_CUT",
   "SMOKIN' SEXY STYLE", "Where Is Your Motivation?", "Judgement Cut", "THREE WEAPON SLOTS",
+  "RIFT_COMBAT_LOADOUT_HUD", "YOUR LOADOUT", "ITEM INTEL HIDDEN",
 ]) assert.ok(bundle.includes(marker), `production bundle is missing ${marker}`);
 for (const marker of [
   ".spartan-resource-dock", ".devil-combo-resource", ".spartan-weapon-rack", ".sparda-anatomy", ".devil-wing",
   ".sparda-cinematic", ".sparda-judgement-field", ".spartan-inventory", ".rarity-mythical", ".sparda-flight",
   ".taunt-pose-", ".sparda-ebony-shot", ".sparda-sparda-wave", ".sparda-over-here",
+  ".combat-loadout-hud", ".combat-loadout-rail", ".floor-anomaly-core",
 ]) assert.ok(css.includes(marker), `production stylesheet is missing ${marker}`);
 assert.ok(bundle.includes("RIFT_SPARTAN_EXECUTE_EARLY(e,i,a,n"), "combat resolver does not route Spartan state actions");
 assert.ok(bundle.includes("RIFT_SPARTAN_PREPARE_ATTACK(e,i,a,n,h,g,_"), "combat resolver does not prepare weapon-dependent attacks");
 assert.ok(bundle.includes("RIFT_SPARTAN_RESOLVE_ACTION(e,i,a,n,{hit:le&&!ue"), "Combo progression is not separated from hit procs");
 assert.ok(bundle.includes("let n=.0025+Y(t,`regeneration`)*.00135"), "regeneration does not use the single effective-stat path");
+assert.ok(bundle.includes("wl.filter(e=>!e.move?.tags?.includes(`spardaWeaponSwitch`)).map"), "Spartan switch actions still render in the action-card grid");
+assert.ok(bundle.includes("RIFT_CURSED_ULTIMATE=C.find(e=>e?.id===`ultimate`)"), "Cursed Child still relies on a positional Ultimate action");
+assert.ok(css.includes(".devil-wing.right{left:auto;right:53%;transform-origin:100% 50%}"), "battlefield Devil Trigger right wing is not mirrored from the body centerline");
+assert.ok(css.includes(".cinematic-wing.right{left:auto;right:51%;transform-origin:100% 50%}"), "cinematic Devil Trigger right wing is not mirrored from the body centerline");
 
 const exportMarker = "export{xs as default};";
 assert.equal(bundle.split(exportMarker).length - 1, 1, "could not identify the production export marker");
@@ -39,7 +45,8 @@ const hook = `globalThis.__RIFTBOUND_SPARTAN_TEST__={
   RIFT_SPARTAN_ACTIONS,RIFT_SPARTAN_GAIN_FLAIR,RIFT_SPARTAN_PREPARE_ATTACK,RIFT_SPARTAN_ON_HIT,RIFT_SPARTAN_RESOLVE_ACTION,
   RIFT_SPARTAN_EXECUTE_EARLY,RIFT_SPARTAN_TURN_START,RIFT_SPARTAN_TURN_END,RIFT_SPARTAN_BARRAGE_TICK,RIFT_SPARTAN_BLOCK_REASON,RIFT_SPARTAN_SWITCH_WEAPON,
   RIFT_SPARTAN_AI_CHOICE,
-  RIFT_SPARTAN_RESOURCE_DOCK,RIFT_SPARTAN_CINEMATIC,RIFT_SPARTAN_MODEL,RIFT_SPARTAN_WEAPON_IDS,qr
+  RIFT_SPARTAN_RESOURCE_DOCK,RIFT_SPARTAN_CINEMATIC,RIFT_SPARTAN_MODEL,RIFT_SPARTAN_WEAPON_IDS,
+  RIFT_COMBAT_LOADOUT_RAIL,RIFT_COMBAT_LOADOUT_HUD,qr
 };`;
 
 const packageExisted = existsSync(packagePath);
@@ -91,8 +98,24 @@ try {
       affinities:{force:0,warcraft:0,arcana:0,vitality:0,velocity:0,insight:0},playerLevel:1,playerXp:0,skillPoints:3,
     };
   }
+  function collectElements(node, predicate, matches = []) {
+    if (Array.isArray(node)) { node.forEach((child) => collectElements(child, predicate, matches)); return matches; }
+    if (!node || typeof node !== "object") return matches;
+    if (predicate(node)) matches.push(node);
+    collectElements(node.props?.children, predicate, matches);
+    return matches;
+  }
 
   const ordinaryRace = api.d.find((entry) => entry.name !== "Spartan Blood");
+  const cursedPower = api.g.find((entry) => entry.name === "Cursed Child");
+  assert.ok(cursedPower, "Cursed Child power is missing from the production registry");
+  const cursedChild = api.Hr("Cursed Child Regression", structuredClone(ordinaryRace), structuredClone(trait), structuredClone(cursedPower), null, null, api.Le(api.Me));
+  cursedChild.inventory = Array(6).fill(null);
+  api.RIFT_NORMALIZE_FIGHTER_BUILD(cursedChild);
+  const cursedActions = api.La(cursedChild);
+  assert.equal(cursedActions.some((action) => action.id === "weapon"), false, "weaponless Cursed Child unexpectedly retained a weapon action");
+  const cursedUltimate = cursedActions.find((action) => action.id === "ultimate");
+  assert.ok(cursedUltimate && Number.isFinite(cursedUltimate.cost), "weaponless Cursed Child failed to produce a valid Ultimate action");
   const correctedPowerBuild = api.Hr("Requirement Test", structuredClone(ordinaryRace), structuredClone(trait), structuredClone(humanPower), null, null, api.Le(api.Me));
   assert.equal(correctedPowerBuild.race.name, "Spartan Blood", "Human of Sparta bypassed its Spartan Blood requirement");
   assert.equal(api.RIFT_ITEM_INSTANCE(ids.rebellion, api.RIFT_ITEM(ids.rebellion).price, {reforge:99}).reforge, 5, "new item construction bypassed the Reforge +5 cap");
@@ -105,6 +128,21 @@ try {
   assert.equal(api.RIFT_SPARTAN_ACTIVE_ID(human), ids.rebellion);
   assert.equal(api.RIFT_SPEND_SKILL_POINT(humanRun, "as"), false, "Spartan Blood spent a manual skill point");
   assert.equal(humanRun.skillPoints, 3);
+
+  let hudAction = null;
+  const playerRail = api.RIFT_COMBAT_LOADOUT_RAIL({fighter:human,side:"player",hidden:false,onAction:(action) => { hudAction = action; },selectedActionId:null,busy:false});
+  const playerSlots = collectElements(playerRail, (node) => node.type === "button" && String(node.props?.className||"").includes("combat-loadout-slot"));
+  assert.equal(playerSlots.length, 6, "player combat HUD did not render exactly six item slots");
+  assert.equal(playerSlots.filter((slot) => !slot.props.disabled).length, 2, "Spartan HUD did not expose exactly the two inactive equipped weapons");
+  playerSlots.find((slot) => !slot.props.disabled).props.onClick();
+  assert.ok(hudAction?.move?.tags?.includes("spardaWeaponSwitch"), "Spartan HUD weapon click did not route through the real switch action");
+  const armedRail = api.RIFT_COMBAT_LOADOUT_RAIL({fighter:human,side:"player",hidden:false,onAction:()=>{},selectedActionId:hudAction.id,busy:false});
+  assert.equal(collectElements(armedRail, (node) => node.type === "button" && String(node.props?.className||"").includes(" armed ")).length, 1, "armed Spartan weapon did not expose a confirm state");
+  const hiddenTargetRail = api.RIFT_COMBAT_LOADOUT_RAIL({fighter:humanRun.enemy,side:"enemy",hidden:true,busy:true});
+  assert.equal(collectElements(hiddenTargetRail, (node) => node.type === "button").length, 6, "selected-opponent combat HUD did not render six item slots");
+  assert.equal(collectElements(hiddenTargetRail, (node) => node.type === "b" && node.props?.className === "hidden-item-glyph").length, 6, "enemy Weapon-intel concealment leaked item slots");
+  const combatHud = api.RIFT_COMBAT_LOADOUT_HUD({run:humanRun,opponent:humanRun.enemy,onAction:()=>{},selectedActionId:null,busy:false});
+  assert.match(combatHud.props.className, /combat-loadout-hud/, "universal combat loadout HUD did not replace the anomaly-only chip");
 
   const purchaseRun = run(fighter("Loadout Buyer", humanPower)); purchaseRun.phase = "intermission";
   assert.equal(api.RIFT_BUY_ITEM(purchaseRun, "iron-edge").slot, 0);
