@@ -34,6 +34,9 @@ jobs:
       - name: Verify Build Expansion runtime
         run: node scripts/verify-build-expansion.mjs
 
+      - name: Verify Itemization Expansion runtime
+        run: node scripts/verify-itemization-expansion.mjs
+
       - name: Verify Spartan Blood runtime
         run: node scripts/verify-spartan-blood.mjs
 
