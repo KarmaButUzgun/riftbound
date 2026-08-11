@@ -22,23 +22,32 @@ def replace_once(text,old,new,label):
     if count!=1: raise SystemExit(f'Shop Performance V7: {label} expected once, found {count}')
     return text.replace(old,new,1)
 
-# Cache the reverse-recipe lookup used by the detail pane instead of scanning all 181 items
-# whenever hover/selection causes the shop shell to render.
-bundle=replace_once(
-    bundle,
-    'buildsInto=RIFT_ITEM_CATALOG.filter(entry=>entry.recipe.includes(item.id))',
-    'buildsInto=RIFT_SHOP_PERF_BUILDS_INTO(item.id)',
-    'builds-into cache wiring'
-)
-
 shop_anchor='RIFT_ITEM_SHOP=function RIFT_ITEM_SHOP({run,onCommit}){'
 if bundle.count(shop_anchor)!=1: raise SystemExit(f'Shop Performance V7: final shop anchor expected once, found {bundle.count(shop_anchor)}')
+shop_anchor_pos=bundle.index(shop_anchor)
+tile_start=bundle.rfind('RIFT_CATALOG_TILE=function RIFT_CATALOG_TILE(',0,shop_anchor_pos)
+if tile_start<0: raise SystemExit('Shop Performance V7: final catalog tile override missing')
+detail_start=bundle.rfind('RIFT_ITEM_DETAIL=function RIFT_ITEM_DETAIL(',0,tile_start)
+if detail_start<0: raise SystemExit('Shop Performance V7: final item detail override missing')
+
+# Scope reverse-recipe caching to the final V2 detail pane. Older dead shop implementations
+# contain the same source expression and must not be used as patch anchors.
+detail=bundle[detail_start:tile_start]
+detail=replace_once(
+    detail,
+    'buildsInto=RIFT_ITEM_CATALOG.filter(entry=>entry.recipe.includes(item.id))',
+    'buildsInto=RIFT_SHOP_PERF_BUILDS_INTO(item.id)',
+    'final detail builds-into cache wiring'
+)
+bundle=bundle[:detail_start]+detail+bundle[tile_start:]
+
+# Re-resolve final tile/shop boundaries after the detail splice.
+shop_anchor_pos=bundle.index(shop_anchor)
+tile_start=bundle.rfind('RIFT_CATALOG_TILE=function RIFT_CATALOG_TILE(',0,shop_anchor_pos)
+tile_end=shop_anchor_pos
 
 # Remove per-pixel React hover updates from the final catalog tile. Mouse enter still opens
 # the same tooltip at a cursor-aware/clamped position; moving inside one tile no longer rerenders 181 cards.
-tile_start=bundle.rfind('RIFT_CATALOG_TILE=function RIFT_CATALOG_TILE(',0,bundle.index(shop_anchor))
-if tile_start<0: raise SystemExit('Shop Performance V7: final catalog tile override missing')
-tile_end=bundle.index(shop_anchor)
 tile=bundle[tile_start:tile_end]
 tile=replace_once(
     tile,
