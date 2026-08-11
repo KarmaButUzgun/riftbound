@@ -39,6 +39,17 @@ for (const forbidden of ['art-atmosphere','art-aura','art-foreground','art-flare
 requireText(v3Slice, 'className:`art-main`', 'literal main object layer');
 requireText(v3Slice, 'className:`art-detail`', 'literal object detail layer');
 
+/* Every possible classifier output must have a concrete CSS silhouette family. */
+const classifierSlice = v3Slice.slice(v3Slice.indexOf('const RIFT_LITERAL_REFERENCE_KINDS='), v3Slice.indexOf('function RIFT_ITEM_LITERAL_SPECIAL'));
+const kinds = new Set();
+for (const match of classifierSlice.matchAll(/'[^']+':'([a-z]+)'/g)) kinds.add(match[1]);
+for (const match of classifierSlice.matchAll(/\[`[^`]+`,`([a-z]+)`\]/g)) kinds.add(match[1]);
+for (const match of classifierSlice.matchAll(/(?:Weapon|Defense|Armor|Relic|Magic|Physical|Utility):`([a-z]+)`/g)) kinds.add(match[1]);
+if (kinds.size < 40) throw new Error(`Portrait V3 verifier: suspiciously small literal kind set (${kinds.size})`);
+for (const kind of kinds) {
+  if (!css.includes(`.rift-item-icon.art-v3.literal-${kind}`)) throw new Error(`Portrait V3 verifier: classifier can emit ${kind} but CSS has no literal silhouette`);
+}
+
 requireText(css, '.rift-item-icon.art-v3.literal-gauntlet>.art-main', 'literal gauntlet silhouette');
 requireText(css, '.rift-item-icon.art-v3.ref-six-stones>.art-main', 'gold Six Stones gauntlet body');
 requireText(css, '.rift-item-icon.art-v3.ref-six-stones>.art-gemlight', 'six visible gauntlet stones');
@@ -54,4 +65,4 @@ requireText(css, '.rift-item-icon.art-v3.literal-boots>.art-main', 'literal boot
 requireText(css, '.rift-item-icon.art-v3 .art-atmosphere,.rift-item-icon.art-v3 .art-aura,.rift-item-icon.art-v3 .art-foreground,.rift-item-icon.art-v3 .art-flare,.rift-item-icon.art-v3 .art-spark{display:none!important}', 'abstract V2 layer suppression');
 requireText(css, '--object-tilt', 'small bounded literal-object tilt');
 
-console.log('Portrait Rework V3 verified: final renderer is object-first, all catalog items receive a concrete literal kind or category fallback, iconic references have explicit object mappings, and Gauntlet of Six Stones is a gold armored glove with six visible stones.');
+console.log('Portrait Rework V3 verified: final renderer is object-first, every classifier output has a concrete CSS silhouette, iconic references have explicit object mappings, and Gauntlet of Six Stones is a gold armored glove with six visible stones.');
