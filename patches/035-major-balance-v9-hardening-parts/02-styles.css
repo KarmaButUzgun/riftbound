@@ -1,0 +1,10 @@
+/* Riftbound Major Balance V9 Hardening · state readability */
+.rika-command-dock>summary{position:relative;overflow:hidden}
+.rika-command-dock>summary:after{content:"";position:absolute;left:0;right:auto;bottom:0;height:3px;width:var(--rika-summon,0%);background:linear-gradient(90deg,#8d4ca8,#f5baff 58%,#fff 100%);box-shadow:0 0 10px #f5baffaa;transition:width .22s ease;pointer-events:none}
+.rika-command-dock>summary:before{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:#ffffff12;pointer-events:none}
+.rika-command-dock[style*="100%"]>summary:after{box-shadow:0 0 14px #fff,0 0 25px #f5baff}
+.mythic-v9{isolation:isolate;overflow:hidden}
+.mythic-v9 .mythic-v9-core{z-index:3}
+.mythic-v9 .mythic-v9-halo{z-index:1}
+.mythic-v9 .mythic-v9-detail{z-index:2}
+@media (prefers-reduced-motion:reduce){.rika-command-dock>summary:after{transition:none}}
