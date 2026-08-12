@@ -20,8 +20,8 @@ def repl(old,new,label):
 # Reuse the exact existing One For All Prime Might branches for base One For All.
 repl('i=cr(e)?2:1','i=(cr(e)||sr(e))?2:1','share Prime Might movement multiplier')
 repl('cr(e)&&[`as`,`durability`,`speed`].includes(t)','(cr(e)||sr(e))&&[`as`,`durability`,`speed`].includes(t)','share Prime Might stat tiers')
-repl('g=e?cr(i)?1.36:1.2','g=e?1.36:yr(i)?1.08:br(i)?.96:i.trait.name===`Heavy Hands`?1.12:.86','share Prime Might Smash power')
-repl('_=e?cr(i)?1.52:1.25','_=e?1.52:i.trait.name===`Heavy Hands`?1.05:.65','share Prime Might Smash destruction')
+repl('g=e?cr(i)?1.36:1.2','g=e?1.36','share Prime Might Smash power')
+repl('_=e?cr(i)?1.52:1.25','_=e?1.52','share Prime Might Smash destruction')
 
 export='export{xs as default};'
 if bundle.count(export)!=1: raise SystemExit('V9 combat audit export seam changed')
