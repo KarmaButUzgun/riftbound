@@ -63,6 +63,9 @@ jobs:
       - name: Verify Early Curve Hardening V12.1
         run: node scripts/verify-early-curve-hardening-v121.mjs
 
+      - name: Verify Codex Powers Rarity Hotfix V12.2
+        run: node scripts/verify-codex-powers-rarity-hotfix-v122.mjs
+
       - name: Align Spartan verifier with locked weapon slot
         run: |
           node - <<'NODE'
