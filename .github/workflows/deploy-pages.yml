@@ -70,6 +70,9 @@ jobs:
       - name: Verify Mythical Build Paths + Early Game V12
         run: node scripts/verify-mythical-buildpaths-earlygame-v12.mjs
 
+      - name: Verify Early Curve Hardening V12.1
+        run: node scripts/verify-early-curve-hardening-v121.mjs
+
       - name: Align Spartan verifier with locked weapon slot
         run: |
           node - <<'NODE'
