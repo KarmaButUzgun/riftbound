@@ -13,4 +13,8 @@ patch('scripts/verify-reference-lore-v6.mjs',
 'const referenced=api.RIFT_ITEM_CATALOG.filter(item=>item.reference&&item.reference!==`Riftbound Original`&&item.reference!==`Riftbound`);\n  const entries=Object.entries(api.RIFT_REFERENCE_LORE_V6);',
 'const allReferenced=api.RIFT_ITEM_CATALOG.filter(item=>item.reference&&item.reference!==`Riftbound Original`&&item.reference!==`Riftbound`);\n  const referenced=allReferenced.filter(item=>api.RIFT_REFERENCE_LORE_V6[item.id]);\n  const v9Referenced=allReferenced.filter(item=>!api.RIFT_REFERENCE_LORE_V6[item.id]&&item.rarity===`Mythical`);\n  assert.equal(v9Referenced.length,24,"V9 external Mythical count changed");\n  for(const item of v9Referenced){assert.ok(item.lore?.length>=55&&item.lore.length<=240,`${item.id} V9 lore length invalid`);assert.ok(!/\\breference\\b|translated into|mechanic follows|inspired by|fourth[- ]wall/i.test(item.lore),`${item.id} V9 lore is fourth-wall copy`)}\n  const entries=Object.entries(api.RIFT_REFERENCE_LORE_V6);',
 'Reference Lore legacy/V9 split');
+patch('scripts/verify-shop-performance-v7.mjs',
+'assert.equal(api.RIFT_ITEM_CATALOG.length,181,"catalog size changed during performance pass");',
+'assert.equal(api.RIFT_ITEM_CATALOG.length,205,"catalog size changed outside the intentional V9 Mythical expansion");',
+'Shop Performance V7 intentional V9 catalog growth');
 console.log('Prepared legacy verifiers for the intentional V9 catalog expansion while preserving the original baseline assertions.');
