@@ -30,9 +30,8 @@ if(RIFT_ITEM_INSTANCES(fighter).some(x=>RIFT_ITEM(x.itemId)?.rarity===`Mythical`
 return score};
 
 const RIFT_V9_BASE_ICON=RIFT_ITEM_ICON;
-RIFT_ITEM_ICON=function RIFT_V9_ICON(props){const item=props?.item;
-if(item?.rarity!==`Mythical`)return RIFT_V9_BASE_ICON(props);
-const profile=RIFT_V9_MYTHIC_PROFILE[item.id]||{kind:`relic`,mark:item.glyph};
+RIFT_ITEM_ICON=function RIFT_V9_ICON(props){const item=props?.item,profile=item?RIFT_V9_MYTHIC_PROFILE[item.id]:null;
+if(item?.rarity!==`Mythical`||!profile)return RIFT_V9_BASE_ICON(props);
 return (0,E.jsxs)(`span`,{className:`rift-item-icon art-v9 mythic-v9 mythic-${profile.kind} size-${props?.size||`small`}`,style:{'--item-accent':item.accent},'data-mythic-id':item.id,children:[(0,E.jsx)(`i`,{className:`mythic-v9-core`,children:profile.mark||item.glyph}),(0,E.jsx)(`i`,{className:`mythic-v9-halo`}),(0,E.jsx)(`i`,{className:`mythic-v9-detail`})]})};
 
 const RIFT_V9_MYTHIC_PROFILE={
