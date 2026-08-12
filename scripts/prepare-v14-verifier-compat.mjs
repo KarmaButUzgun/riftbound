@@ -46,4 +46,13 @@ edit('scripts/verify-elemental-cursed-child-v13.mjs',text=>{
   return text;
 },'V14 V13 verifier compatibility');
 
-console.log('Prepared legacy verifiers for V14: 210 items, 70 Legendaries, 26 Mythicals while preserving V13 mechanics coverage.');
+// V14 extends the existing action-card filter so utility-strip actions stay outside
+// the canonical 4x2 deck. Spartan weapon-switch actions are still filtered exactly
+// as before; the old verifier only asserted the pre-V14 literal string.
+edit('scripts/verify-spartan-blood.mjs',text=>replaceExact(text,
+  'assert.ok(bundle.includes("wl.filter(e=>!e.move?.tags?.includes(`spardaWeaponSwitch`)).map"), "Spartan switch actions still render in the action-card grid");',
+  'assert.ok(bundle.includes("wl.filter(e=>!e.move?.tags?.includes(`spardaWeaponSwitch`)&&!e.move?.tags?.includes(`v14UtilityButton`)).map"), "Spartan switch actions or V14 utility actions still render in the action-card grid");',
+  'V14 Spartan extended action-grid filter'),
+  'V14 Spartan verifier compatibility');
+
+console.log('Prepared legacy verifiers for V14: 210 items, 70 Legendaries, 26 Mythicals, extended utility-strip action filtering, while preserving V13 and Spartan mechanics coverage.');
