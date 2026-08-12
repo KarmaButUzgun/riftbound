@@ -6,6 +6,10 @@ patch('scripts/verify-build-expansion.mjs',
 'assert.equal(catalog.length,205);assert.equal(new Set(catalog.map(i=>i.id)).size,205);assert.equal(legendary.length,67);assert.equal(mythical.length,25);assert.ok(mythical.some(item=>item.id==="sparda-devil-sword"));',
 'Build Expansion intentional V9 catalog growth');
 patch('scripts/verify-build-expansion.mjs',
+'catalog.forEach(i=>{audit(i.id);assert.ok(i.price>0);assert.ok(i.recipe.length===0||i.combineCost>0)});',
+'catalog.forEach(i=>{audit(i.id);assert.ok(i.price>0);assert.ok(i.recipe.length===0||i.combineCost>0||(i.rarity==="Mythical"&&i.id!=="sparda-devil-sword"),`${i.id} recipe needs a catalog combineCost or the V12 Mythical recipe-plan surcharge`)});',
+'Build Expansion V12 frozen Mythical recipe-plan surcharge');
+patch('scripts/verify-build-expansion.mjs',
 'const ids=catalog.map(i=>i.id);assert.deepEqual(api.RIFT_SHOP_OFFERS(1,fighter()).map(i=>i.id),ids);assert.deepEqual(api.RIFT_SHOP_OFFERS(50,fighter()).map(i=>i.id),ids);',
 'const ids=catalog.map(i=>i.id);assert.deepEqual(api.RIFT_SHOP_OFFERS(1,fighter()).map(i=>i.id),ids,"full Armory must expose Mythicals from floor 1");assert.deepEqual(api.RIFT_SHOP_OFFERS(34,fighter()).map(i=>i.id),ids,"full Armory must keep Mythicals visible before floor 35");assert.deepEqual(api.RIFT_SHOP_OFFERS(35,fighter()).map(i=>i.id),ids);assert.deepEqual(api.RIFT_SHOP_OFFERS(50,fighter()).map(i=>i.id),ids);',
 'Build Expansion V9 full-catalog Mythical shop availability');
@@ -21,4 +25,4 @@ patch('scripts/verify-shop-performance-v7.mjs',
 'assert.equal(api.RIFT_ITEM_CATALOG.length,181,"catalog size changed during performance pass");',
 'assert.equal(api.RIFT_ITEM_CATALOG.length,205,"catalog size changed outside the intentional V9 Mythical expansion");',
 'Shop Performance V7 intentional V9 catalog growth');
-console.log('Prepared legacy verifiers for the intentional V9 catalog expansion and full-catalog Mythical Armory availability while preserving the original baseline assertions.');
+console.log('Prepared legacy verifiers for the intentional V9/V12 catalog, Mythical Armory, and frozen Mythical recipe-plan model while preserving the original baseline assertions.');
