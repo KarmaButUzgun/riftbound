@@ -5,6 +5,10 @@ patch('scripts/verify-build-expansion.mjs',
 'assert.equal(catalog.length,181);assert.equal(new Set(catalog.map(i=>i.id)).size,181);assert.equal(legendary.length,67);assert.equal(mythical.length,1);assert.equal(mythical[0].id,"sparda-devil-sword");',
 'assert.equal(catalog.length,205);assert.equal(new Set(catalog.map(i=>i.id)).size,205);assert.equal(legendary.length,67);assert.equal(mythical.length,25);assert.ok(mythical.some(item=>item.id==="sparda-devil-sword"));',
 'Build Expansion intentional V9 catalog growth');
+patch('scripts/verify-build-expansion.mjs',
+'const ids=catalog.map(i=>i.id);assert.deepEqual(api.RIFT_SHOP_OFFERS(1,fighter()).map(i=>i.id),ids);assert.deepEqual(api.RIFT_SHOP_OFFERS(50,fighter()).map(i=>i.id),ids);',
+'const ids=catalog.map(i=>i.id),nonMythicIds=catalog.filter(i=>i.rarity!=="Mythical").map(i=>i.id);assert.deepEqual(api.RIFT_SHOP_OFFERS(1,fighter()).map(i=>i.id),nonMythicIds,"pre-endgame Armory must exclude Mythicals");assert.deepEqual(api.RIFT_SHOP_OFFERS(34,fighter()).map(i=>i.id),nonMythicIds,"floor 34 must still exclude Mythicals");assert.deepEqual(api.RIFT_SHOP_OFFERS(35,fighter()).map(i=>i.id),ids,"floor 35 unlocks the Mythical shop tier");assert.deepEqual(api.RIFT_SHOP_OFFERS(50,fighter()).map(i=>i.id),ids);',
+'Build Expansion V9 Mythical shop progression');
 patch('scripts/verify-legendary-portrait-v5.mjs',
 'const high=api.RIFT_ITEM_CATALOG.filter(item=>[`Legendary`,`Mythical`].includes(item.rarity));\n  const legendary=high.filter(item=>item.rarity===`Legendary`),mythical=high.filter(item=>item.rarity===`Mythical`);',
 'const allHigh=api.RIFT_ITEM_CATALOG.filter(item=>[`Legendary`,`Mythical`].includes(item.rarity));\n  const high=allHigh.filter(item=>api.RIFT_LEGENDARY_CANON_PROFILES[item.id]);\n  const legendary=high.filter(item=>item.rarity===`Legendary`),mythical=high.filter(item=>item.rarity===`Mythical`);',
@@ -17,4 +21,4 @@ patch('scripts/verify-shop-performance-v7.mjs',
 'assert.equal(api.RIFT_ITEM_CATALOG.length,181,"catalog size changed during performance pass");',
 'assert.equal(api.RIFT_ITEM_CATALOG.length,205,"catalog size changed outside the intentional V9 Mythical expansion");',
 'Shop Performance V7 intentional V9 catalog growth');
-console.log('Prepared legacy verifiers for the intentional V9 catalog expansion while preserving the original baseline assertions.');
+console.log('Prepared legacy verifiers for the intentional V9 catalog expansion and Mythical progression while preserving the original baseline assertions.');
