@@ -5,6 +5,8 @@ parts=Path(__file__).with_name('034-major-balance-mythical-v9-parts')
 runtime_parts=sorted(parts.glob('*-runtime-v9.js'))
 if not runtime_parts: raise SystemExit('V9 runtime parts missing')
 runtime='\n'.join(p.read_text().strip('\n') for p in runtime_parts)
+# Keep Sparda on its approved bespoke V5 renderer. V9 only owns the 24 new Mythical portraits.
+runtime=runtime.replace('if(item?.rarity!==`Mythical`)return RIFT_V9_BASE_ICON(props);','if(item?.rarity!==`Mythical`||item.id===`sparda-devil-sword`)return RIFT_V9_BASE_ICON(props);')
 styles=(parts/'05-styles-v9.css').read_text().strip(); mythics=(parts/'06-mythical-catalog-v9.js').read_text().strip()
 bundle=bundle_path.read_text(); css=css_path.read_text()
 marker='/* Riftbound Major Balance + Mythical Expansion V9 */'
@@ -21,7 +23,7 @@ bundle=bundle.replace(anchor,mythics+'\n'+anchor,1)
 
 repls=[
 ('passive:`+2 Speed tiers, a larger movement reserve, and superior stride efficiency.`','passive:`Chronal Runner: +2 Speed tiers, a larger movement reserve, superior stride efficiency, and a true Ultimate-history rewind.`','Speedster passive'),
-('m(`Time Portal`,`Rewind everything except yourself to three turns ago.`,100,0,0,[`allEnergy`,`rewind`])','m(`Time Portal`,`Restore the complete combat state tied to the third-most-recent prior Ultimate activation. Permanent rewards and inventory progression remain outside the rewind.`,100,0,0,[`allEnergy`,`rewindUltimate3`,`causality`])','Speedster Ultimate'),
+('m(`Time Portal`,`Rewind everything except yourself to three turns ago.`,100,0,0,[`allEnergy`,`rewind`])','m(`Time Portal`,`Restore the complete combat state tied to the third-most-recent prior Ultimate activation. Permanent rewards and inventory progression remain outside the rewind.`,100,0,0,[`allEnergy`,`rewindUltimate3`,`timeRewind`])','Speedster Ultimate'),
 ('passive:`Resist blindness, illusions, and shadow effects.`','passive:`Photon Body: resist blindness, illusions, and shadow effects. Normal Movement Points are doubled.`','Light passive'),
 ('if(e.boss&&e.player.power.name===`Decay`&&!e.symbolTrial){','if(e.boss&&e.player.power.name===`Decay`&&!e.symbolTrial&&RIFT_V9_META().afo50){','Symbol of Fear progression gate'),
 ('e.pochita.alive&&!e.pochita.heart&&ra(e,s),ei(e),','e.pochita.alive&&!e.pochita.heart&&!e.pochita.rejected&&(e.pochita.accepted?ra(e,s):(e.pochita.pendingChoice=1,e.player.statuses.pochitaChoicePending=1)),ei(e),','Pochita opt-in encounter'),
