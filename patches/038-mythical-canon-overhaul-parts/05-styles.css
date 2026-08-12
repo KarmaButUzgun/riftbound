@@ -1,0 +1,8 @@
+/* Riftbound Mythical Canon Portrait + Balance V10 */
+.rift-item-icon.art-v10{background:radial-gradient(circle at 50% 42%,color-mix(in srgb,var(--canon-a) 16%,transparent),transparent 46%),linear-gradient(155deg,#111923,#060a10 58%,#020304);box-shadow:inset 0 0 0 1px #ffffff18,inset 0 0 22px #000d,0 3px 10px #000d,0 0 19px color-mix(in srgb,var(--canon-a) 26%,transparent)}
+.rift-item-icon.art-v10>.canon-main{filter:drop-shadow(0 3px 3px #000d)}
+.rift-item-icon.art-v10>.canon-secondary{filter:drop-shadow(0 2px 2px #000c)}
+.rift-item-icon.art-v10:hover>.canon-main{filter:drop-shadow(0 4px 4px #000d) brightness(1.09)}
+.rift-item-icon.art-v10.canon-zeta-suit-canon>.canon-main,.rift-item-icon.art-v10.canon-air-force-gloves-canon>.canon-main,.rift-item-icon.art-v10.canon-air-force-gloves-canon>.canon-secondary{filter:drop-shadow(0 3px 4px #000d)}
+.rift-item-icon.art-v10.canon-moonlight-greatsword-canon>.canon-main,.rift-item-icon.art-v10.canon-doom-crucible-canon>.canon-main,.rift-item-icon.art-v10.canon-arc-reactor-canon>.canon-main{filter:drop-shadow(0 3px 3px #000d) drop-shadow(0 0 5px var(--canon-a))}
+.rift-item-icon.art-v10.canon-prison-realm-canon>.canon-main,.rift-item-icon.art-v10.canon-stone-mask-canon>.canon-main{filter:drop-shadow(0 4px 4px #000e)}

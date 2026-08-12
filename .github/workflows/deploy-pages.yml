@@ -61,6 +61,9 @@ jobs:
       - name: Verify Major Balance + Mythical V9
         run: node scripts/verify-major-balance-mythical-v9.mjs
 
+      - name: Verify Mythical Canon Portrait + Balance V10
+        run: node scripts/verify-mythical-canon-v10.mjs
+
       - name: Align Spartan verifier with locked weapon slot
         run: |
           node - <<'NODE'
