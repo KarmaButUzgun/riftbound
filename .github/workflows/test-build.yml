@@ -27,6 +27,9 @@ jobs:
       - name: Prepare V13 late verifier compatibility
         run: node scripts/prepare-v13-late-verifier-compat.mjs
 
+      - name: Prepare V14 verifier compatibility
+        run: node scripts/prepare-v14-verifier-compat.mjs
+
       - name: Verify Bizarre Update runtime
         run: node scripts/verify-bizarre-update.mjs
 
@@ -77,6 +80,9 @@ jobs:
 
       - name: Verify Elemental + Cursed Child Rework V13
         run: node scripts/verify-elemental-cursed-child-v13.mjs
+
+      - name: Verify Beneath The Drowning V14
+        run: node scripts/verify-btd-v14.mjs
 
       - name: Align Spartan verifier with locked weapon slot
         run: |
