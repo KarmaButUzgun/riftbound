@@ -5,12 +5,13 @@ root=Path(sys.argv[1])
 bundle_path=root/'assets/page-F6OuavDb.js'
 css_path=root/'assets/riftbound.css'
 parts=Path(__file__).with_name('038-mythical-canon-overhaul-parts')
-runtime_path=parts/'01-runtime.js'
-styles_path=parts/'02-styles.css'
-for path in (bundle_path,css_path,runtime_path,styles_path):
+runtime_paths=sorted(parts.glob('*-runtime.js'))
+styles_path=parts/'05-styles.css'
+if not runtime_paths: raise SystemExit('Mythical Canon Overhaul: runtime parts missing')
+for path in (bundle_path,css_path,styles_path,*runtime_paths):
     if not path.is_file(): raise SystemExit(f'Mythical Canon Overhaul: missing {path}')
 
-bundle=bundle_path.read_text(); css=css_path.read_text(); runtime=runtime_path.read_text().strip(); styles=styles_path.read_text().strip()
+bundle=bundle_path.read_text(); css=css_path.read_text(); runtime='\n'.join(path.read_text().strip() for path in runtime_paths); styles=styles_path.read_text().strip()
 marker='/* Riftbound Mythical Canon Portrait + Balance V10 */'
 if marker in bundle or marker in css: raise SystemExit('Mythical Canon Overhaul: already applied')
 if not runtime.startswith(marker) or not styles.startswith(marker): raise SystemExit('Mythical Canon Overhaul: payload validation failed')
