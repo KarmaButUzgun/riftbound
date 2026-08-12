@@ -26,7 +26,7 @@ def repl(old,new,label,required=True):
 status='e.statuses.huntersMark>0&&t.push(`HUNTER ×${e.statuses.huntersMark}`)'
 repl(status,status+',e.statuses.antiHealStacks>0&&t.push(`ANTI-HEAL ×${e.statuses.antiHealStacks} · ${Math.ceil(e.statuses.antiHealTurns||0)}T · ${Math.round(Math.min(.75,e.statuses.antiHealStacks*.15)*100)}%`),e.statuses.cleaveAdaptation&&Object.keys(e.statuses.cleaveAdaptation).length&&t.push(`CLEAVE PEN ${Math.max(...Object.values(e.statuses.cleaveAdaptation))}%`),RIFT_CURSED_CHILD(e)&&!e.statuses.rikaCombatHint&&!e.statuses.rikaLocked&&t.push(`RIKA SUMMON ${Math.round(e.statuses.rikaSummon||0)}%`)','status rail integration',False)
 repl('RIFT_CURSED_CHILD(w.player)&&(0,E.jsxs)(`details`,{className:`rika-command-dock`,children:[',
-     'RIFT_CURSED_CHILD(w.player)&&(0,E.jsxs)(`details`,{className:`rika-command-dock`,style:{`--rika-summon`:`${Math.round(w.player.statuses.rikaSummon||0)}%`},children:[',
+     'RIFT_CURSED_CHILD(w.player)&&(0,E.jsxs)(`details`,{className:`rika-command-dock`,style:{"--rika-summon":`${Math.round(w.player.statuses.rikaSummon||0)}%`},children:[',
      'Rika dock progress variable',False)
 repl('w.player.statuses.rikaCombatHint?`PARTIAL MANIFESTATION · AUTONOMOUS ALLY`:`Not manifested. Choose Partial or Full Rika.`',
      'w.player.statuses.rikaCombatHint?`PARTIAL MANIFESTATION · SUMMON BAR ${Math.round(w.player.statuses.rikaSummon||0)}%`:`RIKA SUMMON BAR · ${Math.round(w.player.statuses.rikaSummon||0)} / 100 · Deal damage with Partial Rika to unlock Full Rika.`',
