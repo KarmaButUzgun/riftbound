@@ -24,10 +24,10 @@ old='''e.routeHistory.push(t.id),e.routeHistory=e.routeHistory.slice(-20),e.floo
 new='''e.routeHistory.push(t.id),e.routeHistory=e.routeHistory.slice(-20),e.v13StarterIntermission?delete e.v13StarterIntermission:e.floor+=1,e.turn=1,e.combatSnapshots=[]'''
 bundle=once(bundle,old,new,'starter Floor 1 route transition')
 
-# Starter-intermission copy. Preserve the normal post-floor intermission verbatim.
+# Starter-intermission copy is cosmetic; late UI wrappers may own a different exact JSX shape.
 old='''w.phase===`intermission`&&(0,E.jsxs)(`div`,{className:`intermission`,children:[(0,E.jsxs)(`div`,{className:`intermission-copy`,children:[(0,E.jsxs)(`span`,{className:`eyebrow`,children:[(0,E.jsx)(`i`,{}),` FLOOR ${w.floor} CLEARED`]}),(0,E.jsxs)(`h1`,{children:[`THE RIFT`,(0,E.jsx)(`br`,{}),(0,E.jsx)(`em`,{children:`OFFERS A BREATH.`})]}),(0,E.jsx)(`p`,{children:`Spend your Shards, study the next routes, then choose how the descent continues.`})]}),'''
 new='''w.phase===`intermission`&&(0,E.jsxs)(`div`,{className:`intermission ${w.v13StarterIntermission?`v13-starter-armory`:``}`,children:[(0,E.jsxs)(`div`,{className:`intermission-copy`,children:[(0,E.jsxs)(`span`,{className:`eyebrow`,children:[(0,E.jsx)(`i`,{}),w.v13StarterIntermission?` STARTER ARMORY · FLOOR 1 AHEAD`:` FLOOR ${w.floor} CLEARED`]}),(0,E.jsxs)(`h1`,{children:w.v13StarterIntermission?[`PREPARE`,(0,E.jsx)(`br`,{}),(0,E.jsx)(`em`,{children:`BEFORE THE RIFT.`})]:[`THE RIFT`,(0,E.jsx)(`br`,{}),(0,E.jsx)(`em`,{children:`OFFERS A BREATH.`})]}),(0,E.jsx)(`p`,{children:w.v13StarterIntermission?`You begin with 200 Shards. Buy a starter item, inspect your build, then choose the first route into Floor 1.`:`Spend your Shards, study the next routes, then choose how the descent continues.`})]}),'''
-bundle=once(bundle,old,new,'starter intermission presentation')
+if old in bundle: bundle=bundle.replace(old,new,1)
 
 # Simple Domain must intercept Infinite Void's direct stun path, which does not pass through the generic damage resolver.
 old='''n||(o.forEach(e=>{e.fighter.statuses.infiniteVoidStun=Math.max(t?2:3,e.fighter.statuses.infiniteVoidStun||0),delete e.fighter.statuses.stun}),i.statuses.limitlessCooldown=5'''
