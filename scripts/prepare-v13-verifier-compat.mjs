@@ -12,6 +12,10 @@ patch('scripts/verify-build-expansion.mjs',
 'assert.equal(catalog.length,205);assert.equal(new Set(catalog.map(i=>i.id)).size,205);assert.equal(legendary.length,67);assert.equal(mythical.length,25);assert.ok(mythical.some(item=>item.id==="sparda-devil-sword"));',
 'assert.equal(catalog.length,207);assert.equal(new Set(catalog.map(i=>i.id)).size,207);assert.equal(legendary.length,68);assert.equal(mythical.length,26);assert.ok(mythical.some(item=>item.id==="sparda-devil-sword"));assert.ok(mythical.some(item=>item.id==="the-namegiver"));assert.ok(legendary.some(item=>item.id==="simple-domain-manual"));',
 'Build Expansion intentional V13 catalog growth');
+patch('scripts/verify-build-expansion.mjs',
+'assert.equal(new Set(legendary.map(i=>i.passiveId)).size,67);',
+'assert.equal(new Set(legendary.map(i=>i.passiveId)).size,68);',
+'Build Expansion V13 Legendary passive uniqueness');
 
 patch('scripts/verify-reference-lore-v6.mjs',
 'const v9Referenced=allReferenced.filter(item=>!api.RIFT_REFERENCE_LORE_V6[item.id]&&item.rarity===`Mythical`);',
