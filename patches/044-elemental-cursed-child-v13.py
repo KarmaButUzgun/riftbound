@@ -61,10 +61,14 @@ shop=once(shop,
 '''(0,E.jsxs)(`button`,{type:`button`,className:`armory-loadout-toggle`,onClick:()=>setLoadoutOpen(open=>!open),"aria-expanded":loadoutOpen,children:[loadoutOpen?`HIDE BUILD TOOLS · `:`MANAGE BUILD · `,ownedCount,`/6`]}),''',
 '''RIFT_CURSED_CHILD(run.player)&&(0,E.jsx)(`button`,{type:`button`,className:`v13-rika-shop-toggle ${rikaShop?`active`:``}`,onClick:()=>{setShopOwner(v=>v===`rika`?`yuta`:`rika`);setSelectedId(null);setHover(null);setFeedback(null)},children:rikaShop?`VIEW YUTA BUILD`:`VIEW RIKA BUILD`}),(0,E.jsxs)(`button`,{type:`button`,className:`armory-loadout-toggle`,onClick:()=>setLoadoutOpen(open=>!open),"aria-expanded":loadoutOpen,children:[loadoutOpen?`HIDE BUILD TOOLS · `:`MANAGE BUILD · `,ownedCount,`/6`]}),''',
 'Rika Armory toggle')
-shop=once(shop,
-'''(0,E.jsx)(`div`,{className:`armory-loadout-wrap ${loadoutOpen?`is-open`:`is-collapsed`}`,children:(0,E.jsx)(RIFT_INVENTORY_MANAGER,{run,onCommit})})''',
-'''(0,E.jsx)(`div`,{className:`armory-loadout-wrap ${loadoutOpen?`is-open`:`is-collapsed`}`,children:rikaShop?(0,E.jsx)(RIFT_V13_RIKA_INVENTORY_MANAGER,{run,onCommit}):(0,E.jsx)(RIFT_INVENTORY_MANAGER,{run,onCommit})})''',
-'Rika Armory inventory manager')
+old_inventory='''(0,E.jsx)(`div`,{className:`armory-loadout-wrap ${loadoutOpen?`is-open`:`is-collapsed`}`,children:(0,E.jsx)(RIFT_INVENTORY_MANAGER_MEMO,{run,onCommit})})'''
+new_inventory='''(0,E.jsx)(`div`,{className:`armory-loadout-wrap ${loadoutOpen?`is-open`:`is-collapsed`}`,children:rikaShop?(0,E.jsx)(RIFT_V13_RIKA_INVENTORY_MANAGER,{run,onCommit}):(0,E.jsx)(RIFT_INVENTORY_MANAGER_MEMO,{run,onCommit})})'''
+if old_inventory in shop:
+    shop=shop.replace(old_inventory,new_inventory,1)
+else:
+    old_inventory='''(0,E.jsx)(`div`,{className:`armory-loadout-wrap ${loadoutOpen?`is-open`:`is-collapsed`}`,children:(0,E.jsx)(RIFT_INVENTORY_MANAGER,{run,onCommit})})'''
+    new_inventory='''(0,E.jsx)(`div`,{className:`armory-loadout-wrap ${loadoutOpen?`is-open`:`is-collapsed`}`,children:rikaShop?(0,E.jsx)(RIFT_V13_RIKA_INVENTORY_MANAGER,{run,onCommit}):(0,E.jsx)(RIFT_INVENTORY_MANAGER,{run,onCommit})})'''
+    shop=once(shop,old_inventory,new_inventory,'Rika Armory inventory manager')
 bundle=bundle[:shop_start]+shop+bundle[shop_end:]
 
 # Runtime goes last so it wraps all prior systems and owns final gameplay behavior.
