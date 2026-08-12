@@ -26,6 +26,15 @@ patch('scripts/verify-shop-performance-v7.mjs',
 'assert.equal(api.RIFT_ITEM_CATALOG.length,205,"catalog size changed outside the intentional V9 Mythical expansion");',
 'assert.equal(api.RIFT_ITEM_CATALOG.length,207,"catalog size changed outside the intentional V9/V13 item expansions");',
 'Shop Performance V13 catalog growth');
+for(const [oldText,newText,label] of [
+  ['catalog=(0,r.useMemo)(()=>RIFT_SHOP_OFFERS(run.floor,run.player),[run.floor,run.player])','catalog=(0,r.useMemo)(()=>RIFT_SHOP_OFFERS(run.floor,shopFighter),[run.floor,shopFighter])','V7 catalog memo owner'],
+  ['recommendedIds=(0,r.useMemo)(()=>RIFT_RECOMMENDED_ITEMS(run.player,catalog,10),[run.player,catalog])','recommendedIds=(0,r.useMemo)(()=>RIFT_RECOMMENDED_ITEMS(shopFighter,catalog,10),[shopFighter,catalog])','V7 recommendation memo owner'],
+  ['plan=(0,r.useMemo)(()=>selected?RIFT_RECIPE_PLAN(run.player,selected.id):null,[run.player,selected?.id])','plan=(0,r.useMemo)(()=>selected?RIFT_RECIPE_PLAN(shopFighter,selected.id):null,[shopFighter,selected?.id])','V7 recipe memo owner'],
+  ['profile=(0,r.useMemo)(()=>RIFT_BUILD_PROFILE(run.player),[run.player])','profile=(0,r.useMemo)(()=>RIFT_BUILD_PROFILE(shopFighter),[shopFighter])','V7 profile memo owner'],
+  ['(0,E.jsx)(RIFT_CATALOG_TILE_MEMO,{item,fighter:run.player','(0,E.jsx)(RIFT_CATALOG_TILE_MEMO,{item,fighter:shopFighter','V7 tile active owner'],
+  ['(0,E.jsx)(RIFT_ITEM_DETAIL_MEMO,{item:selected,fighter:run.player','(0,E.jsx)(RIFT_ITEM_DETAIL_MEMO,{item:selected,fighter:shopFighter','V7 detail active owner'],
+  ['(0,E.jsx)(RIFT_INVENTORY_MANAGER_MEMO,{run,onCommit})','children:rikaShop?(0,E.jsx)(RIFT_V13_RIKA_INVENTORY_MANAGER,{run,onCommit}):(0,E.jsx)(RIFT_INVENTORY_MANAGER_MEMO,{run,onCommit})','V7 inventory memo retained for Yuta branch']
+])patch('scripts/verify-shop-performance-v7.mjs',oldText,newText,label);
 
 patch('scripts/verify-major-balance-mythical-v9.mjs',
 'assert.equal(mythics.length,25,`expected exactly 25 Mythicals, got ${mythics.length}`);',
@@ -74,4 +83,4 @@ patch('scripts/verify-mythical-buildpaths-earlygame-v12.mjs',
 const verifierPayload=fs.readFileSync('scripts/verify-elemental-cursed-child-v13.mjs.gz.b64','utf8').trim();
 fs.writeFileSync('scripts/verify-elemental-cursed-child-v13.mjs',gunzipSync(Buffer.from(verifierPayload,'base64')).toString('utf8'));
 
-console.log('Prepared legacy verifiers for V13: 207 items, 68 Legendaries, 26 Mythicals, V13 elemental replacement, and Namegiver-owned portrait/recipe coverage.');
+console.log('Prepared legacy verifiers for V13: 207 items, 68 Legendaries, 26 Mythicals, Rika-owner Armory memoization, V13 elemental replacement, and Namegiver-owned portrait/recipe coverage.');
