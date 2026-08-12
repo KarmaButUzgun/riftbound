@@ -1,0 +1,17 @@
+/* Riftbound Major Balance + Mythical Expansion V9 */
+.rarity-calamity,.calamity{--entry:#ff234f!important;--rarity:#ff234f!important;text-shadow:0 0 18px rgba(255,35,79,.55)}
+.rift-item-icon.art-v9{position:relative;overflow:hidden;background:radial-gradient(circle at 50% 42%,rgba(255,255,255,.22),transparent 23%),linear-gradient(145deg,#12030a,#310817 52%,#080107);box-shadow:inset 0 0 0 1px rgba(255,255,255,.2),0 0 22px color-mix(in srgb,var(--item-accent) 55%,transparent)}
+.rift-item-icon.art-v9:before{content:"";position:absolute;inset:6%;border:1px solid color-mix(in srgb,var(--item-accent) 72%,white);clip-path:polygon(50% 0,93% 25%,100% 70%,50% 100%,0 70%,7% 25%);opacity:.8}
+.mythic-v9-core{position:absolute;inset:16%;display:grid;place-items:center;font-style:normal;font-weight:900;font-size:1.55em;color:white;text-shadow:0 0 4px #fff,0 0 15px var(--item-accent);transform:rotate(-5deg)}
+.mythic-v9-halo{position:absolute;inset:4%;border:2px solid var(--item-accent);border-radius:50%;opacity:.34;animation:v9MythicHalo 5s linear infinite}
+.mythic-v9-detail{position:absolute;left:13%;right:13%;bottom:10%;height:10%;background:linear-gradient(90deg,transparent,var(--item-accent),transparent);filter:blur(1px);opacity:.7}
+.mythic-gauntlets .mythic-v9-core{border-radius:45% 45% 25% 25%;background:linear-gradient(90deg,#18385b,#d8f1ff 45%,#285a87);clip-path:polygon(12% 0,88% 0,100% 50%,70% 100%,30% 100%,0 50%)}
+.mythic-armor .mythic-v9-core{clip-path:polygon(25% 0,75% 0,100% 22%,83% 100%,17% 100%,0 22%);background:linear-gradient(135deg,#092449,#00b3ff 45%,#eefaff);color:#06152d}
+.mythic-book .mythic-v9-core{background:linear-gradient(90deg,#581021 0 47%,#c69c61 48% 52%,#32101c 53%);border:1px solid #e3c08f}
+.mythic-finger .mythic-v9-core{border-radius:48% 44% 38% 45%;background:linear-gradient(90deg,#cf987c,#8b4036);color:#26100e}
+.mythic-sword .mythic-v9-core,.mythic-dagger .mythic-v9-core,.mythic-spear .mythic-v9-core{clip-path:polygon(46% 0,54% 0,62% 70%,78% 76%,58% 82%,54% 100%,46% 100%,42% 82%,22% 76%,38% 70%);background:linear-gradient(90deg,#6d7a85,#fff 47%,#9da9b2 53%,#26313a);font-size:.7em}
+.mythic-orb .mythic-v9-core,.mythic-reactor .mythic-v9-core{border-radius:50%;background:radial-gradient(circle,#fff 0 12%,#5ff 18%,#145 45%,#07121b 72%)}
+.mythic-cube .mythic-v9-core{background:conic-gradient(from 45deg,#69515d,#d3b098,#30252a,#9a7d6f);clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%)}
+@keyframes v9MythicHalo{to{transform:rotate(360deg)}}
+.ofa-faux100-v9{filter:drop-shadow(0 0 10px #55ff7a)!important}
+.ofa-faux100-v9:before,.ofa-faux100-v9:after{background:repeating-linear-gradient(90deg,transparent 0 6px,#59ff7d 7px 10px,transparent 11px 17px)!important;box-shadow:0 0 14px #59ff7d,0 0 30px #2fe960!important}
