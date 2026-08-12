@@ -13,17 +13,23 @@ assert.ok(bundle.includes(marker),'V9 runtime marker missing');assert.ok(css.inc
 for(const needle of ['rewindUltimate3','timeRewind','pyroBurningGround','pyroInfernoGround','bloodAntiHeal','shrineAdaptiveCleave','faux100Blitz','gravityMpCrush','v9OpenDomainToggle','RIFT_V9_GIVE_ENEMY_ITEMS','MYTHICAL SLOT OCCUPIED','RIFTBOUND_V9_DEBUG','Calamity · Floor 50 Unlock','pochitaChoicePending','barrierless=true','v9ExplosiveFlight','afo50','RIFT_V9_MYTHICAL_MECHANIC_COVERAGE','v9RaijinTeleport','v9SlingPortal','v9MimicTearSummon','v9PrisonProgress','v9GunbaiCharge','v9SandevistanHeat','v9PuzzleRematchUsed','v9Kingship','v9IronHaloOverload'])assert.ok(bundle.includes(needle),`V9 mechanic missing ${needle}`);
 for(const id of ['air-force-gloves','zeta-suit','bandits-secret','open-domain','sukuna-finger','anduril-flame-west'])assert.ok(bundle.includes(`"id":"${id}"`),`required Mythical missing ${id}`);
 for(const needle of ['mythic-gauntlets','mythic-armor','mythic-book','mythic-finger','mythic-sword','ofa-faux100-v9','mythic-raijin','mythic-sling-portal','mythic-prison-realm','mythic-mimic-tear','mythic-anduril-rally','mythic-moonlight-wave'])assert.ok(css.includes(needle),`V9 visual missing ${needle}`);
+const shopFixMarker='/* Riftbound Shop Mythical Visibility + Build Strip */';
+assert.ok(bundle.includes(shopFixMarker),'Mythical shop visibility runtime marker missing');
+assert.ok(css.includes(shopFixMarker),'Mythical shop visibility CSS marker missing');
+assert.ok(bundle.includes('armory-current-build-strip'),'always-visible Armory build strip missing');
+assert.ok(!bundle.includes('Number(floor)<35?offers.filter(item=>item.rarity!==`Mythical`):offers'),'obsolete Mythical Floor 35 shop gate still present');
 const exportMarker='export{xs as default};'; assert.equal(bundle.split(exportMarker).length-1,1,'export seam changed');
 const instrumented=resolve(dirname(bundlePath),'page-v9-test.js'),pkg=resolve(dirname(bundlePath),'package.json'),hadPkg=existsSync(pkg);
 try{
  if(!hadPkg)await writeFile(pkg,'{"type":"module"}\n');
- const hook='globalThis.__RIFT_V9_TEST__={RIFT_ITEM_CATALOG,g,RIFT_ITEM,RIFT_ITEM_RARITIES,RIFT_V9_MYTHIC_PROFILE,RIFT_V9_MYTHICAL_MECHANIC_COVERAGE};';
+ const hook='globalThis.__RIFT_V9_TEST__={RIFT_ITEM_CATALOG,g,RIFT_ITEM,RIFT_ITEM_RARITIES,RIFT_SHOP_OFFERS,RIFT_V9_MYTHIC_PROFILE,RIFT_V9_MYTHICAL_MECHANIC_COVERAGE};';
  await writeFile(instrumented,bundle.replace(exportMarker,hook+exportMarker));
  await import(`${pathToFileURL(instrumented).href}?v=${Date.now()}`);
  const api=globalThis.__RIFT_V9_TEST__;assert.ok(api,'V9 test API missing');
  const mythics=api.RIFT_ITEM_CATALOG.filter(x=>x.rarity==='Mythical');
  assert.equal(mythics.length,25,`expected exactly 25 Mythicals, got ${mythics.length}`);
  assert.equal(new Set(mythics.map(x=>x.id)).size,mythics.length,'duplicate Mythical IDs');
+ for(const floor of [1,10,34,35,50]){const offers=api.RIFT_SHOP_OFFERS(floor,null),visibleMythics=offers.filter(x=>x.rarity==='Mythical');assert.equal(visibleMythics.length,25,`Floor ${floor} Armory must expose all 25 Mythicals, got ${visibleMythics.length}`);assert.equal(new Set(visibleMythics.map(x=>x.id)).size,25,`Floor ${floor} Armory Mythical offers contain duplicates`)}
  for(const item of mythics){assert.ok(item.passive?.length>=35,`${item.id} passive too thin`);assert.ok(item.lore?.length>=55,`${item.id} lore too thin`);assert.ok(item.reference&&item.reference!=='Riftbound Original',`${item.id} missing reference`)}
  const required=new Set(['air-force-gloves','zeta-suit','bandits-secret','open-domain','sukuna-finger','anduril-flame-west']);for(const id of required)assert.ok(mythics.some(x=>x.id===id),`${id} missing from final catalog`);
  const newMythics=mythics.filter(item=>item.id!=='sparda-devil-sword');assert.equal(newMythics.length,24,'V9 must add exactly 24 Mythicals on top of Sparda');
@@ -36,5 +42,5 @@ try{
  const faux=api.g.find(x=>x.name==='One For All').moves.find(x=>x.name==='Faux 100%');assert.ok(faux.tags.includes('faux100Blitz')&&faux.tags.includes('noProjectile'));
  const pyro=api.g.find(x=>x.name==='Pyrokinesis');assert.ok(pyro.moves.every(x=>x.tags.includes('scalingAP')));assert.ok(pyro.moves[0].tags.includes('pyroBurningGround'));assert.ok(pyro.moves.some(x=>x.tags.includes('pyroInfernoGround')));
  const blood=api.g.find(x=>x.name==='Blood Sorcery');assert.ok(blood.moves.filter(x=>(x.power||0)>0).every(x=>x.tags.includes('bloodAntiHeal')));
- console.log(`V9 verified: exactly ${mythics.length} Mythicals, all 24 new Mythicals have mechanic coverage and dedicated portraits, Calamity progression and combat reworks are wired.`);
+ console.log(`V9 verified: exactly ${mythics.length} Mythicals, all 25 are Armory-visible on every tested floor, the current build strip is present, and all V9 mechanics remain wired.`);
 }finally{delete globalThis.__RIFT_V9_TEST__;await rm(instrumented,{force:true});if(!hadPkg)await rm(pkg,{force:true})}
