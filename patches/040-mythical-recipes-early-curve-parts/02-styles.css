@@ -1,0 +1,16 @@
+/* Riftbound Mythical Recipes + Early Curve V12 */
+.rift-recipe-simple{min-height:0!important;gap:10px!important}
+.rift-recipe-simple .recipe-graph-scroll,.rift-recipe-simple .recipe-graph-node,.rift-recipe-simple .recipe-graph-children{display:none!important}
+.v12-recipe-flow{display:grid;grid-template-columns:minmax(0,1fr) 24px 96px 24px minmax(150px,.72fr);align-items:stretch;gap:8px;min-width:0}
+.v12-recipe-stage{display:grid;gap:6px;min-width:0;padding:8px;border:1px solid #2e4052;background:#08121b}
+.v12-recipe-stage>label{color:#748697;font-size:7px;font-weight:900;letter-spacing:.14em}
+.v12-recipe-components{display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:6px;align-content:start}
+.v12-recipe-card{position:relative;display:grid;grid-template-columns:34px minmax(0,1fr);align-items:center;gap:7px;min-width:0;min-height:48px;padding:6px;border:1px solid #40536a;border-radius:4px;background:#0b1620;color:#c7d0d7;text-align:left;cursor:pointer}
+.v12-recipe-card:hover{border-color:#8aa4bd;filter:brightness(1.12)}
+.v12-recipe-card>span{display:grid;gap:2px;min-width:0}.v12-recipe-card b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:8px;font-weight:800}.v12-recipe-card small{color:#8091a1;font-size:6px;font-weight:700;letter-spacing:.04em}.v12-recipe-card>em{position:absolute;right:5px;top:4px;color:#66e5a7;font-size:8px;font-weight:900}
+.v12-recipe-card.owned{border-color:#3fa679;background:#0c241b}.v12-recipe-card.result{grid-template-columns:42px minmax(0,1fr);min-height:58px;border-color:#8b9eb2}
+.v12-recipe-stage.combine{align-content:center;justify-items:center;text-align:center;border-style:dashed}.v12-recipe-stage.combine strong{color:#dfc36e;font-size:13px;font-weight:900}.v12-recipe-stage.combine small{color:#718394;font-size:6px;font-weight:700}
+.v12-recipe-arrow{align-self:center;justify-self:center;color:#8a9bab;font-size:18px;font-weight:900}.v12-recipe-help{margin:0!important;padding:7px 8px!important;border:1px solid #26394b!important;background:#071019!important;color:#718394!important;font-size:7px!important;line-height:1.45!important}.v12-direct-recipe{display:grid;grid-template-columns:minmax(150px,230px);justify-content:start}
+@media(max-width:1180px){.v12-recipe-flow{grid-template-columns:minmax(0,1fr) 18px 82px 18px minmax(132px,.7fr)}.v12-recipe-components{grid-template-columns:1fr}}
+@media(max-width:720px){.v12-recipe-flow{grid-template-columns:1fr}.v12-recipe-arrow{transform:rotate(90deg)}.v12-recipe-components{grid-template-columns:1fr 1fr}.v12-recipe-stage.combine{min-height:68px}}
+@media(max-width:440px){.v12-recipe-components{grid-template-columns:1fr}}

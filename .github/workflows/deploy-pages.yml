@@ -67,6 +67,9 @@ jobs:
       - name: Verify Shop GUI Reflow + Mythical Alignment V11
         run: node scripts/verify-shop-gui-reflow-v11.mjs
 
+      - name: Verify Mythical Recipes + Early Curve V12
+        run: node scripts/verify-mythical-recipes-early-curve-v12.mjs
+
       - name: Align Spartan verifier with locked weapon slot
         run: |
           node - <<'NODE'
