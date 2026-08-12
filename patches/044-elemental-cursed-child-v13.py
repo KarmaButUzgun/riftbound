@@ -34,29 +34,38 @@ old='''n||(o.forEach(e=>{e.fighter.statuses.infiniteVoidStun=Math.max(t?2:3,e.fi
 new='''n||(o.forEach(x=>{if(RIFT_V13_SIMPLE_ACTIVE(e,x.fighter))return;x.fighter.statuses.infiniteVoidStun=Math.max(t?2:3,x.fighter.statuses.infiniteVoidStun||0),delete x.fighter.statuses.stun}),i.statuses.limitlessCooldown=5'''
 bundle=once(bundle,old,new,'Infinite Void Simple Domain guard')
 
-# Patch the final active Armory, after V11's layout replacement but before later portrait wrappers.
-shop_start=bundle.rfind('function RIFT_ITEM_SHOP({run,onCommit}){',0,bundle.find('/* Riftbound Portrait Rework V3'))
-if shop_start<0: raise SystemExit('V13 final Armory start missing')
-shop_end=bundle.find('\n}',shop_start)
-if shop_end<0: raise SystemExit('V13 final Armory end missing')
-shop=bundle[shop_start:shop_end+2]
+# Patch the authoritative V11/V2 Armory override, not an older historical shop body.
+shop_anchor='RIFT_ITEM_SHOP=function RIFT_ITEM_SHOP({run,onCommit}){'
+shop_start=bundle.rfind(shop_anchor)
+if shop_start<0: raise SystemExit('V13 final Armory override missing')
+shop_end=bundle.find('\n};',shop_start)
+if shop_end<0: raise SystemExit('V13 final Armory boundary missing')
+shop_end+=3
+shop=bundle[shop_start:shop_end]
 shop=once(shop,
-'''const[query,setQuery]=(0,r.useState)(``),[rarityFilter,setRarityFilter]=(0,r.useState)(`All`),[categoryFilter,setCategoryFilter]=(0,r.useState)(`All`),[selectedId,setSelectedId]=(0,r.useState)(null),[hover,setHover]=(0,r.useState)(null),[feedback,setFeedback]=(0,r.useState)(null),[loadoutOpen,setLoadoutOpen]=(0,r.useState)(false);''',
-'''const[query,setQuery]=(0,r.useState)(``),[rarityFilter,setRarityFilter]=(0,r.useState)(`All`),[categoryFilter,setCategoryFilter]=(0,r.useState)(`All`),[selectedId,setSelectedId]=(0,r.useState)(null),[hover,setHover]=(0,r.useState)(null),[feedback,setFeedback]=(0,r.useState)(null),[loadoutOpen,setLoadoutOpen]=(0,r.useState)(false),[shopOwner,setShopOwner]=(0,r.useState)(`yuta`);const rikaShop=RIFT_CURSED_CHILD(run.player)&&shopOwner===`rika`,shopFighter=rikaShop?RIFT_V13_RIKA_SHOP_FIGHTER(run):run.player;''',
+'''[loadoutOpen,setLoadoutOpen]=(0,r.useState)(false);''',
+'''[loadoutOpen,setLoadoutOpen]=(0,r.useState)(false),[shopOwner,setShopOwner]=(0,r.useState)(`yuta`);const rikaShop=RIFT_CURSED_CHILD(run.player)&&shopOwner===`rika`,shopFighter=rikaShop?RIFT_V13_RIKA_SHOP_FIGHTER(run):run.player;''',
 'Armory owner state')
-shop=shop.replace('RIFT_SHOP_OFFERS(run.floor,run.player)','RIFT_SHOP_OFFERS(run.floor,shopFighter)').replace('[run.floor,run.player]','[run.floor,shopFighter]')
-shop=shop.replace('RIFT_RECOMMENDED_ITEMS(run.player,catalog,10)','RIFT_RECOMMENDED_ITEMS(shopFighter,catalog,10)').replace('[run.player,catalog]','[shopFighter,catalog]')
-shop=shop.replace('RIFT_RECIPE_PLAN(run.player,selected.id)','RIFT_RECIPE_PLAN(shopFighter,selected.id)').replace('[run.player,selected?.id]','[shopFighter,selected?.id]')
-shop=shop.replace('RIFT_BUILD_PROFILE(run.player)','RIFT_BUILD_PROFILE(shopFighter)').replace('[run.player]','[shopFighter]')
-shop=shop.replace('(0,E.jsx)(RIFT_CATALOG_TILE_MEMO,{item,fighter:run.player','(0,E.jsx)(RIFT_CATALOG_TILE_MEMO,{item,fighter:shopFighter')
-shop=shop.replace('(0,E.jsx)(RIFT_ITEM_DETAIL_MEMO,{item:selected,fighter:run.player','(0,E.jsx)(RIFT_ITEM_DETAIL_MEMO,{item:selected,fighter:shopFighter')
-shop=shop.replace('const result=RIFT_BUY_ITEM(next,itemId);','const result=rikaShop?RIFT_V13_RIKA_ITEM(next,itemId):RIFT_BUY_ITEM(next,itemId);')
-shop=shop.replace('(0,E.jsx)(RIFT_INVENTORY_MANAGER_MEMO,{run,onCommit})','rikaShop?(0,E.jsx)(RIFT_V13_RIKA_INVENTORY_MANAGER,{run,onCommit}):(0,E.jsx)(RIFT_INVENTORY_MANAGER_MEMO,{run,onCommit})')
+shop=once(shop,'RIFT_SHOP_OFFERS(run.floor,run.player)','RIFT_SHOP_OFFERS(run.floor,shopFighter)','Armory owner catalog')
+shop=shop.replace('RIFT_RECOMMENDED_ITEMS(run.player,catalog,10)','RIFT_RECOMMENDED_ITEMS(shopFighter,catalog,10)')
+shop=shop.replace('RIFT_RECIPE_PLAN(run.player,selected.id)','RIFT_RECIPE_PLAN(shopFighter,selected.id)')
+shop=shop.replace('RIFT_BUILD_PROFILE(run.player)','RIFT_BUILD_PROFILE(shopFighter)')
+shop=shop.replace('run.player.inventory.filter(Boolean).length','(rikaShop?RIFT_V13_NORMALIZE_RIKA_STORAGE(run.player):run.player.inventory).filter(Boolean).length')
+shop=shop.replace('fighter:run.player','fighter:shopFighter')
+shop=shop.replace('RIFT_ITEM_TOOLTIP,{item:hoverItem,fighter:run.player','RIFT_ITEM_TOOLTIP,{item:hoverItem,fighter:shopFighter')
+shop=shop.replace('RIFT_CATALOG_TILE,{item,fighter:run.player','RIFT_CATALOG_TILE,{item,fighter:shopFighter')
+shop=shop.replace('RIFT_ITEM_DETAIL,{item:selected,fighter:run.player','RIFT_ITEM_DETAIL,{item:selected,fighter:shopFighter')
+shop=shop.replace('const next=P(run),result=RIFT_BUY_ITEM(next,selected.id);','const next=P(run),result=rikaShop?RIFT_V13_RIKA_ITEM(next,selected.id):RIFT_BUY_ITEM(next,selected.id);')
+shop=shop.replace('const next=P(run),result=RIFT_BUY_ITEM(next,id);','const next=P(run),result=rikaShop?RIFT_V13_RIKA_ITEM(next,id):RIFT_BUY_ITEM(next,id);')
 shop=once(shop,
-'''(0,E.jsxs)(`div`,{className:`armory-top-actions`,children:[(0,E.jsxs)(`button`,{type:`button`,className:`loadout-toggle ${loadoutOpen?`active`:``}`,onClick:()=>setLoadoutOpen(v=>!v),children:[loadoutOpen?`HIDE BUILD`:`MANAGE BUILD`,` · `,run.player.inventory.filter(Boolean).length,` / 6`]}),''',
-'''(0,E.jsxs)(`div`,{className:`armory-top-actions`,children:[RIFT_CURSED_CHILD(run.player)&&(0,E.jsx)(`button`,{type:`button`,className:`v13-rika-shop-toggle ${rikaShop?`active`:``}`,onClick:()=>{setShopOwner(v=>v===`rika`?`yuta`:`rika`);setSelectedId(null);setFeedback(null)},children:rikaShop?`VIEW YUTA BUILD`:`VIEW RIKA BUILD`}),(0,E.jsxs)(`button`,{type:`button`,className:`loadout-toggle ${loadoutOpen?`active`:``}`,onClick:()=>setLoadoutOpen(v=>!v),children:[loadoutOpen?`HIDE BUILD`:`MANAGE BUILD`,` · `,(rikaShop?RIFT_V13_NORMALIZE_RIKA_STORAGE(run.player):run.player.inventory).filter(Boolean).length,` / 6`]}),''',
+'''(0,E.jsxs)(`button`,{type:`button`,className:`armory-loadout-toggle`,onClick:()=>setLoadoutOpen(open=>!open),"aria-expanded":loadoutOpen,children:[loadoutOpen?`HIDE BUILD TOOLS · `:`MANAGE BUILD · `,ownedCount,`/6`]}),''',
+'''RIFT_CURSED_CHILD(run.player)&&(0,E.jsx)(`button`,{type:`button`,className:`v13-rika-shop-toggle ${rikaShop?`active`:``}`,onClick:()=>{setShopOwner(v=>v===`rika`?`yuta`:`rika`);setSelectedId(null);setHover(null);setFeedback(null)},children:rikaShop?`VIEW YUTA BUILD`:`VIEW RIKA BUILD`}),(0,E.jsxs)(`button`,{type:`button`,className:`armory-loadout-toggle`,onClick:()=>setLoadoutOpen(open=>!open),"aria-expanded":loadoutOpen,children:[loadoutOpen?`HIDE BUILD TOOLS · `:`MANAGE BUILD · `,ownedCount,`/6`]}),''',
 'Rika Armory toggle')
-bundle=bundle[:shop_start]+shop+bundle[shop_end+2:]
+shop=once(shop,
+'''(0,E.jsx)(`div`,{className:`armory-loadout-wrap ${loadoutOpen?`is-open`:`is-collapsed`}`,children:(0,E.jsx)(RIFT_INVENTORY_MANAGER,{run,onCommit})})''',
+'''(0,E.jsx)(`div`,{className:`armory-loadout-wrap ${loadoutOpen?`is-open`:`is-collapsed`}`,children:rikaShop?(0,E.jsx)(RIFT_V13_RIKA_INVENTORY_MANAGER,{run,onCommit}):(0,E.jsx)(RIFT_INVENTORY_MANAGER,{run,onCommit})})''',
+'Rika Armory inventory manager')
+bundle=bundle[:shop_start]+shop+bundle[shop_end:]
 
 # Runtime goes last so it wraps all prior systems and owns final gameplay behavior.
 export='export{xs as default};'
