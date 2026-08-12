@@ -1,0 +1,53 @@
+/* Riftbound Shop GUI Reflow + Mythical Alignment V11 */
+/* One build surface only: the interactive dock remains visible; the redundant read-only strip is retired. */
+.armory-current-build-strip{display:none!important}
+.armory-loadout-wrap.is-collapsed{display:block!important}
+.armory-loadout-wrap{min-height:0;max-height:148px;background:#08111a}
+.armory-loadout-wrap .shop-inventory-dock{max-height:148px!important;overflow-y:auto;padding:6px 10px 8px!important;gap:5px!important}
+.armory-loadout-wrap.is-collapsed .shop-inventory-dock{max-height:72px!important;overflow:hidden;padding:5px 10px!important}
+.armory-loadout-wrap.is-collapsed .shop-inventory-dock>header,
+.armory-loadout-wrap.is-collapsed .inventory-controls,
+.armory-loadout-wrap.is-collapsed .inventory-hint,
+.armory-loadout-wrap.is-collapsed .spartan-inventory-feedback{display:none!important}
+.armory-is-open .rift-inventory-grid{grid-template-columns:repeat(6,minmax(92px,1fr))!important;gap:5px!important}
+.armory-is-open .inventory-slot{grid-template-columns:30px minmax(0,1fr)!important;grid-template-rows:auto auto!important;min-height:56px!important;padding:5px 6px!important}
+.armory-is-open .inventory-slot>small{font-size:6px!important}.armory-is-open .inventory-slot>strong{font-size:8px!important}.armory-is-open .inventory-slot>em{font-size:6px!important}
+.armory-is-open .inventory-controls{min-height:36px;padding:5px 7px!important}.armory-is-open .inventory-controls>span{min-width:160px}.armory-is-open .inventory-controls button{min-height:28px!important}
+
+/* Give catalog and build path the vertical room stolen by the duplicate build strip. */
+.build-expansion-shop.full-catalog-armory.armory-is-open{grid-template-rows:auto minmax(0,1fr) auto!important}
+.armory-is-open>.shop-command-header{grid-row:1!important}.armory-is-open>.league-shop-layout{grid-row:2!important}.armory-is-open>.armory-loadout-wrap{grid-row:3!important}
+.armory-is-open .league-shop-layout{grid-template-columns:clamp(145px,11vw,176px) minmax(390px,1fr) clamp(430px,31vw,540px)!important;height:auto!important;min-height:0!important;overflow:hidden}
+.armory-is-open .shop-detail-pane{min-width:0!important;padding:12px 14px 88px!important;overflow-y:auto!important}
+.armory-is-open .shop-detail-header .rift-item-icon.hero{width:76px!important;height:76px!important}
+.armory-is-open .rift-recipe-graph{margin-top:10px;min-height:150px;padding:11px 10px 12px!important;border-color:#41576b;background:linear-gradient(180deg,#08131d,#061019)}
+.armory-is-open .recipe-graph-scroll{min-height:104px;max-height:270px;overflow:auto!important;padding:9px 12px 15px!important;scrollbar-gutter:stable both-edges}
+.armory-is-open .recipe-graph-children{gap:18px!important;padding-top:25px!important}
+.armory-is-open .recipe-graph-card{width:132px!important;min-height:48px!important}.armory-is-open .recipe-graph-node.root>.recipe-graph-card{width:164px!important;min-height:62px!important}
+.armory-is-open .shop-upgrade-row{margin-top:9px}
+.armory-is-open .shop-purchase-bar{bottom:-88px!important}
+
+/* A real shared art stage lets the entire canon object move/scale together while preserving each authored layer's rotation. */
+.rift-item-icon.art-v11>.rift-v11-art-stage{position:absolute;inset:0;z-index:4;display:block;transform-origin:50% 50%;transform:translate(var(--v11-art-x,0),var(--v11-art-y,0)) scale(var(--v11-art-scale,1));pointer-events:none}
+.rift-item-icon.art-v11>.rift-v11-art-stage>i{position:absolute;display:block;transform-origin:50% 50%;will-change:auto}
+.rift-item-icon.art-v11>.rift-v11-art-stage>.canon-main{z-index:6;left:var(--cm-x);top:var(--cm-y);width:var(--cm-w);height:var(--cm-h);background:var(--cm-bg);clip-path:var(--cm-clip);transform:rotate(var(--cm-rot));border-radius:var(--cm-radius);border:var(--cm-border);box-shadow:var(--cm-shadow);opacity:var(--cm-opacity);filter:drop-shadow(0 3px 3px #000d)}
+.rift-item-icon.art-v11>.rift-v11-art-stage>.canon-secondary{z-index:7;left:var(--cs-x);top:var(--cs-y);width:var(--cs-w);height:var(--cs-h);background:var(--cs-bg);clip-path:var(--cs-clip);transform:rotate(var(--cs-rot));border-radius:var(--cs-radius);border:var(--cs-border);box-shadow:var(--cs-shadow);opacity:var(--cs-opacity);filter:drop-shadow(0 2px 2px #000c)}
+.rift-item-icon.art-v11>.rift-v11-art-stage>.canon-detail{z-index:8;left:var(--cd-x);top:var(--cd-y);width:var(--cd-w);height:var(--cd-h);background:var(--cd-bg);clip-path:var(--cd-clip);transform:rotate(var(--cd-rot));border-radius:var(--cd-radius);border:var(--cd-border);box-shadow:var(--cd-shadow);opacity:var(--cd-opacity)}
+.rift-item-icon.art-v11>.rift-v11-art-stage>.canon-mark{z-index:9;left:var(--ck-x);top:var(--ck-y);width:var(--ck-w);height:var(--ck-h);background:var(--ck-bg);clip-path:var(--ck-clip);transform:rotate(var(--ck-rot));border-radius:var(--ck-radius);border:var(--ck-border);box-shadow:var(--ck-shadow);opacity:var(--ck-opacity)}
+.rift-item-icon.art-v11>.rift-v11-art-stage>.canon-glow{z-index:4;left:var(--cg-x);top:var(--cg-y);width:var(--cg-w);height:var(--cg-h);background:var(--cg-bg);clip-path:var(--cg-clip);transform:rotate(var(--cg-rot));border-radius:var(--cg-radius);border:var(--cg-border);box-shadow:var(--cg-shadow);opacity:var(--cg-opacity);filter:blur(.2px)}
+.rift-item-icon.art-v11.hero>.rift-v11-art-stage>.canon-main{filter:drop-shadow(0 5px 5px #000d)}
+.rift-item-icon.art-v11.hero>.rift-v11-art-stage>.canon-secondary{filter:drop-shadow(0 3px 3px #000b)}
+.rift-item-icon.art-v11:hover>.rift-v11-art-stage>.canon-main{filter:drop-shadow(0 4px 4px #000d) brightness(1.08)}
+.rift-item-icon.art-v11.canon-moonlight-greatsword-canon>.rift-v11-art-stage>.canon-main,.rift-item-icon.art-v11.canon-doom-crucible-canon>.rift-v11-art-stage>.canon-main,.rift-item-icon.art-v11.canon-arc-reactor-canon>.rift-v11-art-stage>.canon-main{filter:drop-shadow(0 3px 3px #000d) drop-shadow(0 0 5px var(--canon-a))}
+
+@media(max-width:1180px) and (min-width:901px){
+ .armory-is-open .league-shop-layout{grid-template-columns:142px minmax(330px,1fr) minmax(360px,430px)!important}
+ .armory-is-open .recipe-graph-card{width:118px!important}.armory-is-open .recipe-graph-node.root>.recipe-graph-card{width:148px!important}
+}
+@media(max-width:900px){
+ .armory-is-open .league-shop-layout{grid-template-columns:1fr!important;grid-template-rows:auto auto minmax(0,1fr)!important}
+ .armory-loadout-wrap{max-height:126px}.armory-loadout-wrap.is-collapsed .shop-inventory-dock{max-height:64px!important;overflow-x:auto!important}
+ .armory-is-open .rift-inventory-grid{grid-template-columns:repeat(6,92px)!important;width:max-content}
+ .armory-is-open .shop-detail-pane{padding:10px 10px 76px!important}
+ .armory-is-open .recipe-graph-scroll{max-height:240px}
+}
