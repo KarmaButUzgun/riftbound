@@ -4,10 +4,10 @@ import sys
 root=Path(sys.argv[1])
 bundle_path=root/'assets/page-F6OuavDb.js'
 parts=Path(__file__).with_name('036-v9-combat-audit-hardening-parts')
-runtime_path=parts/'01-runtime.js'
-for path in (bundle_path,runtime_path):
-    if not path.is_file(): raise SystemExit(f'V9 combat audit missing {path}')
-bundle=bundle_path.read_text(); runtime=runtime_path.read_text().strip()
+runtime_parts=sorted(parts.glob('*.js'))
+if not bundle_path.is_file(): raise SystemExit(f'V9 combat audit missing {bundle_path}')
+if not runtime_parts: raise SystemExit(f'V9 combat audit missing runtime parts in {parts}')
+bundle=bundle_path.read_text(); runtime='\n'.join(path.read_text().strip() for path in runtime_parts)
 marker='/* Riftbound V9 Combat Audit Hardening */'
 if marker in bundle: raise SystemExit('V9 combat audit already applied')
 
@@ -27,4 +27,4 @@ export='export{xs as default};'
 if bundle.count(export)!=1: raise SystemExit('V9 combat audit export seam changed')
 bundle=bundle.replace(export,runtime+'\n'+export,1)
 bundle_path.write_text(bundle)
-print('Applied V9 combat audit hardening: base OFA reuses Prime Might, Cleave penetrates real Durability, Faux 100% damages crossed targets, Mythical is a first-class tier, and duplicate Mythical save state is sanitized')
+print(f'Applied V9 combat audit hardening ({len(runtime_parts)} runtime parts): base OFA reuses Prime Might, Cleave penetrates real Durability, Faux 100% damages crossed targets, Mythical is a first-class tier, duplicate Mythical save state is sanitized, and all Mythicals have production mechanics')
