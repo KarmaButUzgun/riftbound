@@ -5,12 +5,13 @@ root=Path(sys.argv[1])
 bundle_path=root/'assets/page-F6OuavDb.js'
 css_path=root/'assets/riftbound.css'
 parts=Path(__file__).with_name('034-cinematic-rework-v8-parts')
-runtime_path=parts/'01-cinematic-rework-v8.js'
-styles_path=parts/'02-cinematic-rework-v8.css'
-for path in (bundle_path,css_path,runtime_path,styles_path):
+runtime_parts=sorted(parts.glob('*-runtime-v8.js'))
+style_parts=sorted(parts.glob('*-styles-v8.css'))
+for path in (bundle_path,css_path):
     if not path.is_file(): raise SystemExit(f'Cinematic Rework V8: missing {path}')
+if not runtime_parts or not style_parts: raise SystemExit('Cinematic Rework V8: runtime/style parts missing')
 
-bundle=bundle_path.read_text(); css=css_path.read_text(); runtime=runtime_path.read_text().strip(); styles=styles_path.read_text().strip()
+bundle=bundle_path.read_text(); css=css_path.read_text(); runtime='\n'.join(path.read_text().strip() for path in runtime_parts); styles='\n'.join(path.read_text().strip() for path in style_parts)
 js_marker='/* Riftbound Cinematic Rework V8 · literal canon-authentic ultimates and transformations */'
 css_marker='/* Riftbound Cinematic Rework V8 · Yoru-quality literal cinematic staging */'
 if not runtime.startswith(js_marker): raise SystemExit('Cinematic Rework V8: runtime payload failed validation')
