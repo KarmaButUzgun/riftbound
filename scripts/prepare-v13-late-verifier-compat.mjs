@@ -1,13 +1,17 @@
 #!/usr/bin/env node
+import assert from 'node:assert/strict';
 import fs from 'node:fs';
-function patch(path,oldText,newText,label){
-  let text=fs.readFileSync(path,'utf8');
-  const count=text.split(oldText).length-1;
-  if(count!==1)throw new Error(`${label}: expected one anchor in ${path}, found ${count}`);
-  text=text.replace(oldText,newText);fs.writeFileSync(path,text);
-}
-patch('scripts/verify-shop-gui-reflow-v11.mjs',
-"assert.ok(shop.includes('[loadoutOpen,setLoadoutOpen]=(0,r.useState)(false);'),'shop must open with compact loadout dock');",
-"assert.ok(shop.includes('[loadoutOpen,setLoadoutOpen]=(0,r.useState)(false),[shopOwner,setShopOwner]=(0,r.useState)(`yuta`);'),'shop must open with compact Yuta loadout dock and explicit Rika inventory owner state');",
-'V11 compact dock expectation with V13 Rika owner state');
-console.log('Prepared late V13 verifier compatibility for the Rika-aware compact Armory dock.');
+
+const v11Path='scripts/verify-shop-gui-reflow-v11.mjs';
+const v11=fs.readFileSync(v11Path,'utf8');
+assert.ok(
+  v11.includes("assert.ok(shop.includes('[loadoutOpen,setLoadoutOpen]=(0,r.useState)(false);'),'shop must open with compact loadout dock');"),
+  'V11 compact-dock verifier baseline changed unexpectedly'
+);
+
+// V13.1 deliberately moves shopOwner/shopFighter ahead of the first catalog memo.
+// Run the dedicated ordering regression here so both PR and Pages workflows pick it
+// up through the existing late-compat step without maintaining divergent pipelines.
+await import(`./verify-v131-shopfighter-tdz.mjs?run=${Date.now()}`);
+
+console.log('Prepared late V13/V13.1 verifier compatibility: V11 compact dock remains valid and Armory owner ordering is TDZ-safe.');
