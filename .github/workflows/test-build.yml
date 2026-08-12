@@ -24,6 +24,9 @@ jobs:
       - name: Prepare V13 verifier compatibility
         run: node scripts/prepare-v13-verifier-compat.mjs
 
+      - name: Prepare V13 late verifier compatibility
+        run: node scripts/prepare-v13-late-verifier-compat.mjs
+
       - name: Verify Bizarre Update runtime
         run: node scripts/verify-bizarre-update.mjs
 
