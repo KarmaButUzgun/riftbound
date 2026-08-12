@@ -28,6 +28,9 @@ jobs:
       - name: Build Riftbound
         run: bash scripts/build-site.sh
 
+      - name: Prepare V9 verifier compatibility
+        run: node scripts/prepare-v9-verifier-compat.mjs
+
       - name: Verify Bizarre Update runtime
         run: node scripts/verify-bizarre-update.mjs
 
@@ -54,6 +57,9 @@ jobs:
 
       - name: Verify Shop Performance V7
         run: node scripts/verify-shop-performance-v7.mjs
+
+      - name: Verify Major Balance + Mythical V9
+        run: node scripts/verify-major-balance-mythical-v9.mjs
 
       - name: Align Spartan verifier with locked weapon slot
         run: |
