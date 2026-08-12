@@ -3,11 +3,14 @@ import sys
 root=Path(sys.argv[1]); bundle_path=root/'assets/page-F6OuavDb.js'; css_path=root/'assets/riftbound.css'
 parts=Path(__file__).with_name('034-major-balance-mythical-v9-parts')
 runtime_parts=sorted(parts.glob('*-runtime-v9.js'))
+style_parts=sorted(parts.glob('*-styles-v9.css'))
 if not runtime_parts: raise SystemExit('V9 runtime parts missing')
+if not style_parts: raise SystemExit('V9 style parts missing')
 runtime='\n'.join(p.read_text().strip('\n') for p in runtime_parts)
+styles='\n'.join(p.read_text().strip('\n') for p in style_parts)
 # Keep Sparda on its approved bespoke V5 renderer. V9 only owns the 24 new Mythical portraits.
 runtime=runtime.replace('if(item?.rarity!==`Mythical`)return RIFT_V9_BASE_ICON(props);','if(item?.rarity!==`Mythical`||item.id===`sparda-devil-sword`)return RIFT_V9_BASE_ICON(props);')
-styles=(parts/'05-styles-v9.css').read_text().strip(); mythics=(parts/'06-mythical-catalog-v9.js').read_text().strip()
+mythics=(parts/'06-mythical-catalog-v9.js').read_text().strip()
 bundle=bundle_path.read_text(); css=css_path.read_text()
 marker='/* Riftbound Major Balance + Mythical Expansion V9 */'
 if marker in bundle: raise SystemExit('V9 already applied')
@@ -40,4 +43,4 @@ if bundle.count(export)!=1: raise SystemExit('V9 export seam changed')
 bundle=bundle.replace(export,runtime+'\n'+export,1)
 css=css.rstrip()+'\n\n'+styles+'\n'
 bundle_path.write_text(bundle); css_path.write_text(css)
-print(f'Applied Riftbound Major Balance + Mythical Expansion V9 ({len(runtime_parts)} runtime parts)')
+print(f'Applied Riftbound Major Balance + Mythical Expansion V9 ({len(runtime_parts)} runtime parts, {len(style_parts)} style parts)')
