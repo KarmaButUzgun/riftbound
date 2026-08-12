@@ -2,7 +2,7 @@ name: Deploy Riftbound
 
 on:
   push:
-    branches: ["main", "agent/major-balance-mythical-v9"]
+    branches: ["main"]
   workflow_dispatch:
 
 permissions:
