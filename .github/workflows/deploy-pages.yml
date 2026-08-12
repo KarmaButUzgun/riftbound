@@ -55,6 +55,9 @@ jobs:
       - name: Verify Shop Performance V7
         run: node scripts/verify-shop-performance-v7.mjs
 
+      - name: Verify Cinematic Rework V8
+        run: node scripts/verify-cinematic-rework-v8.mjs
+
       - name: Align Spartan verifier with locked weapon slot
         run: |
           node - <<'NODE'
