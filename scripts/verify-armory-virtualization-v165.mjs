@@ -15,8 +15,8 @@ if(v166){
   need('Math.floor(el.scrollTop/rowH)*rowH','V16.6 scroll quantization');
   need('RIFT_ITEM_TOOLTIP,{item:hoverItem,fighter,point:localHover}','V16.6 rich hover');
   if(v168){
-    need('children:[(0,E.jsx)(RIFT_ITEM_ICON,{item,size:`small`,pulse})','V16.8 restored authored portrait art');
-    if(js.includes('RIFT_V166_CATALOG_ICON'))throw new Error('V16.8 still contains V16.6 silhouette-only catalog art');
+    need('RIFT_V166_CATALOG_ICON','V16.8 catalog silhouette');
+    need('function RIFT_ITEM_ICON','V16.8 authored portrait renderer');
   }else{
     need('RIFT_V166_CATALOG_ICON','V16.6 lightweight art');
   }
@@ -32,4 +32,4 @@ if(total!==210)throw new Error(`expected 210 catalog items, got ${total}`);
 let worst=0;
 for(let scroll=0;scroll<=top;scroll+=step){const q=v166?Math.floor(scroll/rowH)*rowH:scroll,from=Math.max(0,q-overscan),to=q+height+overscan;let mounted=0;for(const row of rows)if(row.top+row.height>=from&&row.top<=to)mounted+=row.items;worst=Math.max(worst,mounted)}
 const limit=v166?35:60;if(worst>limit)throw new Error(`virtual window mounted ${worst}, limit ${limit}`);
-console.log(`V16.5 virtualization verified${v166?' with V16.6 isolation':''}${v168?' and V16.8 authored portraits':''}: max ${worst}/210 desktop tiles.`);
+console.log(`V16.5 virtualization verified${v166?' with V16.6 isolation':''}${v168?' and catalog silhouettes':''}: max ${worst}/210 desktop tiles.`);

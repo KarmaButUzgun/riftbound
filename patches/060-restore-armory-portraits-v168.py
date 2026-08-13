@@ -8,23 +8,23 @@ s=js_path.read_text()
 marker='/* Riftbound Armory Portrait Restoration V16.8 */'
 if marker in s: raise SystemExit('V16.8 already applied')
 
-old='children:[(0,E.jsx)(RIFT_V166_CATALOG_ICON,{item,pulse}),(0,E.jsx)(`strong`,{children:item.name})'
-new='children:[(0,E.jsx)(RIFT_ITEM_ICON,{item,size:`small`,pulse}),(0,E.jsx)(`strong`,{children:item.name})'
-if s.count(old)!=1:
-    raise SystemExit(f'V16.8 catalog portrait anchor expected once, found {s.count(old)}')
-s=s.replace(old,new,1)
-
-# V16.6 introduced silhouette-only catalog helpers. Once the original authored
-# RIFT_ITEM_ICON portrait renderer is back in the tile, remove those dead helpers
-# so the optimization cannot silently fall back to portrait-less browse art again.
-helper_start=s.find('function RIFT_V166_CATALOG_FAMILY(item)')
-tile_start=s.find('function RIFT_V16_CATALOG_TILE(', helper_start)
-if helper_start<0 or tile_start<0:
-    raise SystemExit('V16.8 could not locate V16.6 silhouette helper block')
-s=s[:helper_start]+marker+'\n'+s[tile_start:]
+# The V16.6 lightweight silhouette is intentional only in the scrolling catalog.
+# Keep that optimized catalog path, while preserving the original authored
+# RIFT_ITEM_ICON portraits everywhere else (hover cards, detail, recipes,
+# inventory/loadouts and other item surfaces).
+anchor='function RIFT_V16_CATALOG_TILE({item,fighter,selected,recommended,favorite,onSelect,onQuickBuy,onHover,onFavorite,pulse=false})'
+if s.count(anchor)!=1:
+    raise SystemExit(f'V16.8 catalog tile anchor expected once, found {s.count(anchor)}')
+if s.count('children:[(0,E.jsx)(RIFT_V166_CATALOG_ICON,{item,pulse}),(0,E.jsx)(`strong`,{children:item.name})')!=1:
+    raise SystemExit('V16.8 expected catalog-only silhouette renderer')
+if 'function RIFT_V166_CATALOG_ICON' not in s:
+    raise SystemExit('V16.8 missing lightweight catalog icon helper')
+if 'RIFT_ITEM_TOOLTIP,{item:hoverItem,fighter,point:localHover}' not in s:
+    raise SystemExit('V16.8 missing rich authored hover preview path')
+s=s.replace(anchor,marker+'\n'+anchor,1)
 
 js_path.write_text(s)
-print('Applied Riftbound Armory Portrait Restoration V16.8')
-print(' - restored authored item portraits in catalog tiles')
-print(' - retained V16.5/V16.6 virtualization and memoization')
-print(' - removed dead silhouette-only catalog renderer')
+print('Applied Riftbound Armory Portrait Split V16.8')
+print(' - lightweight silhouettes remain only in the scrolling catalog grid')
+print(' - authored portraits remain in hover, detail, recipe, loadout, inventory, and other surfaces')
+print(' - V16.5/V16.6 virtualization and memoization remain intact')
