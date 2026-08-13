@@ -115,8 +115,11 @@ jobs:
       - name: Verify V17-V20 consolidation runtime
         run: node scripts/verify-consolidation-v17-v20.mjs
 
-      - name: Verify V20 authoritative co-op protocol
+      - name: Verify V29 authoritative co-op protocol
         run: node scripts/verify-coop-authority-v20.mjs
+
+      - name: Verify V21-V30 Remastered release
+        run: node scripts/verify-remastered-v21-v30.mjs
 
       - name: Upload built site
         uses: actions/upload-artifact@v4

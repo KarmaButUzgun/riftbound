@@ -11,7 +11,8 @@ const PORT = Number(process.env.PORT || process.env.RIFTBOUND_COOP_PORT || 3000)
 const HOST = process.env.RIFTBOUND_COOP_HOST || '0.0.0.0';
 const MAX_BODY = 2 * 1024 * 1024;
 const ROOM_TTL = 1000 * 60 * 60 * 8;
-const PROTOCOL_VERSION = 2;
+const CONNECTION_TTL = Math.max(250, Number(process.env.RIFTBOUND_COOP_CONNECTION_TTL || 18_000));
+const PROTOCOL_VERSION = 3;
 const INTENT_RATE_MS = 90;
 const INTENT_TYPES = new Set(['action', 'move']);
 const rooms = new Map();
@@ -45,6 +46,8 @@ function publicRoom(room) {
     players: [...room.players.values()].sort((a,b)=>a.slot-b.slot).map(publicPlayer),
     snapshotRevision: room.snapshotRevision,
     hasSnapshot: !!room.snapshot,
+    stateHash: room.snapshot?.stateHash || null,
+    recoveryAvailable: !!room.snapshot,
     protocolVersion: PROTOCOL_VERSION,
   };
 }
@@ -87,6 +90,9 @@ function normalizeIntent(room, player, body) {
   const type = String(body.type || '');
   if (!INTENT_TYPES.has(type)) throw new Error('Unsupported partner command');
   const source = body.payload && typeof body.payload === 'object' && !Array.isArray(body.payload) ? body.payload : {};
+  const expectedStateHash = source.expectedStateHash == null ? null : String(source.expectedStateHash).slice(0, 96);
+  const authoritativeStateHash = room.snapshot?.stateHash || null;
+  if (expectedStateHash && authoritativeStateHash && expectedStateHash !== authoritativeStateHash) throw new Error('Authoritative state changed. Full resync required');
   let payload;
   if (type === 'action') {
     const actionId = String(source.actionId || '').slice(0, 96);
@@ -103,7 +109,7 @@ function normalizeIntent(room, player, body) {
   }
   player.lastIntentAt = now;
   player.lastIntentSequence = sequence;
-  return { type, payload, sequence, at: now };
+  return { type, payload, expectedStateHash, sequence, at: now };
 }
 function findLanIp() {
   try {
@@ -143,6 +149,14 @@ setInterval(() => {
     rooms.delete(code);
   }
 }, 60_000).unref();
+setInterval(() => {
+  const cutoff = Date.now() - CONNECTION_TTL;
+  for (const room of rooms.values()) for (const player of room.players.values()) if (player.connected && player.lastSeen < cutoff) {
+    player.connected = false;
+    emit(room, 'player-disconnected', { player: publicPlayer(player), room: publicRoom(room), recoverable: true });
+    maybeStart(room);
+  }
+}, Math.min(5_000, Math.max(125, Math.floor(CONNECTION_TTL / 2)))).unref();
 
 async function api(req, res, url) {
   const parts = url.pathname.split('/').filter(Boolean);
@@ -162,22 +176,28 @@ async function api(req, res, url) {
   const token = req.headers['x-rift-token'] || url.searchParams.get('token');
   const player = auth(room, playerId, token);
   if (!player) return bad(res, 401, 'Invalid room credentials');
-  player.lastSeen = Date.now(); player.connected = true; touch(room);
+  const reconnected = !player.connected; player.lastSeen = Date.now(); player.connected = true; touch(room);
+  if (reconnected) { emit(room, 'player-reconnected', { player: publicPlayer(player), room: publicRoom(room), recoveryAvailable: !!room.snapshot }); maybeStart(room); }
 
-  if (parts[3] === 'state' && req.method === 'GET') return json(res, 200, { ok: true, room: publicRoom(room), snapshot: room.snapshot, snapshotRevision: room.snapshotRevision });
+  if (parts[3] === 'state' && req.method === 'GET') return json(res, 200, { ok: true, room: publicRoom(room), snapshot: room.snapshot, snapshotRevision: room.snapshotRevision, intentResults: room.intentResults.slice(-12) });
+  if (parts[3] === 'recovery' && req.method === 'GET') return json(res, 200, { ok: true, protocolVersion: PROTOCOL_VERSION, room: publicRoom(room), snapshot: room.snapshot, snapshotRevision: room.snapshotRevision, intentResults: room.intentResults.slice(-30), events: room.events.slice(-30) });
+  if (parts[3] === 'resync' && req.method === 'POST') {
+    const event = emit(room, 'resync-requested', { playerId: player.id, slot: player.slot, snapshotRevision: room.snapshotRevision, stateHash: room.snapshot?.stateHash || null });
+    return json(res, 200, { ok: true, eventRevision: event.revision, room: publicRoom(room), snapshot: room.snapshot, snapshotRevision: room.snapshotRevision, intentResults: room.intentResults.slice(-12) });
+  }
   if (parts[3] === 'ready' && req.method === 'POST') {
     const body = await readJson(req); player.ready = body.ready !== false; emit(room, 'ready-changed', { player: publicPlayer(player), room: publicRoom(room) }); maybeStart(room); return json(res, 200, { ok: true, room: publicRoom(room) });
   }
-  if (parts[3] === 'heartbeat' && req.method === 'POST') return json(res, 200, { ok: true, room: publicRoom(room) });
+  if (parts[3] === 'heartbeat' && req.method === 'POST') return json(res, 200, { ok: true, serverAt: Date.now(), room: publicRoom(room) });
   if (parts[3] === 'leave' && req.method === 'POST') {
     player.connected = false; player.ready = false; for (const [key, stream] of room.sse) if (key.startsWith(`${player.id}:`)) { try { stream.end(); } catch {} room.sse.delete(key); }
     emit(room, 'player-left', { player: publicPlayer(player), room: publicRoom(room) }); maybeStart(room); return json(res, 200, { ok: true });
   }
   if (parts[3] === 'snapshot' && req.method === 'POST') {
     if (!player.host) return bad(res, 403, 'Only the host can publish authoritative run state');
-    const body = await readJson(req); room.snapshotRevision += 1; room.snapshot = { revision: room.snapshotRevision, at: Date.now(), state: body.state ?? null, phase: body.phase ?? null, turn: body.turn ?? null };
-    emit(room, 'snapshot', { snapshotRevision: room.snapshotRevision, phase: room.snapshot.phase, turn: room.snapshot.turn });
-    return json(res, 200, { ok: true, snapshotRevision: room.snapshotRevision });
+    const body = await readJson(req), stateHash = body.state?.coop?.stateHash == null ? null : String(body.state.coop.stateHash).slice(0, 96); room.snapshotRevision += 1; room.snapshot = { revision: room.snapshotRevision, at: Date.now(), stateHash, state: body.state ?? null, phase: body.phase ?? null, turn: body.turn ?? null };
+    emit(room, 'snapshot', { snapshotRevision: room.snapshotRevision, phase: room.snapshot.phase, turn: room.snapshot.turn, stateHash });
+    return json(res, 200, { ok: true, snapshotRevision: room.snapshotRevision, stateHash });
   }
   if (parts[3] === 'intent' && req.method === 'POST') {
     try {
@@ -194,6 +214,8 @@ async function api(req, res, url) {
     if (!player.host) return bad(res, 403, 'Only the host may publish authoritative intent results');
     const body = await readJson(req), intentId = String(body.intentId || '').slice(0, 96);
     if (!room.intents.some(intent => intent.id === intentId)) return bad(res, 404, 'Unknown partner command');
+    const previous = room.intentResults.find(result => result.intentId === intentId);
+    if (previous) return json(res, 200, { ok: true, duplicate: true, result: previous });
     const result = { intentId, ok: body.ok === true, message: String(body.message || (body.ok ? 'Command resolved' : 'Command rejected')).slice(0, 220), at: Date.now() };
     room.intentResults.push(result); if (room.intentResults.length > 80) room.intentResults.shift();
     emit(room, 'intent-result', result);
@@ -231,7 +253,7 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(PORT, HOST, () => {
   const lan = findLanIp();
-  console.log('\nRIFTBOUND CO-OP // V20 HOST AUTHORITY');
+  console.log('\nRIFTBOUND CO-OP // V29 BOUND TOGETHER');
   console.log('--------------------------------');
   console.log(`Host: http://localhost:${PORT}`);
   console.log(`LAN : http://${lan}:${PORT}`);

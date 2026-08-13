@@ -8,6 +8,6 @@ const bundle = resolve(gameRoot, 'assets/page-F6OuavDb.js');
 
 await import(`${pathToFileURL(bundle).href}?manifest=${Date.now()}`);
 const manifest = globalThis.RIFTBOUND_MANIFEST;
-if (!manifest || manifest.schemaVersion !== 20) throw new Error('V20 runtime manifest was not exposed');
+if (!manifest || manifest.schemaVersion !== 30) throw new Error('V30 runtime manifest was not exposed');
 await writeFile(output, `${JSON.stringify(manifest, null, 2)}\n`);
-console.log(`Generated Riftbound V20 runtime manifest with ${manifest.counts.items} items, ${manifest.counts.powers} powers, ${manifest.counts.routes} routes, and ${manifest.counts.arenas} arenas.`);
+console.log(`Generated Riftbound V30 runtime manifest with ${manifest.counts.items} items, ${manifest.counts.powers} powers, ${manifest.counts.routes} routes, and ${manifest.counts.arenas} arenas.`);

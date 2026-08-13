@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Riftbound Remastered">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="36%" r="70%">
+      <stop offset="0" stop-color="#183141"/>
+      <stop offset="0.62" stop-color="#071019"/>
+      <stop offset="1" stop-color="#020507"/>
+    </radialGradient>
+    <linearGradient id="rift" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#f7d98b"/>
+      <stop offset="0.45" stop-color="#63dfcf"/>
+      <stop offset="1" stop-color="#aa7cff"/>
+    </linearGradient>
+    <filter id="glow" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="14" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <path d="M74 256 154 122l102 36 102-36 80 134-80 134-102-36-102 36Z" fill="none" stroke="#284956" stroke-width="12"/>
+  <path d="m248 76 68 118-50 29 54 62-79 151-9-132 51-29-51-61Z" fill="url(#rift)" filter="url(#glow)"/>
+  <circle cx="256" cy="256" r="171" fill="none" stroke="#d8fff8" stroke-opacity=".18" stroke-width="4" stroke-dasharray="12 22"/>
+  <path d="M98 256h70M344 256h70" stroke="#d8fff8" stroke-opacity=".52" stroke-width="8" stroke-linecap="round"/>
+</svg>

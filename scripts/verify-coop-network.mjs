@@ -16,4 +16,4 @@ assert.match(bundle,/RIFT_COOP_EXPOSE_RUNTIME/);
 assert.match(bundle,/RIFT_COOP_EXPOSE_RUN/);
 for (const marker of ['HOST RUN','JOIN RUN','EventSource','snapshotRun','sendIntent','window.RIFT_COOP','data-coop-action','intent-result']) assert.ok(client.includes(marker), `client missing ${marker}`);
 for (const marker of ['/api/health','/api/rooms','text/event-stream','Only the host can publish authoritative run state','maxPlayers','PROTOCOL_VERSION','normalizeIntent']) assert.ok(server.includes(marker), `server missing ${marker}`);
-console.log('LAN Co-op V20 network verification passed.');
+console.log('LAN Co-op V29 network verification passed.');
