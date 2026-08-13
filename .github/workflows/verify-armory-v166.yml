@@ -1,0 +1,24 @@
+name: Verify Armory V16.6
+
+on:
+  pull_request:
+    branches: ["main"]
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Build exact patch stack
+        run: bash scripts/build-site.sh
+
+      - name: Verify Armory render isolation
+        run: node scripts/verify-armory-render-isolation-v166.mjs
