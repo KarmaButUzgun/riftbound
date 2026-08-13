@@ -94,6 +94,9 @@ jobs:
       - name: Verify Beneath The Drowning V14
         run: node scripts/verify-btd-v14.mjs
 
+      - name: Verify V14.2 save-load hydration
+        run: node scripts/verify-v142-save-load.mjs
+
       - name: Align Spartan verifier with locked weapon slot
         run: |
           node - <<'NODE'
