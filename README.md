@@ -2,7 +2,7 @@
 
 Riftbound is a standalone turn-based ascension RPG rebuilt from an immutable recovered client and evolved through deterministic runtime patches.
 
-Current patch release: **V30 - Riftbound Remastered**
+Current patch release: **V31 - Codex Ascendant**
 
 Immutable base: **v0.3.0 - Cursed Child**
 
@@ -10,12 +10,29 @@ The current runtime contains:
 
 - 210 items, including 70 Legendary and 26 Mythical items
 - 50 Special Powers
+- 49 public Power profiles and all 7 Stands in the interactive Codex
+- 248 displayed Power and Stand techniques with detailed combat intelligence
 - 30 routes
 - 20 arenas
 - 57 preserved ability definitions containing 221 Special Power and Stand moves
 - 29 spatial presentation types, with every one of the 221 moves classified
 - a six-slot build system and full Armory workflow
 - host-authoritative two-player LAN co-op with protocol-3 recovery and resync
+
+## V31 Codex Ascendant
+
+V31 remasters the Special Power and Stand Codex into a cinematic, fully interactive archive while preserving the locked V20.0.1 ability constitution.
+
+- Click any Power or Stand technique to open its complete dossier.
+- Read authored description, damage class, scaling, power coefficient, sequence coefficient, reference damage, hit count, Energy cost, destruction, target mode, core geometry, range, spatial family, requirements, effects, and resolver flags.
+- Browse all 49 public Special Power profiles and all 7 Stands, including partial manifestation, summoned commands, Ultimates, and Star Platinum's authored evolution overrides.
+- Search by profile, move, description, role, or effect. Filter by rarity, damage class, tactical role, and spatial shape.
+- Pin one move and select another for a six-metric side-by-side comparison.
+- Navigate with keyboard, mouse, touch, or controller-oriented focus behavior. Reduced motion, high contrast, large text, and responsive layouts remain supported.
+- Reference damage is explicitly labeled as a Tier 10 training estimate. Live output still depends on the active build, defender, statuses, terrain, hit logic, and authored resolver.
+- Ability constitution `7598b438` remains exact: 57 protected definitions, 221 protected moves, and zero mechanical changes.
+
+The V31 roadmap and implementation record are in [UPDATE-V31-CODEX-ASCENDANT.md](UPDATE-V31-CODEX-ASCENDANT.md).
 
 ## V21-V30 Remastered release
 
@@ -71,6 +88,7 @@ Focused release checks:
 ```bash
 npm run verify:v20
 npm run verify:v30
+npm run verify:v31
 npm run verify:coop
 npm run verify:release
 ```

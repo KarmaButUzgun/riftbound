@@ -187,6 +187,10 @@ The protocol test checks host/join, readiness, snapshot hashes, stale-state reje
 
 The full historical CI matrix remains green from the Bizarre Update through V20, plus the standalone V13.1, V16.1, V16.2, V16.3, V16.5, and V16.6 workflows.
 
+## Roadmap continuation
+
+The next completed milestone is [V31 - Codex Ascendant](UPDATE-V31-CODEX-ASCENDANT.md), a cinematic and interactive remaster of the Special Power and Stand archive. It adds move intelligence, reference damage, filters, tactical previews, and direct comparison without changing the V21 ability constitution.
+
 ## Compatibility and rollback
 
 - Existing saves normalize forward through schema 30.

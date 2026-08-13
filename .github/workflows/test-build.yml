@@ -121,6 +121,9 @@ jobs:
       - name: Verify V21-V30 Remastered release
         run: node scripts/verify-remastered-v21-v30.mjs
 
+      - name: Verify V31 Codex Ascendant
+        run: node scripts/verify-codex-ascendant-v31.mjs
+
       - name: Upload built site
         uses: actions/upload-artifact@v4
         with:
