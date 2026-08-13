@@ -9,7 +9,8 @@
     "verify:coop": "node scripts/verify-coop-network.mjs && node scripts/verify-coop-authority-v20.mjs",
     "verify:v20": "node scripts/verify-consolidation-v17-v20.mjs",
     "verify:v30": "node scripts/verify-remastered-v21-v30.mjs",
-    "verify:release": "npm run verify:v20 && npm run verify:v30 && npm run verify:coop"
+    "verify:v31": "node scripts/verify-codex-ascendant-v31.mjs",
+    "verify:release": "npm run verify:v20 && npm run verify:v30 && npm run verify:v31 && npm run verify:coop"
   },
   "engines": {
     "node": ">=20"

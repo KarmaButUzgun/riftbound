@@ -12,8 +12,8 @@ assert.ok(existsSync(bundlePath),'built runtime is missing');
 await import(`${pathToFileURL(bundlePath).href}?verify-v20=${Date.now()}`);
 
 const manifest=globalThis.RIFTBOUND_MANIFEST;
-assert.equal(manifest?.schemaVersion,30);
-assert.equal(manifest?.release,'V30 · Riftbound Remastered');
+assert.equal(manifest?.schemaVersion,31,'V17-V20 compatibility must survive the additive V31 schema');
+assert.equal(manifest?.release,'V31 · Codex Ascendant');
 assert.deepEqual(manifest?.counts,{items:210,powers:50,routes:30,arenas:20,legendary:70,mythical:26});
 assert.equal(new Set(manifest.items.map(item=>item.id)).size,manifest.items.length,'catalog ids are not unique');
 const itemIds=new Set(manifest.items.map(item=>item.id));
@@ -62,6 +62,6 @@ assert.ok(bundle.includes('(0,r.useEffect)(()=>{persist()},[mode,query,category,
 assert.ok(!bundle.includes('(0,r.useEffect)(persist,[mode,query,category,rarity,stat,sort,selectedId,archetypeId,owner])'),'Armory persistence effect still returns a non-function cleanup value');
 for(const marker of ['--rift-v17-marker','--rift-v19-marker','--rift-v20-marker','.rift-reduced-motion','.rift-high-contrast','.rift-fx-low'])assert.ok(css.includes(marker),`styles missing ${marker}`);
 const publishedManifest=JSON.parse(await readFile(resolve(root,'_site/riftbound-manifest.json'),'utf8'));
-assert.equal(publishedManifest.schemaVersion,30);
+assert.equal(publishedManifest.schemaVersion,31);
 assert.deepEqual(publishedManifest.counts,manifest.counts);
-console.log('Riftbound V17-V20 compatibility verification passed under V30.');
+console.log('Riftbound V17-V20 compatibility verification passed under V31.');

@@ -12,8 +12,8 @@ for(const path of [bundlePath,cssPath,resolve(root,'_site/index.html'),resolve(r
 
 await import(`${pathToFileURL(bundlePath).href}?verify-v30=${Date.now()}`);
 const manifest=globalThis.RIFTBOUND_MANIFEST;
-assert.equal(manifest?.schemaVersion,30);
-assert.equal(manifest?.release,'V30 · Riftbound Remastered');
+assert.equal(manifest?.schemaVersion,31,'V30 foundation must remain certified beneath the additive V31 schema');
+assert.equal(manifest?.release,'V31 · Codex Ascendant');
 assert.deepEqual(manifest.counts,{items:210,powers:50,routes:30,arenas:20,legendary:70,mythical:26});
 
 const preservation=globalThis.RIFTBOUND_PRESERVATION;
@@ -141,10 +141,10 @@ const published=JSON.parse(publishedText);
 const webManifest=JSON.parse(await readFile(resolve(root,'_site/manifest.webmanifest'),'utf8'));
 assert.equal(webManifest.display,'standalone');
 assert.equal(webManifest.icons[0].purpose,'any maskable');
-assert.equal(published.schemaVersion,30);
+assert.equal(published.schemaVersion,31);
 assert.equal(published.preservation.constitutionHash,'7598b438');
 assert.equal(published.spatialGrammar.moves,221);
 assert.equal(published.spatialGrammar.typed,221);
 assert.equal(published.remastered.certified,true);
 
-console.log('Riftbound V21-V30 Remastered verification passed: 221/221 abilities preserved and spatially typed.');
+console.log('Riftbound V21-V30 Remastered foundation verification passed beneath V31: 221/221 abilities preserved and spatially typed.');
