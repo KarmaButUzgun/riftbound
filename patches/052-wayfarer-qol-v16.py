@@ -7,13 +7,14 @@ root=Path(sys.argv[1]) if len(sys.argv)>1 else Path('.build/riftbound-standalone
 bundle_path=root/'assets/page-F6OuavDb.js'
 css_path=root/'assets/riftbound.css'
 parts=Path(__file__).with_name('052-wayfarer-qol-v16-parts')
-runtime_path=parts/'01-runtime.js.gz.b64'
+runtime_parts=sorted(parts.glob('01-runtime-*.b64'))
 styles_path=parts/'02-styles.css.gz.b64'
-for path in (bundle_path,css_path,runtime_path,styles_path):
+for path in (bundle_path,css_path,styles_path):
     if not path.is_file(): raise SystemExit(f'Wayfarer V16: missing {path}')
+if len(runtime_parts)!=6: raise SystemExit(f'Wayfarer V16: expected 6 runtime payload chunks, found {len(runtime_parts)}')
 bundle=bundle_path.read_text(); css=css_path.read_text()
 try:
-    runtime=gzip.decompress(base64.b64decode(runtime_path.read_text())).decode().strip()
+    runtime=gzip.decompress(base64.b64decode(''.join(path.read_text().strip() for path in runtime_parts))).decode().strip()
     styles=gzip.decompress(base64.b64decode(styles_path.read_text())).decode().strip()
 except Exception as exc:
     raise SystemExit(f'Wayfarer V16: payload decode failed: {exc}')
