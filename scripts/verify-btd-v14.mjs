@@ -16,10 +16,14 @@ for(const needle of [
  '/* Riftbound Beneath The Drowning Update V14 */','gluttony-ring','cursed-promise-ring','pilot-goggles',
  'Aura Accumulation','Mutated Aura Accumulation','v14AaWhisper','v14-pass','v14AirJump','v14FInertia',
  'Whipsaint Breaker','Bloodspore','Repeat','Translucency','Mach Beyond','Maximum Output Full Throttle 200% Mach Beyond',
- 'CAUSALITY FRACTURE','THE RESULT ARRIVES FIRST','RIFT_V14_CAN_CRIT','RIFT_V14_ON_CRIT','v14UtilityButton'
+ 'CAUSALITY FRACTURE','RIFT_V14_CAN_CRIT','RIFT_V14_ON_CRIT','v14UtilityButton','/* Riftbound BTD Visual Overhaul V14.1 */','RIFT_V141_DS','RIFT_V141_MAP_VESTIGE','RIFT_V141_FLASH','RIFT_V141_WHIP_VFX','RIFT_V141_AA_ULT_CINEMA'
 ])assert.ok(bundle.includes(needle),`missing V14 runtime marker ${needle}`);
-for(const needle of ['.v14-utility-strip','.v14-whisper-screen','.v14-mach-handprints','.v14-mach-fists','.v14-mach-cutscene.is-200','.v14-translucent-self','.v14-translucent-hidden','.v14-pilot-icon','.v14-gluttony-icon','.v14-promise-icon'])assert.ok(css.includes(needle),`missing V14 style ${needle}`);
-assert.ok(bundle.includes('Array.from({length:alt?32:10}'), '200% Mach Beyond must render 32-fist barrage');
+for(const needle of ['.v14-utility-strip','.v14-whisper-screen','.v14-translucent-self','.v14-translucent-hidden','.v14-pilot-icon','.v14-gluttony-icon','.v14-promise-icon','.v141-aa-native-cutscene','.v141-vestige-lineup','.v141-fist-barrage','.v141-map-vestige','.v141-whipsaint-live','.v141-bloodspore-bloom'])assert.ok(css.includes(needle),`missing V14 style ${needle}`);
+assert.ok(bundle.includes('Array.from({length:alt?32:14}'), '200% Mach Beyond must render 32-fist barrage inside the native cutscene');
+assert.ok(bundle.includes('Array.from({length:6}'), 'Mach Beyond must render all six vestiges');
+assert.ok(!bundle.includes('run.v14MachCutscene={'), 'legacy post-action Mach cutscene state still exists');
+assert.ok(!bundle.includes('(0,E.jsx)(RIFT_V14_MACH_CUTSCENE,{run:w})'), 'legacy second Mach cutscene is still mounted');
+assert.ok(bundle.includes('RIFT_V141_IS_AA_ULT(t,e.name)||Z(t,e.name,`player`,!0,'), 'AA player Ult still triggers duplicate post-cutscene full-screen FX');
 assert.ok(bundle.includes('run.environmentStage=Math.max(run.environmentStage||0,8);run.environmentProgress=100'), '200% Mach must create postgame-scale environmental destruction');
 assert.ok(bundle.includes('`causality`,`causal`,`noCounter`,`absolute`'), '200% Mach must be causality-level');
 assert.ok(bundle.includes('it===`powers`&&g.filter(e=>!e.codexHidden).map('), 'hidden Mutated AA leaked into Codex');
@@ -28,7 +32,7 @@ assert.ok(bundle.includes('RIFT_V14_BORROWED(action)'), 'Cursed Promise must use
 
 const exportMarker='export{xs as default};';
 assert.equal(bundle.split(exportMarker).length-1,1);
-const hook=`globalThis.__RIFT_V14_TEST__={g,d,p,Me,Le,Hr,RIFT_EMPTY_WEAPON,RIFT_NORMALIZE_FIGHTER_BUILD,RIFT_ITEM_CATALOG,RIFT_ITEM,RIFT_ITEM_INSTANCE,RIFT_ITEM_INSTANCES,RIFT_HAS_PASSIVE,La,Y,RIFT_V14_AIR_COST,RIFT_V14_BORROWED,RIFT_V14_CRIT_CHANCE,RIFT_V14_CAN_CRIT,RIFT_V14_MACH_MISSING,RIFT_V14_AA_WHISPER,RIFT_V14_MACH_CUTSCENE,Da,rs,go,vs};`;
+const hook=`globalThis.__RIFT_V14_TEST__={g,d,p,Me,Le,Hr,RIFT_EMPTY_WEAPON,RIFT_NORMALIZE_FIGHTER_BUILD,RIFT_ITEM_CATALOG,RIFT_ITEM,RIFT_ITEM_INSTANCE,RIFT_ITEM_INSTANCES,RIFT_HAS_PASSIVE,La,Y,RIFT_V14_AIR_COST,RIFT_V14_BORROWED,RIFT_V14_CRIT_CHANCE,RIFT_V14_CAN_CRIT,RIFT_V14_MACH_MISSING,RIFT_V14_AA_WHISPER,RIFT_V141_DS,RIFT_V141_IS_AA_ULT,RIFT_V141_FLASH,RIFT_V141_MAP_VESTIGE,Da,rs,go,vs};`;
 const packageExisted=existsSync(packagePath);
 try{
  if(!packageExisted)await writeFile(packagePath,'{"type":"module"}\n');
@@ -54,12 +58,13 @@ try{
  assert.equal(api.RIFT_V14_BORROWED({id:'power-1',sourcePower:'Native',move:{tags:['physical']}}),false);assert.equal(api.RIFT_V14_BORROWED({id:'mimic-test',move:{tags:[]}}),true);assert.equal(api.RIFT_V14_BORROWED({id:'power-1',move:{tags:['borrowedPower']}}),true);
  hf.statuses.v14FInertia=1;const physical=ha.find(x=>x.name==='Whipsaint Breaker');assert.equal(api.RIFT_V14_CAN_CRIT(hf,physical,physical.move.tags),true);assert.equal(api.RIFT_V14_CRIT_CHANCE(hf,physical,physical.move.tags),1);
  const whisper=api.RIFT_V14_AA_WHISPER({run:{player:{statuses:{}},logs:[]},onCommit(){}});assert.equal(whisper.type,'div');
- const cut=api.RIFT_V14_MACH_CUTSCENE({run:{v14MachCutscene:{id:'x',kind:'mach200',attacker:'A',target:'B'}}});assert.equal(cut.type,'div');
+ const cut=api.RIFT_V141_DS({scene:{id:'x',power:'Aura Accumulation',move:'Maximum Output Full Throttle 200% Mach Beyond',side:'player',glyph:'因'}});assert.equal(typeof cut.type,'function');assert.equal(api.RIFT_V141_IS_AA_ULT('Aura Accumulation','Super Duper Bone Breaker'),true);assert.equal(api.RIFT_V141_IS_AA_ULT('Limitless','Purple'),false);
+ api.RIFT_V141_FLASH({turn:1},hf,'whipsaint');assert.equal(hf.statuses.v141VestigeFlash.index,0);const ghost=api.RIFT_V141_MAP_VESTIGE({fighter:hf});assert.equal(ghost.type,'div');
  // Action smoke: energy spending, counter interception, Translucency pick immunity, F-Inertia, Pass, and the hidden Floor 5 voice.
  const live=fighter(aa),run=api.Da(live);run.player.energy=run.player.maxEnergy;let smart=api.La(run.player).find(x=>x.name==='Smart Counter'),e0=run.player.energy;api.rs(run,'player',smart);assert.equal(run.player.energy,e0-10);assert.equal(run.player.statuses.v14SmartCounter,1);let enemyHp=run.enemy.hp;api.go(run,run.enemy,run.player,40,false,['physical','scalingAS']);assert.ok(run.enemy.hp<enemyHp);assert.equal(run.player.statuses.v14SmartCounter,undefined);
  const full=fighter(mut),fullRun=api.Da(full);fullRun.player.energy=fullRun.player.maxEnergy;let translucent=api.La(fullRun.player).find(x=>x.name==='Translucency'),tEnergy=fullRun.player.energy;api.rs(fullRun,'player',translucent);assert.equal(fullRun.player.energy,tEnergy-24);assert.equal(fullRun.player.statuses.v14Translucent,1);let selfHp=fullRun.player.hp;api.go(fullRun,fullRun.enemy,fullRun.player,30,false,['physical','melee']);assert.equal(fullRun.player.hp,selfHp);let inertia=api.La(fullRun.player).find(x=>x.name.startsWith('F-Inertia')),iEnergy=fullRun.player.energy;api.rs(fullRun,'player',inertia);assert.equal(fullRun.player.statuses.v14FInertia,true);assert.equal(fullRun.player.energy,iEnergy-14);let pass=api.La(fullRun.player).find(x=>x.id==='v14-pass');api.rs(fullRun,'player',pass);assert.equal(fullRun.player.statuses.v14PassedTurn,fullRun.turn);
  const voice=fighter(aa),voiceRun=api.Da(voice);voiceRun.floor=5;voiceRun.enemy.hp=0;voiceRun.boss=true;api.vs(voiceRun);assert.equal(voiceRun.phase,'v14AaWhisper');assert.equal(voiceRun.player.statuses.v14VoiceOffered,1);
- console.log(`BTD V14 verified: ${catalog.length} items, ${legends.length} Legendaries, Aura Accumulation + hidden Haisha route, utility pass, item hooks, and 200% Mach presentation.`);
+ console.log(`BTD V14.1 verified: ${catalog.length} items, ${legends.length} Legendaries, Aura Accumulation + hidden Haisha route, utility pass, item hooks, and 200% Mach presentation.`);
 } finally {
  delete globalThis.__RIFT_V14_TEST__; await rm(testPath,{force:true}); if(!packageExisted)await rm(packagePath,{force:true});
 }
