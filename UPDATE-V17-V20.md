@@ -172,3 +172,10 @@ This release combines the complete V17 through V20 roadmap into one deterministi
 - GitHub Pages remains dependency-free single-player.
 - LAN co-op remains an opt-in local Node server.
 - Existing Yuta/Rika inventories, favorites, item instances, route history, combat snapshots, and previous migration data are preserved.
+
+## V20.0.1 - Armory navigation hotfix
+
+- Fixed a React effect cleanup error that could close the runtime when changing the Armory from Build to Browse, Craft, Inventory, or Favorites.
+- Kept Armory browsing-state persistence while ensuring its effect returns no cleanup value.
+- Added a regression assertion for the exact effect lifecycle contract.
+- Verified the deployed Build, Browse, Craft, Inventory, and Favorites navigation in a rendered browser.
