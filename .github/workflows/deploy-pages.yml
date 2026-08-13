@@ -100,6 +100,9 @@ jobs:
       - name: Verify Combat Fluidity V15
         run: node scripts/verify-combat-fluidity-v15.mjs
 
+      - name: Verify Wayfarer QoL V16
+        run: node scripts/verify-wayfarer-v16.mjs
+
       - name: Align Spartan verifier with locked weapon slot
         run: |
           node - <<'NODE'
