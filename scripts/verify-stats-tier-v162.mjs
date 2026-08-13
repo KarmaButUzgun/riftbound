@@ -1,0 +1,22 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+
+const path='.build/riftbound-standalone/assets/page-F6OuavDb.js';
+const source=fs.readFileSync(path,'utf8');
+const need=(text,label)=>{if(!source.includes(text))throw new Error(`V16.2 stats missing: ${label}`)};
+need('/* Riftbound Stats Tier Hotfix V16.2 */','runtime marker');
+need('D=[`as`,`ap`,`durability`,`speed`,`range`,`iq`,`combatSkill`,`battleIq`,`energy`,`regeneration`]','AS in stat-sheet iteration');
+need('e===`as`?u.ap:u[e]','AS tier alias');
+need('if(!n?.length)return`T${Math.max(1,r+1)}`','safe unknown-stat fallback');
+if(source.includes('function Br(e,t){return t<u[e].length?u[e][Math.max(0,t)].name:`${u[e][19].name} +${t-19}`}'))throw new Error('V16.2 regression: unsafe Br resolver still exists');
+const start=source.indexOf('function Br('),end=source.indexOf('function Vr(',start);
+if(start<0||end<0)throw new Error('V16.2 could not isolate Br resolver');
+const fnSource=source.slice(start,end);
+const table={ap:Array.from({length:20},(_,i)=>({name:`P${i}`})),speed:Array.from({length:20},(_,i)=>({name:`S${i}`}))};
+const Br=new Function('u',`${fnSource};return Br;`)(table);
+assert.equal(Br('as',4),'P4','Attack Strength did not inherit AP tier names');
+assert.equal(Br('speed',7),'S7','existing stat table lookup changed');
+assert.equal(Br('as',25),'P19 +6','over-cap AS tier formatting changed');
+assert.equal(Br('missing',2),'T3','unknown stat key did not fail safe');
+assert.equal(Br('as',undefined),'P0','undefined old-save tier did not normalize safely');
+console.log('V16.2 stats verified: AS labels resolve, malformed keys fail safe, and old-save/over-cap values do not crash Stats.');
