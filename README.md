@@ -1,60 +1,117 @@
 # Riftbound
 
-Standalone recovered Riftbound client and live deployment source.
+Riftbound is a standalone turn-based ascension RPG rebuilt from an immutable recovered client and evolved through deterministic runtime patches.
 
-Current base release: **v0.3.0 — Cursed Child**
+Current patch release: **V20 - Consolidation Arc**
 
-Current patch stack: **Itemization Expansion + Combat UI Reflow**, layered over **LAN Co-op Alpha**, **Combat Loadout HUD**, **Spartan Blood**, **Full Catalog Armory**, **Build Expansion**, and **The Bizarre Update, Part 2**.
+Immutable base: **v0.3.0 - Cursed Child**
 
-## Deployment
+The current runtime contains:
 
-The repository keeps `riftbound-standalone-v0.3.0.zip` as an immutable recovered base. GitHub Actions extracts that archive, applies every Python patch in `patches/` in filename order, and publishes only the playable static files (`index.html`, `entry.js`, and `assets/`).
+- 210 items, including 70 Legendary and 26 Mythical items
+- 50 Special Powers
+- 30 routes
+- 20 arenas
+- a six-slot build system and full Armory workflow
+- host-authoritative two-player LAN co-op
 
-Workflow: `.github/workflows/deploy-pages.yml`
+## V17-V20 release
 
-Build script: `scripts/build-site.sh`
+V20 consolidates four major update layers:
 
-Runtime verification:
+- **V17 Foundation + Armory Reforged:** versioned migrations, runtime diagnostics, effect priorities, a generated content manifest, and a complete shop GUI replacement with Build, Browse, Craft, Inventory, and Favorites modes.
+- **V18 Balance Lab + Adaptive Builds:** three six-item archetypes per power, component and affordability-aware recommendations, build warnings, role-varied enemy equipment, and machine-readable item, move, economy, and encounter budgets.
+- **V19 Combat Intelligence:** six explainable AI personalities, target-aware action scoring, a live turn timeline, damage/accuracy/range previews, and route encounter compensation.
+- **V20 Authority + Accessibility + Effects:** a separately controlled Player 2 ally, validated protocol-v2 intent resolution, reduced motion, high contrast, larger interface text, effect-density controls, and adaptive effects throttling.
 
-- `node scripts/verify-bizarre-update.mjs`
-- `node scripts/verify-build-expansion.mjs`
-- `node scripts/verify-itemization-expansion.mjs`
-- `node scripts/verify-spartan-blood.mjs`
-- `node scripts/verify-coop-network.mjs`
+The full release log is in [UPDATE-V17-V20.md](UPDATE-V17-V20.md).
 
-Build Expansion removes weapon rolls, starts every new run weaponless, adds a six-slot inventory, and splits offensive progression into Attack Strength and Attack Power. The current item catalog contains **181 data-driven items**, **67 Legendary items/passive identities**, and **one Mythical capstone** after the Itemization Expansion. The expansion adds exactly 32 new fiction-reference Legendaries plus 24 new lower-rarity components, reworks existing Common/Uncommon/Epic identities while preserving Rebellion, and broadens recipe routes around physical, AP, hybrid, crit, status, movement, defense, sustain, summon, Stand, Devil, weapon, Ultimate, cooldown, and tactical builds.
+## Build and deployment
 
-The Full Catalog Armory makes every item available on every floor in a deterministic three-pane shop. The Itemization Expansion upgrades that workflow with designed non-text item portraits, immediate hover tooltips, explicit passive trigger/cooldown language, live component trees, guarded double-click component purchasing, fast purchase feedback, and recipe/inventory updates without leaving the build view. Level-Up/Affinity caps now describe natural progression only; item bonuses are uncapped equipment contributions, and the UI separates Base, Level-Up Cap, Item Bonus, and Effective Stat values.
+The repository keeps `riftbound-standalone-v0.3.0.zip` unchanged. The build extracts it, applies every Python patch in `patches/` in filename order, validates the resulting JavaScript, and publishes only the playable static site.
 
-Recent combat UI reflow work targets comfortable play at normal browser zoom: fighter sheets use width instead of long vertical stacks, loadouts/anomaly sit in a compact horizontal ribbon, tactical formation is a roster rail, the battlefield shell places movement/minimap and field state beside the arena, and the action deck stays a stable 4×2 layout. Weaponless fighters retain a visible locked weapon-action slot so move positions do not reshuffle when a weapon is equipped.
+```bash
+npm run build
+```
 
-Spartan Blood adds its Mythic race and two Mythical powers, three dedicated weapon slots, capped weapon reforging, Flair and style systems, Devil Combo progression, differentiated Devil Triggers, weapon-specific combat laws, and the full Judgement Cut time-stop finisher. The update also includes purpose-built AI, migration-safe saves, battle history, battlefield models, responsive combat controls, and red or violet cinematic effects.
+Generated output:
 
-The Combat Loadout HUD uses the former anomaly-only space for universal player and selected-opponent six-slot item rails. Spartan Blood weapon switching happens through the player rail while retaining full-action and Combo bonus-action rules; dedicated switch cards no longer clutter the move grid.
+- `_site/index.html`
+- `_site/entry.js`
+- `_site/assets/`
+- `_site/riftbound-build.json`
+- `_site/riftbound-manifest.json`
 
-## LAN Co-op Alpha
+GitHub Pages deployment is defined in `.github/workflows/deploy-pages.yml`. Pull-request verification is defined in `.github/workflows/test-build.yml`.
 
-Riftbound now includes a dependency-free local multiplayer host and in-game Host/Join lobby foundation. It is deliberately host-authoritative: the host publishes the canonical run snapshot, room events travel over Server-Sent Events, and partner inputs are submitted as authenticated intents for resolver-side execution.
+Focused V20 checks:
 
-Requirements: Node.js 20+ and two devices on the same LAN/Wi-Fi.
+```bash
+npm run verify:v20
+npm run verify:coop
+```
 
-From the repository root run:
+Both workflows also run the complete historical verifier stack so the consolidation remains compatible with Bizarre Update, itemization, Mythicals, Cursed Child, Beneath The Drowning, Combat Fluidity, Wayfarer, Spartan Blood, and the earlier co-op transport.
+
+## Armory Reforged
+
+Open the Armory from an intermission floor. Its persistent command bar keeps the six equipped slots, Shards, floor, active Yuta/Rika owner, and Return to Floor control visible.
+
+Primary modes:
+
+- **Build:** three adaptive build directions, an explicit next target, owned-state progress, and compatibility warnings.
+- **Browse:** search, category chips, rarity/stat filters, sorting, a virtualized catalog, visible Buy/Build buttons, and a compact inspector.
+- **Craft:** one pinned target, owned-component consumption, missing-component navigation, and the exact remaining Shard cost.
+- **Inventory:** equip, reorder, replace, and sell without leaving the Armory.
+- **Favorites:** the same complete catalog workflow filtered to saved items.
+
+Keyboard controls inside the Armory:
+
+- `/` focuses search
+- `B` buys or builds the inspected item when legal
+- `F` toggles its favorite state
+- Left/Right selects adjacent visible items
+- `Escape` returns to the floor
+
+## LAN co-op
+
+Co-op requires Node.js 20+ and two devices on the same LAN or Wi-Fi.
 
 ```bash
 npm run coop
 ```
 
-The command rebuilds the current patch stack and starts the local host. It prints two addresses:
+The server prints:
 
-- `http://localhost:3000` — open this on the host computer.
-- `http://<LAN-IP>:3000` — send this address to the friend on the same network.
+- `http://localhost:3000` for the host
+- `http://<LAN-IP>:3000` for the second device
 
-Open the **CO-OP** control in the lower-right corner, choose **HOST RUN**, send the six-character room code to the partner, then have both players ready up. Session credentials are stored only in each browser and the room itself lives in host memory.
+Open **CO-OP** in the lower-right corner. The host creates a room, the partner joins with its six-character code, and both players ready up. During combat, Player 2 receives a separate Rift Echo ally with its own HP, Energy, Movement Points, equipment, and action list.
 
-This first network milestone provides the LAN transport/lobby/state-authority layer and exposes the current Riftbound run to that bridge. Normal GitHub Pages play stays single-player because the co-op UI only activates when the local server answers `/api/health`. The next resolver stage connects remote intents to a separately owned allied fighter so two players can independently act inside the same roguelike combat state.
+The host remains authoritative:
+
+- only Player 2 can issue ally commands
+- commands are authenticated, sequenced, rate-limited, and schema-validated
+- Player 2 may move only `coop-ally`
+- one ally action is accepted per host turn
+- the host resolves the action and publishes an acknowledgement
+- the normal auxiliary AI loop cannot double-control the co-op ally
+
+Co-op activates only when the local server responds. GitHub Pages remains a normal single-player deployment.
+
+## Accessibility and effects
+
+The **ACCESS** control in the lower-left corner provides:
+
+- reduced motion
+- high contrast and non-color state cues
+- larger interface text
+- Auto, High, Medium, or Low effect density
+
+Auto density samples frame rate and lowers nonessential effects when rendering pressure rises. Combat state, keyboard focus, labels, and live announcements remain available at every density.
 
 ## Updating Riftbound
 
-Normal updates should be added as deterministic patch files under `patches/` rather than replacing the full archive. This lets new powers, mechanics, balancing, bug fixes, visual effects, UI work, and network integration deploy without repeatedly uploading the full game.
+Add normal updates as deterministic patch files under `patches/` instead of replacing the recovered archive. Keep migrations forward-compatible, expose new system contracts through the runtime manifest or diagnostics APIs, add focused verification, and retain the exact-build workflow.
 
-Browser saves remain local to the deployed site's origin. LAN room state is intentionally ephemeral in the Alpha host.
+Browser saves remain local to the deployed origin. LAN room state is intentionally ephemeral and lives in host memory.

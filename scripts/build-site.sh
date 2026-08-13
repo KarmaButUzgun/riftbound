@@ -82,5 +82,6 @@ node --check "$SITE_DIR/assets/page-F6OuavDb.js"
 
 printf '{"base":"%s","patches":%d,"commit":"%s"}\n' \
   "$BASE_ZIP" "${#patches[@]}" "${GITHUB_SHA:-local}" > "$SITE_DIR/riftbound-build.json"
+node scripts/generate-runtime-manifest.mjs "$GAME_DIR" "$SITE_DIR/riftbound-manifest.json"
 
 echo "Built Riftbound site in $SITE_DIR"
