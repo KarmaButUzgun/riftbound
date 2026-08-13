@@ -97,6 +97,9 @@ jobs:
       - name: Verify V14.2 save-load hydration
         run: node scripts/verify-v142-save-load.mjs
 
+      - name: Verify Combat Fluidity V15
+        run: node scripts/verify-combat-fluidity-v15.mjs
+
       - name: Align Spartan verifier with locked weapon slot
         run: |
           node - <<'NODE'
