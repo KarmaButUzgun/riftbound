@@ -58,6 +58,8 @@ assert.equal(v20.accessibility.get().effects,'auto');
 const bundle=await readFile(bundlePath,'utf8'),css=await readFile(cssPath,'utf8');
 for(const marker of ['Riftbound Foundation Update V17','Riftbound Armory Reforged V17','Riftbound Balance Lab and Adaptive Builds V18','Riftbound Combat Intelligence V19','Riftbound Authority Accessibility and Effects V20'])assert.ok(bundle.includes(marker),`runtime missing ${marker}`);
 for(const marker of ['RIFT_V17_ARMORY_MODES','RIFT_V17_VIRTUAL_CATALOG','RIFT_V19_COMBAT_STRIP','RIFT_V20_APPLY_COOP_INTENT','RIFT_V20_ACCESS_PANEL'])assert.ok(bundle.includes(marker),`runtime missing ${marker}`);
+assert.ok(bundle.includes('(0,r.useEffect)(()=>{persist()},[mode,query,category,rarity,stat,sort,selectedId,archetypeId,owner])'),'Armory persistence effect must not return an object as React cleanup');
+assert.ok(!bundle.includes('(0,r.useEffect)(persist,[mode,query,category,rarity,stat,sort,selectedId,archetypeId,owner])'),'Armory persistence effect still returns a non-function cleanup value');
 for(const marker of ['--rift-v17-marker','--rift-v19-marker','--rift-v20-marker','.rift-reduced-motion','.rift-high-contrast','.rift-fx-low'])assert.ok(css.includes(marker),`styles missing ${marker}`);
 const publishedManifest=JSON.parse(await readFile(resolve(root,'_site/riftbound-manifest.json'),'utf8'));
 assert.equal(publishedManifest.schemaVersion,20);
