@@ -11,6 +11,9 @@ const PORT = Number(process.env.PORT || process.env.RIFTBOUND_COOP_PORT || 3000)
 const HOST = process.env.RIFTBOUND_COOP_HOST || '0.0.0.0';
 const MAX_BODY = 2 * 1024 * 1024;
 const ROOM_TTL = 1000 * 60 * 60 * 8;
+const PROTOCOL_VERSION = 2;
+const INTENT_RATE_MS = 90;
+const INTENT_TYPES = new Set(['action', 'move']);
 const rooms = new Map();
 
 const MIME = {
@@ -42,6 +45,7 @@ function publicRoom(room) {
     players: [...room.players.values()].sort((a,b)=>a.slot-b.slot).map(publicPlayer),
     snapshotRevision: room.snapshotRevision,
     hasSnapshot: !!room.snapshot,
+    protocolVersion: PROTOCOL_VERSION,
   };
 }
 function touch(room) { room.updatedAt = Date.now(); }
@@ -72,17 +76,48 @@ function auth(room, playerId, token) {
   const p = room?.players.get(String(playerId || ''));
   return p && p.token === token ? p : null;
 }
-function findLanIp() {
-  for (const group of Object.values(networkInterfaces())) for (const item of group || []) {
-    if (item.family === 'IPv4' && !item.internal) return item.address;
+function normalizeIntent(room, player, body) {
+  if (!room.started) throw new Error('Both players must be ready before partner commands are accepted');
+  if (player.host || player.slot !== 2) throw new Error('Only Player 2 may issue ally commands');
+  if (room.snapshot?.phase && room.snapshot.phase !== 'combat') throw new Error('Partner commands are only accepted during combat');
+  const now = Date.now();
+  if (now - Number(player.lastIntentAt || 0) < INTENT_RATE_MS) throw new Error('Partner command rate limit reached');
+  const sequence = Math.trunc(Number(body.sequence));
+  if (!Number.isSafeInteger(sequence) || sequence <= Number(player.lastIntentSequence || 0)) throw new Error('Partner command sequence is stale');
+  const type = String(body.type || '');
+  if (!INTENT_TYPES.has(type)) throw new Error('Unsupported partner command');
+  const source = body.payload && typeof body.payload === 'object' && !Array.isArray(body.payload) ? body.payload : {};
+  let payload;
+  if (type === 'action') {
+    const actionId = String(source.actionId || '').slice(0, 96);
+    if (!/^[a-zA-Z0-9:_-]+$/.test(actionId)) throw new Error('Invalid ally action');
+    const targetId = source.targetId == null ? null : String(source.targetId).slice(0, 96);
+    const aim = source.aim && Number.isFinite(Number(source.aim.x)) && Number.isFinite(Number(source.aim.y))
+      ? { x: Math.max(0, Math.min(100, Number(source.aim.x))), y: Math.max(0, Math.min(100, Number(source.aim.y))) }
+      : null;
+    payload = { actionId, targetId, aim };
+  } else {
+    if (String(source.actorId || '') !== 'coop-ally') throw new Error('Player 2 may only move the co-op ally');
+    if (!source.position || !Number.isFinite(Number(source.position.x)) || !Number.isFinite(Number(source.position.y))) throw new Error('Invalid ally destination');
+    payload = { actorId: 'coop-ally', position: { x: Math.max(0, Math.min(100, Number(source.position.x))), y: Math.max(0, Math.min(100, Number(source.position.y))) } };
   }
+  player.lastIntentAt = now;
+  player.lastIntentSequence = sequence;
+  return { type, payload, sequence, at: now };
+}
+function findLanIp() {
+  try {
+    for (const group of Object.values(networkInterfaces())) for (const item of group || []) {
+      if (item.family === 'IPv4' && !item.internal) return item.address;
+    }
+  } catch {}
   return '127.0.0.1';
 }
 function createRoom(name) {
   let code; do { code = roomCode(); } while (rooms.has(code));
   const token = id(18), playerId = id(8), now = Date.now();
-  const room = { id: code, createdAt: now, updatedAt: now, revision: 0, snapshotRevision: 0, snapshot: null, started: false, players: new Map(), sse: new Map(), events: [], intents: [] };
-  room.players.set(playerId, { id: playerId, token, name: cleanName(name, 'Host'), slot: 1, ready: false, connected: true, host: true, lastSeen: now });
+  const room = { id: code, createdAt: now, updatedAt: now, revision: 0, snapshotRevision: 0, snapshot: null, started: false, players: new Map(), sse: new Map(), events: [], intents: [], intentResults: [] };
+  room.players.set(playerId, { id: playerId, token, name: cleanName(name, 'Host'), slot: 1, ready: false, connected: true, host: true, lastSeen: now, lastIntentAt: 0, lastIntentSequence: 0 });
   rooms.set(code, room); emit(room, 'room-created', publicRoom(room));
   return { room, playerId, token };
 }
@@ -90,7 +125,7 @@ function joinRoom(room, name) {
   if ([...room.players.values()].filter(p=>p.connected).length >= 2) throw new Error('Room is full');
   const reusable = [...room.players.values()].find(p=>!p.connected && !p.host);
   const playerId = reusable?.id || id(8), token = id(18), now = Date.now();
-  const player = { id: playerId, token, name: cleanName(name, 'Partner'), slot: 2, ready: false, connected: true, host: false, lastSeen: now };
+  const player = { id: playerId, token, name: cleanName(name, 'Partner'), slot: 2, ready: false, connected: true, host: false, lastSeen: now, lastIntentAt: 0, lastIntentSequence: 0 };
   room.players.set(playerId, player); emit(room, 'player-joined', { player: publicPlayer(player), room: publicRoom(room) });
   return { playerId, token };
 }
@@ -111,7 +146,7 @@ setInterval(() => {
 
 async function api(req, res, url) {
   const parts = url.pathname.split('/').filter(Boolean);
-  if (url.pathname === '/api/health' && req.method === 'GET') return json(res, 200, { ok: true, service: 'riftbound-coop', version: 1, transport: 'sse', maxPlayers: 2 });
+  if (url.pathname === '/api/health' && req.method === 'GET') return json(res, 200, { ok: true, service: 'riftbound-coop', version: PROTOCOL_VERSION, protocolVersion: PROTOCOL_VERSION, transport: 'sse', maxPlayers: 2, authority: 'host' });
   if (url.pathname === '/api/rooms' && req.method === 'POST') {
     const body = await readJson(req), created = createRoom(body.name);
     return json(res, 201, { ok: true, room: publicRoom(created.room), playerId: created.playerId, token: created.token, role: 'host' });
@@ -145,8 +180,24 @@ async function api(req, res, url) {
     return json(res, 200, { ok: true, snapshotRevision: room.snapshotRevision });
   }
   if (parts[3] === 'intent' && req.method === 'POST') {
-    const body = await readJson(req); const intent = { id: id(7), playerId: player.id, slot: player.slot, at: Date.now(), type: String(body.type || 'input').slice(0,40), payload: body.payload ?? null };
-    room.intents.push(intent); if (room.intents.length > 80) room.intents.shift(); emit(room, 'intent', intent); return json(res, 202, { ok: true, intentId: intent.id });
+    try {
+      const normalized = normalizeIntent(room, player, await readJson(req));
+      const intent = { id: id(7), playerId: player.id, slot: player.slot, ...normalized };
+      room.intents.push(intent); if (room.intents.length > 80) room.intents.shift();
+      emit(room, 'intent', intent);
+      return json(res, 202, { ok: true, intentId: intent.id, sequence: intent.sequence });
+    } catch (error) {
+      return bad(res, /rate limit/i.test(error.message) ? 429 : 409, error.message);
+    }
+  }
+  if (parts[3] === 'intent-result' && req.method === 'POST') {
+    if (!player.host) return bad(res, 403, 'Only the host may publish authoritative intent results');
+    const body = await readJson(req), intentId = String(body.intentId || '').slice(0, 96);
+    if (!room.intents.some(intent => intent.id === intentId)) return bad(res, 404, 'Unknown partner command');
+    const result = { intentId, ok: body.ok === true, message: String(body.message || (body.ok ? 'Command resolved' : 'Command rejected')).slice(0, 220), at: Date.now() };
+    room.intentResults.push(result); if (room.intentResults.length > 80) room.intentResults.shift();
+    emit(room, 'intent-result', result);
+    return json(res, 200, { ok: true, result });
   }
   if (parts[3] === 'events' && req.method === 'GET') {
     res.writeHead(200, { 'content-type': 'text/event-stream; charset=utf-8', 'cache-control': 'no-store', connection: 'keep-alive', 'x-accel-buffering': 'no' });
@@ -180,7 +231,7 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(PORT, HOST, () => {
   const lan = findLanIp();
-  console.log('\nRIFTBOUND CO-OP // LAN ALPHA');
+  console.log('\nRIFTBOUND CO-OP // V20 HOST AUTHORITY');
   console.log('--------------------------------');
   console.log(`Host: http://localhost:${PORT}`);
   console.log(`LAN : http://${lan}:${PORT}`);

@@ -122,6 +122,12 @@ jobs:
       - name: Verify LAN Co-op network layer
         run: node scripts/verify-coop-network.mjs
 
+      - name: Verify V17-V20 consolidation runtime
+        run: node scripts/verify-consolidation-v17-v20.mjs
+
+      - name: Verify V20 authoritative co-op protocol
+        run: node scripts/verify-coop-authority-v20.mjs
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:

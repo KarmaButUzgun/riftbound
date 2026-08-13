@@ -5,12 +5,13 @@ const state = {
   enabled: false, connected: false, room: null, playerId: null, token: null, role: null,
   eventSource: null, run: null, bridge: null, snapshotTimer: null, heartbeatTimer: null,
   lastSnapshotHash: '', lastSnapshotRevision: 0, remoteSnapshot: null, lastEventRevision: 0,
+  intentSequence: 0, lastIntentResult: null, bridgeContext: null,
 };
 
 function authHeaders() { return { 'content-type': 'application/json', 'x-rift-player': state.playerId || '', 'x-rift-token': state.token || '' }; }
 function saveSession() {
   if (!state.room || !state.playerId || !state.token) return localStorage.removeItem(STORAGE_KEY);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify({ roomId: state.room.id, playerId: state.playerId, token: state.token, role: state.role }));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ roomId: state.room.id, playerId: state.playerId, token: state.token, role: state.role, intentSequence: state.intentSequence }));
 }
 function loadSession() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null'); } catch { return null; } }
 function clearSession() { localStorage.removeItem(STORAGE_KEY); state.room = null; state.playerId = null; state.token = null; state.role = null; }
@@ -40,10 +41,13 @@ function compactFighter(fighter) {
 function snapshotRun(run) {
   if (!run) return null;
   const aux = (run.auxiliaryCombatants || []).map(entry => ({ id: entry.id, team: entry.team, role: entry.role, fighter: compactFighter(entry.fighter) }));
+  let coop = null;
+  try { coop = state.bridge?.snapshotExtras?.(run, state.bridgeContext) || null; } catch {}
   return cloneSafe({
     phase: run.phase, floor: run.floor, turn: run.turn, round: run.round, shards: run.shards,
     player: compactFighter(run.player), enemy: compactFighter(run.enemy), auxiliaryCombatants: aux,
     battlefield: run.battlefield, encounter: run.encounter, revealed: run.revealed, history: (run.history || []).slice(-80),
+    coop,
   });
 }
 function hashSnapshot(value) { const text = JSON.stringify(value); let h = 2166136261; for (let i=0;i<text.length;i++){ h ^= text.charCodeAt(i); h = Math.imul(h,16777619); } return `${text.length}:${h>>>0}`; }
@@ -65,6 +69,7 @@ function ensureUi() {
         <div id="rift-coop-players"></div>
         <div class="rift-coop-row"><button id="rift-coop-ready" type="button">READY</button><button id="rift-coop-leave" type="button">LEAVE</button></div>
         <div id="rift-coop-run"><small>AUTHORITATIVE RUN</small><strong id="rift-coop-run-title">WAITING FOR HOST STATE</strong><span id="rift-coop-run-detail">The host owns reality.</span></div>
+        <section id="rift-coop-ally"><small>PLAYER 2 · ALLY COMMAND</small><strong>WAITING FOR COMBAT LINK</strong><span>Ready both players to manifest the co-op ally.</span></section>
       </div>
       <footer id="rift-coop-status">LAN SERVER DETECTED</footer>
     </section>`;
@@ -78,10 +83,27 @@ function ensureUi() {
   $('rift-coop-ready').onclick = () => setReady(!currentPlayer()?.ready);
   $('rift-coop-leave').onclick = leaveRoom;
   $('rift-coop-copy').onclick = async () => { try { await navigator.clipboard.writeText(location.href); setStatus('LAN link copied.'); } catch { setStatus('Copy failed — send your LAN URL manually.'); } };
+  root.addEventListener('click', event => {
+    const action = event.target.closest('[data-coop-action]');
+    if (action) { requestPartnerAction(action.dataset.coopAction, action.dataset.coopTarget || null); return; }
+    const move = event.target.closest('[data-coop-move]');
+    if (move) requestPartnerMove(move.dataset.coopMove);
+  });
 }
 function $(id) { return document.getElementById(id); }
 function setStatus(message, danger = false) { const el = $('rift-coop-status'); if (el) { el.textContent = message; el.classList.toggle('danger', danger); } }
 function currentPlayer() { return state.room?.players?.find(p => p.id === state.playerId) || null; }
+function renderAllyController(snapshot) {
+  const root = $('rift-coop-ally'); if (!root) return;
+  const coop = snapshot?.coop;
+  if (!state.room?.started) { root.innerHTML = '<small>PLAYER 2 · ALLY COMMAND</small><strong>ROOM PAUSED</strong><span>Both players must be connected and ready.</span>'; return; }
+  if (!coop?.ally) { root.innerHTML = '<small>PLAYER 2 · ALLY COMMAND</small><strong>ALLY MATERIALIZING</strong><span>The host is creating the authoritative fighter.</span>'; return; }
+  const ally = coop.ally, result = state.lastIntentResult;
+  const header = `<div class="rift-coop-ally-head"><span><small>${state.role === 'partner' ? 'YOU CONTROL' : 'PARTNER CONTROLS'}</small><strong>${escapeHtml(ally.name)}</strong><em>${Math.max(0,Math.round(ally.hp))}/${Math.max(1,Math.round(ally.maxHp))} HP · ${Math.round(ally.energy)}/${Math.round(ally.maxEnergy)} ENERGY</em></span><b>${coop.canAct ? 'READY' : 'SPENT'}</b></div>`;
+  const actions = (coop.actions || []).map(action => `<button type="button" data-coop-action="${escapeHtml(action.id)}" data-coop-target="${escapeHtml(action.targetId || '')}" ${state.role !== 'partner' || action.disabled ? 'disabled' : ''}><b>${escapeHtml(action.slot)}</b><span><strong>${escapeHtml(action.name)}</strong><small>${action.cost} ENERGY${action.reason ? ` · ${escapeHtml(action.reason)}` : ''}</small></span></button>`).join('');
+  const movement = `<div class="rift-coop-move"><button type="button" data-coop-move="up" ${state.role !== 'partner' || !coop.canMove ? 'disabled' : ''}>↑</button><button type="button" data-coop-move="left" ${state.role !== 'partner' || !coop.canMove ? 'disabled' : ''}>←</button><button type="button" data-coop-move="down" ${state.role !== 'partner' || !coop.canMove ? 'disabled' : ''}>↓</button><button type="button" data-coop-move="right" ${state.role !== 'partner' || !coop.canMove ? 'disabled' : ''}>→</button><span>${Number(coop.movement || 0).toFixed(1)} MP</span></div>`;
+  root.innerHTML = `${header}<div class="rift-coop-actions">${actions || '<span>No legal actions available.</span>'}</div>${movement}${result ? `<footer class="${result.ok ? 'ok' : 'bad'}">${escapeHtml(result.message)}</footer>` : ''}`;
+}
 function render() {
   ensureUi(); const online = !!state.room && !!state.playerId;
   $('rift-coop-offline').hidden = online; $('rift-coop-online').hidden = !online;
@@ -93,6 +115,7 @@ function render() {
   const snap = state.role === 'host' ? snapshotRun(state.run) : state.remoteSnapshot?.state;
   if (snap) { $('rift-coop-run-title').textContent = `${snap.phase || 'RUN'} · FLOOR ${snap.floor ?? '?'} · TURN ${snap.turn ?? '?'}`.toUpperCase(); $('rift-coop-run-detail').textContent = `${snap.player?.name || 'P1'} · ${snap.player?.power || 'Unknown'}${snap.enemy ? `  VS  ${snap.enemy.name || 'Enemy'} · ${snap.enemy.power || 'Unknown'}` : ''}`; }
   else { $('rift-coop-run-title').textContent = state.room.started ? 'RUN LINK ACTIVE' : 'WAITING FOR BOTH PLAYERS'; $('rift-coop-run-detail').textContent = state.role === 'host' ? 'Start or continue Riftbound; snapshots publish automatically.' : 'Waiting for the host to expose the live run.'; }
+  renderAllyController(snap);
 }
 function escapeHtml(text) { return String(text ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
 
@@ -131,23 +154,41 @@ function openEvents() {
     try { const event=JSON.parse(e.data); state.lastEventRevision=Math.max(state.lastEventRevision,event.revision||0);
       if (['player-joined','player-left','ready-changed','room-started','room-paused','room-created'].includes(event.type)) await refreshState();
       if (event.type === 'snapshot' && state.role !== 'host') await refreshState();
-      if (event.type === 'intent' && state.role === 'host') handleIntent(event.payload);
+      if (event.type === 'intent' && state.role === 'host') await handleIntent(event.payload);
+      if (event.type === 'intent-result') { state.lastIntentResult=event.payload; render(); }
     } catch {}
   };
-  for (const type of ['player-joined','player-left','ready-changed','room-started','room-paused','room-created','snapshot','intent']) es.addEventListener(type,handle);
+  for (const type of ['player-joined','player-left','ready-changed','room-started','room-paused','room-created','snapshot','intent','intent-result']) es.addEventListener(type,handle);
   es.onopen=()=>setStatus('LAN sync online.'); es.onerror=()=>setStatus('LAN sync reconnecting…',true);
 }
 async function refreshState() { if(!state.room)return; try { const data=await request(`/rooms/${state.room.id}/state`,{headers:authHeaders()}); state.room=data.room; state.remoteSnapshot=data.snapshot; state.lastSnapshotRevision=data.snapshotRevision||0; render(); } catch(e){ setStatus(e.message,true); } }
-async function sendIntent(type,payload={}) { if(!state.room)throw new Error('Not in a co-op room'); return request(`/rooms/${state.room.id}/intent`,{method:'POST',headers:authHeaders(),body:JSON.stringify({type,payload})}); }
-function handleIntent(intent) {
+async function sendIntent(type,payload={}) {
+  if(!state.room)throw new Error('Not in a co-op room');
+  const sequence=++state.intentSequence;saveSession();
+  return request(`/rooms/${state.room.id}/intent`,{method:'POST',headers:authHeaders(),body:JSON.stringify({type,payload,sequence})});
+}
+async function handleIntent(intent) {
   if (!intent || intent.playerId === state.playerId) return;
-  if (state.bridge?.applyIntent) { try { state.bridge.applyIntent(intent, state.run); return; } catch (e) { setStatus(`Game bridge rejected input: ${e.message}`,true); } }
-  window.dispatchEvent(new CustomEvent('riftbound:coop-intent',{detail:intent}));
+  let result;
+  if (state.bridge?.applyIntent) {
+    try { result = await state.bridge.applyIntent(intent, state.run, state.bridgeContext); }
+    catch (e) { result = {ok:false,message:e.message}; setStatus(`Game bridge rejected input: ${e.message}`,true); }
+  } else {
+    window.dispatchEvent(new CustomEvent('riftbound:coop-intent',{detail:intent}));
+    result = {ok:false,message:'Game bridge is not ready'};
+  }
+  try { await request(`/rooms/${state.room.id}/intent-result`,{method:'POST',headers:authHeaders(),body:JSON.stringify({intentId:intent.id,ok:result?.ok===true,message:result?.message})}); } catch {}
+}
+async function requestPartnerAction(actionId,targetId=null) { try { await coopApi.requestAction(actionId,targetId); setStatus('Ally command sent to the host.'); } catch(e) { setStatus(e.message,true); } }
+async function requestPartnerMove(direction) {
+  const snap=state.remoteSnapshot?.state,position=snap?.coop?.position;if(!position)return setStatus('Ally position is unavailable.',true);
+  const delta={up:[0,-7],down:[0,7],left:[-7,0],right:[7,0]}[direction];if(!delta)return;
+  try { await coopApi.requestMove('coop-ally',{x:position.x+delta[0],y:position.y+delta[1]});setStatus('Ally movement sent to the host.'); } catch(e) { setStatus(e.message,true); }
 }
 
 async function resumeSession() {
   const saved=loadSession(); if(!saved)return;
-  state.room={id:saved.roomId};state.playerId=saved.playerId;state.token=saved.token;state.role=saved.role;
+  state.room={id:saved.roomId};state.playerId=saved.playerId;state.token=saved.token;state.role=saved.role;state.intentSequence=Number(saved.intentSequence||0);
   try { const data=await request(`/rooms/${saved.roomId}/state`,{headers:authHeaders()}); state.room=data.room;state.remoteSnapshot=data.snapshot;state.connected=true;openEvents();startHeartbeat();startSnapshotPublisher();render();setStatus('Co-op session restored.'); }
   catch { clearSession(); render(); }
 }
@@ -162,7 +203,7 @@ const coopApi = {
   snapshotRun,
 };
 window.RIFT_COOP = coopApi;
-window.RIFT_COOP_EXPOSE_RUN = (run,onAction,selectedActionId,busy) => coopApi.exposeRun(run,{onAction,selectedActionId,busy,actions:()=>{try{return typeof La==='function'?La(run.player):[]}catch{return[]}}});
+window.RIFT_COOP_EXPOSE_RUN = (run,onAction,selectedActionId,busy,commit) => coopApi.exposeRun(run,{onAction,selectedActionId,busy,commit,actions:()=>{try{return typeof La==='function'?La(run.player):[]}catch{return[]}}});
 
 (async function boot(){
   try { const health=await request('/health'); if(!health?.ok)return; state.enabled=true; ensureUi(); render(); await resumeSession(); }

@@ -1,3 +1,8 @@
 .build/
 _site/
 patches/__pycache__/
+# Build-time materializations restored from checked-in compressed payloads.
+patches/044-elemental-cursed-child-v13-parts/01-runtime-v13.js
+patches/044-elemental-cursed-child-v13-parts/02-styles-v13.css
+patches/047-btd-v14-parts/01-runtime-v14.js
+patches/047-btd-v14-parts/02-styles-v14.css

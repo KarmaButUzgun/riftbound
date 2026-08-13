@@ -6,7 +6,8 @@
     "build": "bash scripts/build-site.sh",
     "coop": "bash scripts/build-site.sh && node multiplayer/server.mjs",
     "coop:server": "node multiplayer/server.mjs",
-    "verify:coop": "node scripts/verify-coop-network.mjs"
+    "verify:coop": "node scripts/verify-coop-network.mjs && node scripts/verify-coop-authority-v20.mjs",
+    "verify:v20": "node scripts/verify-consolidation-v17-v20.mjs"
   },
   "engines": {
     "node": ">=20"
