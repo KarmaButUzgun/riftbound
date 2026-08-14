@@ -36,7 +36,7 @@ The V31 roadmap and implementation record are in [UPDATE-V31-CODEX-ASCENDANT.md]
 
 ### V31.1 preview accuracy
 
-The Codex tactical preview no longer uses the V24 text classifier. Every one of the 248 displayed techniques now has an explicit mechanics-backed visual contract covering acquisition, origin, target, travel path, actual range, actual radius, contact shape, timing, and persistent aftermath. Fireball now travels before leaving Burning Ground, Thunder God falls vertically, close strikes remain close, domains and global effects cover their true footprint, and resolver-special moves such as Causality Punch, Go Beyond, time stops, rewinds, summons, traps, and transformations use dedicated diagrams. The preview verifier rejects missing contracts and generic fallbacks.
+The Codex tactical preview no longer uses the V24 text classifier. Every one of the 248 displayed techniques now has an explicit mechanics-backed visual contract covering acquisition, origin, target, travel path, actual range, actual radius, contact shape, timing, and persistent aftermath. Those contracts drive the original stable V31 cinematic DOM renderer, preserving its working layout while correcting which ability shape each card depicts. The preview verifier rejects missing contracts, generic fallbacks, and any attempt to replace the cinematic renderer with the broken SVG stage.
 
 ## V21-V30 Remastered release
 

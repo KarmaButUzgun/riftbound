@@ -18,11 +18,14 @@ const manifest=globalThis.RIFTBOUND_MANIFEST;
 
 assert.equal(codex.previewVersion,2);
 assert.equal(codex.previewPatch,'31.1');
+assert.equal(codex.previewRenderer,'v31-cinematic');
 assert.deepEqual(catalog.preview.version,2);
 assert.deepEqual(catalog.preview.patch,'31.1');
 assert.equal(catalog.preview.explicit,248);
 assert.equal(catalog.preview.fallbacks,0);
 assert.equal(catalog.preview.profiles,56);
+assert.equal(catalog.preview.renderer,'v31-cinematic');
+assert.equal(catalog.preview.layout,'stable-dom');
 assert.ok(catalog.preview.patterns.length>=120,'preview grammar collapsed into generic shapes');
 assert.notEqual(renderCatalog,catalog,'render catalog must exercise the live Codex build path');
 assert.equal(renderCatalog.preview.explicit,248);
@@ -32,6 +35,8 @@ assert.equal(manifest.codex.previewPatch,'V31.1');
 assert.equal(manifest.codex.previewVersion,2);
 assert.equal(manifest.codex.previewCoverage,248);
 assert.equal(manifest.codex.previewFallbacks,0);
+assert.equal(manifest.codex.previewRenderer,'v31-cinematic');
+assert.equal(manifest.codex.previewLayout,'stable-dom');
 assert.equal(manifest.codex.mechanicsBackedPreviews,true);
 
 const validTargets=new Set(['none','enemy','ally','many','point']);
@@ -65,6 +70,7 @@ for(const profile of catalog.profiles){
     assert.equal(move.spatial.type,preview.primaryType);
     assert.equal(move.spatial.label,preview.label);
     assert.equal(move.spatial.previewVersion,2);
+    assert.equal(move.spatial.previewRenderer,'v31-cinematic');
     assert.equal(move.spatial.presentationOnly,true);
     assert.equal(move.spatial.mechanicsChanged,false);
     assert.equal(codex.preview(move),preview);
@@ -122,8 +128,9 @@ const [bundle,css,publishedText]=await Promise.all([
   readFile(cssPath,'utf8'),
   readFile(resolve(root,'_site/riftbound-manifest.json'),'utf8'),
 ]);
-for(const marker of ['Riftbound Codex Preview Accuracy V31.1','RIFT_V311_PROFILE_SPECS','RIFT_V311_BUILD_PREVIEW','RIFT_V31_MOVE_VISUAL=RIFT_V311_MOVE_VISUAL'])assert.ok(bundle.includes(marker),`bundle missing ${marker}`);
-for(const marker of ['--rift-v311-preview-marker','.v311-stage','.v311-board','.v311-sequence','.v311-ruler'])assert.ok(css.includes(marker),`styles missing ${marker}`);
+for(const marker of ['Riftbound Codex Preview Accuracy V31.1','RIFT_V311_PROFILE_SPECS','RIFT_V311_BUILD_PREVIEW','RIFT_V31_MOVE_VISUAL=RIFT_V311_CINEMATIC_MOVE_VISUAL'])assert.ok(bundle.includes(marker),`bundle missing ${marker}`);
+for(const marker of ['--rift-v311-preview-marker','.v31-tactical-stage','.v31-stage-grid','.v31-stage-effect','.v31-stage-unit'])assert.ok(css.includes(marker),`styles missing ${marker}`);
+assert.ok(!bundle.includes('RIFT_V31_MOVE_VISUAL=RIFT_V311_MOVE_VISUAL'),'broken SVG renderer still owns the Codex preview seam');
 assert.match(css,/prefers-reduced-motion:reduce/);
 assert.match(css,/rift-high-contrast/);
 const published=JSON.parse(publishedText);
