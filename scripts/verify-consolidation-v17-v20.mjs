@@ -12,9 +12,9 @@ assert.ok(existsSync(bundlePath),'built runtime is missing');
 await import(`${pathToFileURL(bundlePath).href}?verify-v20=${Date.now()}`);
 
 const manifest=globalThis.RIFTBOUND_MANIFEST;
-assert.equal(manifest?.schemaVersion,31,'V17-V20 compatibility must survive the additive V31 schema');
-assert.equal(manifest?.release,'V31 · Codex Ascendant');
-assert.deepEqual(manifest?.counts,{items:210,powers:50,routes:30,arenas:20,legendary:70,mythical:26});
+assert.equal(manifest?.schemaVersion,32,'V17-V20 compatibility must survive the additive V32 schema');
+assert.equal(manifest?.release,'V32 · Restless Gambler');
+assert.deepEqual(manifest?.counts,{items:210,powers:51,routes:30,arenas:20,legendary:70,mythical:26});
 assert.equal(new Set(manifest.items.map(item=>item.id)).size,manifest.items.length,'catalog ids are not unique');
 const itemIds=new Set(manifest.items.map(item=>item.id));
 for(const item of manifest.items)for(const component of item.recipe)assert.ok(itemIds.has(component),`${item.name} references missing component ${component}`);
@@ -22,7 +22,7 @@ assert.ok(manifest.effectPriority.causality>manifest.effectPriority.damage);
 assert.ok(manifest.effectPriority.damage>manifest.effectPriority.presentation);
 assert.equal(manifest.coop.protocolVersion,3);
 assert.equal(manifest.coop.authority,'host');
-assert.deepEqual(manifest.accessibility,['reducedMotion','highContrast','largeText','effectDensity']);
+assert.deepEqual(manifest.accessibility,['reducedMotion','highContrast','largeText','effectDensity','jackpotMusic']);
 
 const balance=globalThis.RIFTBOUND_BALANCE_LAB;
 assert.equal(balance?.version,18);
@@ -62,6 +62,6 @@ assert.ok(bundle.includes('(0,r.useEffect)(()=>{persist()},[mode,query,category,
 assert.ok(!bundle.includes('(0,r.useEffect)(persist,[mode,query,category,rarity,stat,sort,selectedId,archetypeId,owner])'),'Armory persistence effect still returns a non-function cleanup value');
 for(const marker of ['--rift-v17-marker','--rift-v19-marker','--rift-v20-marker','.rift-reduced-motion','.rift-high-contrast','.rift-fx-low'])assert.ok(css.includes(marker),`styles missing ${marker}`);
 const publishedManifest=JSON.parse(await readFile(resolve(root,'_site/riftbound-manifest.json'),'utf8'));
-assert.equal(publishedManifest.schemaVersion,31);
+assert.equal(publishedManifest.schemaVersion,32);
 assert.deepEqual(publishedManifest.counts,manifest.counts);
-console.log('Riftbound V17-V20 compatibility verification passed under V31.');
+console.log('Riftbound V17-V20 compatibility verification passed under V32.');

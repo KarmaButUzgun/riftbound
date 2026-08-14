@@ -16,22 +16,22 @@ const manifest=globalThis.RIFTBOUND_MANIFEST;
 const codex=globalThis.RIFTBOUND_CODEX;
 const preservation=globalThis.RIFTBOUND_PRESERVATION;
 
-assert.equal(manifest?.schemaVersion,31);
-assert.equal(manifest?.release,'V31 · Codex Ascendant');
-assert.equal(codex?.version,31);
-assert.equal(codex.release,'Codex Ascendant');
+assert.equal(manifest?.schemaVersion,32);
+assert.equal(manifest?.release,'V32 · Restless Gambler');
+assert.equal(codex?.version,32);
+assert.equal(codex.release,'Restless Gambler');
 assert.deepEqual(codex.reference,{attackStrengthTier:10,attackPowerTier:10,durabilityTier:10,speedTier:10,combatSkillTier:10,battleIqTier:10,label:'Tier 10 attacker · Tier 10 training target'});
 
 const catalog=codex.catalog();
-assert.deepEqual(catalog.totals,{registeredPowers:50,visiblePowers:49,hiddenPowers:1,stands:7,profiles:56,moves:248,evolvedMoves:3});
-assert.equal(catalog.profiles.length,56);
-assert.equal(catalog.powers.length,49);
+assert.deepEqual(catalog.totals,{registeredPowers:51,visiblePowers:50,hiddenPowers:1,stands:7,profiles:57,moves:255,evolvedMoves:3});
+assert.equal(catalog.profiles.length,57);
+assert.equal(catalog.powers.length,50);
 assert.equal(catalog.stands.length,7);
-assert.equal(catalog.moves.length,248);
+assert.equal(catalog.moves.length,255);
 assert.equal(new Set(catalog.profiles.map(profile=>profile.id)).size,catalog.profiles.length,'profile IDs are not unique');
 assert.equal(new Set(catalog.moves.map(move=>move.id)).size,catalog.moves.length,'move IDs are not unique');
-assert.equal(catalog.constitutionHash,'7598b438');
-assert.equal(catalog.abilityChanges,0);
+assert.equal(catalog.constitutionHash,'3684c969');
+assert.equal(catalog.abilityChanges,4);
 assert.ok(!catalog.profiles.some(profile=>profile.name==='Mutated Aura Accumulation'),'hidden authored boss power leaked into the public Codex');
 assert.ok(catalog.profiles.some(profile=>profile.name==='Stand Manifestation'),'authored Stand Manifestation system profile disappeared');
 
@@ -91,6 +91,14 @@ assert.equal(fireball.damageClass,'Supernatural');
 assert.equal(fireball.scaling.mode,'AP');
 assert.ok(fireball.reference.damage>0);
 
+const gambler=codex.profile('Restless Gambler');
+assert.ok(gambler);
+assert.equal(gambler.rarity,'Legendary');
+assert.equal(gambler.moves.length,7);
+assert.deepEqual(gambler.groups.map(group=>group.label),['Technique Array','Jackpot Override']);
+assert.deepEqual(gambler.moves.map(move=>move.name),['Chromatic Balls','Train Door','Rough Blast','Private Pure Love Train','Lucky Shot','Relentless Luck','Fever Punch']);
+assert.deepEqual(gambler.moves.slice(4).map(move=>move.cost),[0,0,0]);
+
 const purpleMatches=codex.filter({query:'Purple'});
 assert.ok(purpleMatches.some(profile=>profile.name==='Limitless'),'move-name search did not resolve its source profile');
 assert.ok(codex.filter({kind:'stand'}).every(profile=>profile.kind==='stand'));
@@ -105,13 +113,13 @@ assert.ok(comparison.metrics.find(metric=>metric.id==='power').delta>0);
 assert.ok(comparison.metrics.find(metric=>metric.id==='cost').direction==='worse');
 
 const constitution=preservation.assert();
-assert.deepEqual(constitution,{ok:true,expected:'7598b438',actual:'7598b438',counts:{abilities:57,moves:221}});
-assert.equal(globalThis.RIFTBOUND_SPATIAL.coverage().total,221);
-assert.equal(globalThis.RIFTBOUND_SPATIAL.coverage().typed,221);
+assert.deepEqual(constitution,{ok:true,expected:'3684c969',actual:'3684c969',counts:{abilities:58,moves:225},baseHash:'7598b438',basePreserved:true});
+assert.equal(globalThis.RIFTBOUND_SPATIAL.coverage().total,225);
+assert.equal(globalThis.RIFTBOUND_SPATIAL.coverage().typed,225);
 assert.equal(globalThis.RIFTBOUND_REMASTERED.certify().ok,true);
-assert.equal(manifest.codex.abilityChanges,0);
-assert.equal(manifest.codex.constitutionHash,'7598b438');
-assert.equal(manifest.codex.displayedMoves,248);
+assert.equal(manifest.codex.abilityChanges,4);
+assert.equal(manifest.codex.constitutionHash,'3684c969');
+assert.equal(manifest.codex.displayedMoves,255);
 assert.equal(manifest.codex.referenceDamage,true);
 assert.equal(manifest.codex.comparison,true);
 
@@ -123,8 +131,8 @@ assert.match(css,/prefers-reduced-motion:reduce/);
 assert.match(css,/max-width:760px/);
 assert.match(css,/rift-high-contrast/);
 const published=JSON.parse(publishedText);
-assert.equal(published.schemaVersion,31);
+assert.equal(published.schemaVersion,32);
 assert.deepEqual(published.codex,manifest.codex);
 assert.equal(published.remastered.certified,true);
 
-console.log('Riftbound V31 Codex Ascendant verification passed: 56 profiles, 248 displayed techniques, interactive intelligence, and zero ability changes.');
+console.log('Riftbound V31 Codex foundation verification passed beneath V32: 57 profiles, 255 displayed techniques, and the additive Restless Gambler contract.');

@@ -20,20 +20,20 @@ assert.equal(codex.previewVersion,2);
 assert.equal(codex.previewPatch,'31.1');
 assert.equal(codex.previewRenderer,'v31-cinematic');
 assert.deepEqual(catalog.preview.version,2);
-assert.deepEqual(catalog.preview.patch,'31.1');
-assert.equal(catalog.preview.explicit,248);
+assert.deepEqual(catalog.preview.patch,'V32');
+assert.equal(catalog.preview.explicit,255);
 assert.equal(catalog.preview.fallbacks,0);
-assert.equal(catalog.preview.profiles,56);
+assert.equal(catalog.preview.profiles,57);
 assert.equal(catalog.preview.renderer,'v31-cinematic');
 assert.equal(catalog.preview.layout,'stable-dom');
 assert.ok(catalog.preview.patterns.length>=120,'preview grammar collapsed into generic shapes');
 assert.notEqual(renderCatalog,catalog,'render catalog must exercise the live Codex build path');
-assert.equal(renderCatalog.preview.explicit,248);
+assert.equal(renderCatalog.preview.explicit,255);
 assert.equal(renderCatalog.preview.fallbacks,0);
-assert.equal(renderCatalog.moves.filter(move=>move.preview?.explicit).length,248,'live Codex build lost explicit previews');
-assert.equal(manifest.codex.previewPatch,'V31.1');
+assert.equal(renderCatalog.moves.filter(move=>move.preview?.explicit).length,255,'live Codex build lost explicit previews');
+assert.equal(manifest.codex.previewPatch,'V32');
 assert.equal(manifest.codex.previewVersion,2);
-assert.equal(manifest.codex.previewCoverage,248);
+assert.equal(manifest.codex.previewCoverage,255);
 assert.equal(manifest.codex.previewFallbacks,0);
 assert.equal(manifest.codex.previewRenderer,'v31-cinematic');
 assert.equal(manifest.codex.previewLayout,'stable-dom');
@@ -76,7 +76,7 @@ for(const profile of catalog.profiles){
     assert.equal(codex.preview(move),preview);
   }
 }
-assert.equal(keys.size,248);
+assert.equal(keys.size,255);
 
 const preview=(profile,name)=>{
   const move=codex.profile(profile)?.moves.find(entry=>entry.name===name);
@@ -120,8 +120,17 @@ assert.equal(preview('Star Platinum','Za Warudo!').geometry.rangeText,'BATTLEFIE
 assert.equal(preview('Star Platinum','Za Warudo!').targetKind,'many');
 assert.equal(preview('King Crimson Requiem','Time Dodge').anchor,'self');
 
-assert.deepEqual(globalThis.RIFTBOUND_PRESERVATION.assert(),{ok:true,expected:'7598b438',actual:'7598b438',counts:{abilities:57,moves:221}});
-assert.equal(manifest.codex.abilityChanges,0);
+assert.equal(preview('Restless Gambler','Chromatic Balls').pattern,'projectile-multi');
+assert.match(preview('Restless Gambler','Chromatic Balls').resolution,/three ricochet contacts/i);
+assert.equal(preview('Restless Gambler','Train Door').pattern,'wall-point-delayed');
+assert.match(preview('Restless Gambler','Train Door').aftermath,/remains as cover/i);
+assert.equal(preview('Restless Gambler','Private Pure Love Train').pattern,'self-domain');
+assert.equal(preview('Restless Gambler','Lucky Shot').pattern,'melee-barrage-multi');
+assert.equal(preview('Restless Gambler','Relentless Luck').visualRadius,7);
+assert.equal(preview('Restless Gambler','Fever Punch').pattern,'melee-charge-strike-wave');
+
+assert.deepEqual(globalThis.RIFTBOUND_PRESERVATION.assert(),{ok:true,expected:'3684c969',actual:'3684c969',counts:{abilities:58,moves:225},baseHash:'7598b438',basePreserved:true});
+assert.equal(manifest.codex.abilityChanges,4);
 
 const [bundle,css,publishedText]=await Promise.all([
   readFile(bundlePath,'utf8'),
@@ -134,8 +143,8 @@ assert.ok(!bundle.includes('RIFT_V31_MOVE_VISUAL=RIFT_V311_MOVE_VISUAL'),'broken
 assert.match(css,/prefers-reduced-motion:reduce/);
 assert.match(css,/rift-high-contrast/);
 const published=JSON.parse(publishedText);
-assert.equal(published.codex.previewCoverage,248);
+assert.equal(published.codex.previewCoverage,255);
 assert.equal(published.codex.previewFallbacks,0);
 assert.equal(published.codex.mechanicsBackedPreviews,true);
 
-console.log('Riftbound V31.1 Codex preview verification passed: 248 explicit mechanics-backed previews, zero fallbacks, zero ability changes.');
+console.log('Riftbound Codex preview verification passed: 255 explicit mechanics-backed previews, zero fallbacks, and all seven Restless Gambler techniques correctly mapped.');
