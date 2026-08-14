@@ -27,6 +27,7 @@ const RIFT_V32_POWER=Object.freeze({
 });
 if(!g.some(power=>power.name===RIFT_V32_POWER_NAME))g.push(RIFT_V32_POWER);
 try{RIFT_V22_REGISTRY.powers.set(RIFT_V32_POWER_NAME,RIFT_V32_POWER)}catch{}
+RIFT_V16_BUILD_GUIDES[RIFT_V32_POWER_NAME]=RIFT_V16_G([`pilot-goggles`,`fists-of-the-north-star`,`berserker-armor`,`speed-force-tachyon`,`vibranium-echo-shell`,`save-crystal-zero`]);
 
 function RIFT_V32_IS(fighter){return fighter?.power?.name===RIFT_V32_POWER_NAME}
 function RIFT_V32_ACTOR(run,fighter){return RIFT_ACTOR_ID_FOR_FIGHTER(run,fighter)||RIFT_V22_ACTOR_ID?.(run,fighter)||null}

@@ -68,7 +68,7 @@ assert.deepEqual(manifest.restlessGambler,{rarity:'Legendary',feverMax:6,domainT
 assert.deepEqual(api.constitution(),{ok:true,expected:'3684c969',actual:'3684c969',counts:{abilities:58,moves:225},baseHash:'7598b438',basePreserved:true});
 
 const [bundle,css,publishedText]=await Promise.all([readFile(bundlePath,'utf8'),readFile(cssPath,'utf8'),readFile(manifestPath,'utf8')]);
-for(const marker of ['Riftbound Restless Gambler V32','RIFT_V32_START_DOMAIN','RIFT_V32_START_JACKPOT','RIFT_V32_PROCESS_DOORS','RIFT_V32_GAMBLER_HUD','RIFTBOUND_RESTLESS_GAMBLER'])assert.ok(bundle.includes(marker),`bundle missing ${marker}`);
+for(const marker of ['Riftbound Restless Gambler V32','RIFT_V32_START_DOMAIN','RIFT_V32_START_JACKPOT','RIFT_V32_PROCESS_DOORS','RIFT_V32_GAMBLER_HUD','RIFTBOUND_RESTLESS_GAMBLER','RIFT_V16_BUILD_GUIDES[RIFT_V32_POWER_NAME]'])assert.ok(bundle.includes(marker),`bundle missing ${marker}`);
 for(const marker of ['--rift-v32-marker','.v32-gambler-hud','.v32-jackpot-awakening','.v32-train-door-slam','.rift-v32-jackpot'])assert.ok(css.includes(marker),`styles missing ${marker}`);
 assert.match(bundle,/jackpotMusic/);
 assert.match(bundle,/RIFT_V32_JACKPOT_REGEN=\.08/);
