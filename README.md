@@ -2,7 +2,7 @@
 
 Riftbound is a standalone turn-based ascension RPG rebuilt from an immutable recovered client and evolved through deterministic runtime patches.
 
-Current patch release: **V31 - Codex Ascendant**
+Current patch release: **V31.1 - Codex Preview Accuracy**
 
 Immutable base: **v0.3.0 - Cursed Child**
 
@@ -33,6 +33,10 @@ V31 remasters the Special Power and Stand Codex into a cinematic, fully interact
 - Ability constitution `7598b438` remains exact: 57 protected definitions, 221 protected moves, and zero mechanical changes.
 
 The V31 roadmap and implementation record are in [UPDATE-V31-CODEX-ASCENDANT.md](UPDATE-V31-CODEX-ASCENDANT.md).
+
+### V31.1 preview accuracy
+
+The Codex tactical preview no longer uses the V24 text classifier. Every one of the 248 displayed techniques now has an explicit mechanics-backed visual contract covering acquisition, origin, target, travel path, actual range, actual radius, contact shape, timing, and persistent aftermath. Fireball now travels before leaving Burning Ground, Thunder God falls vertically, close strikes remain close, domains and global effects cover their true footprint, and resolver-special moves such as Causality Punch, Go Beyond, time stops, rewinds, summons, traps, and transformations use dedicated diagrams. The preview verifier rejects missing contracts and generic fallbacks.
 
 ## V21-V30 Remastered release
 
@@ -89,6 +93,7 @@ Focused release checks:
 npm run verify:v20
 npm run verify:v30
 npm run verify:v31
+npm run verify:previews
 npm run verify:coop
 npm run verify:release
 ```

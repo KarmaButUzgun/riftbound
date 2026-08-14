@@ -134,6 +134,9 @@ jobs:
       - name: Verify V31 Codex Ascendant
         run: node scripts/verify-codex-ascendant-v31.mjs
 
+      - name: Verify V31.1 mechanics-backed Codex previews
+        run: node scripts/verify-codex-previews-v311.mjs
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
