@@ -155,3 +155,7 @@ V31.1 removes that classifier from the Codex preview path. All 248 displayed tec
 - exhaustive verification requiring 248 explicit contracts and zero generic fallbacks.
 
 The ability constitution remains `7598b438`. This correction changes presentation only and makes zero ability-mechanic changes.
+
+### Renderer repair
+
+The first V31.1 deployment incorrectly replaced the established cinematic DOM stage with an SVG tactical board. Global application typography leaked into the SVG text nodes, producing oversized actor labels and an unusable preview. The repair restores the exact V31 cinematic renderer and keeps the 248 explicit contracts solely as the authoritative ability-to-visual mapping. The working layout is preserved; only the depicted spatial family and its ability-specific label are corrected.
