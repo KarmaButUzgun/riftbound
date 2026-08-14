@@ -140,3 +140,18 @@ The V31 verifier checks:
 - runtime markers, replacement of the legacy Codex grid, responsive styles, reduced motion, high contrast, published manifest parity, and static build artifacts
 
 Both pull-request and Pages workflows run V31 after the complete historical release matrix.
+
+## V31.1 - Preview Accuracy correction
+
+The initial V31 tactical cards reused the V24 presentation classifier. That classifier was designed to add flavor to live combat effects, not to serve as a precise move diagram, so it could collapse multiple phases or select a misleading family from descriptive text.
+
+V31.1 removes that classifier from the Codex preview path. All 248 displayed techniques now have an explicit contract with:
+
+- actual resolver range, radius, origin, target mode, and core geometry;
+- authored acquisition, resolution, and aftermath phases;
+- distinct paths for projectiles, beams, lines, cones, falls, dashes, teleports, walls, tethers, traps, summons, domains, fields, global effects, time manipulation, transformation, healing, and defense;
+- accurate multi-stage combinations such as projectile into persistent field, impact into summon, teleport into strike, strike into pressure cone, and detonation into lingering radiation;
+- a fixed 120m by 64m reference field with meter rulers instead of fixed source and target positions;
+- exhaustive verification requiring 248 explicit contracts and zero generic fallbacks.
+
+The ability constitution remains `7598b438`. This correction changes presentation only and makes zero ability-mechanic changes.
