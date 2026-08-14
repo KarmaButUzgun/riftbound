@@ -2,22 +2,37 @@
 
 Riftbound is a standalone turn-based ascension RPG rebuilt from an immutable recovered client and evolved through deterministic runtime patches.
 
-Current patch release: **V31.1 - Codex Preview Accuracy**
+Current patch release: **V32 - Restless Gambler**
 
 Immutable base: **v0.3.0 - Cursed Child**
 
 The current runtime contains:
 
 - 210 items, including 70 Legendary and 26 Mythical items
-- 50 Special Powers
-- 49 public Power profiles and all 7 Stands in the interactive Codex
-- 248 displayed Power and Stand techniques with detailed combat intelligence
+- 51 Special Powers
+- 50 public Power profiles and all 7 Stands in the interactive Codex
+- 255 displayed Power and Stand techniques with detailed combat intelligence
 - 30 routes
 - 20 arenas
-- 57 preserved ability definitions containing 221 Special Power and Stand moves
-- 29 spatial presentation types, with every one of the 221 moves classified
+- 58 preserved ability definitions containing 225 Special Power and Stand moves
+- 29 spatial presentation types, with every one of the 225 moves classified
 - a six-slot build system and full Armory workflow
 - host-authoritative two-player LAN co-op with protocol-3 recovery and resync
+
+## V32 Restless Gambler
+
+V32 adds the Legendary Restless Gambler as a complete combat system, not a cosmetic Codex entry.
+
+- Rough Energy makes successful physical strikes stack Bleed up to six.
+- Failed accuracy and dodge outcomes, plus minimum-damage Chromatic Balls rolls, build a six-segment Fever bar. Every two Fever segments add one Attack Strength, Durability, and Speed tier.
+- Private Pure Love Train begins every battle at 100% Ultimate. Its twelve-turn domain rolls an XXX line after every two Special techniques.
+- Odd rolls extend the domain, even rolls restore 24% maximum Energy, consecutive lines fully heal and refresh power cooldowns, and three matching digits trigger Jackpot. Maximum Fever guarantees that next Jackpot.
+- Jackpot lasts twenty combatant turns with free replacement techniques, full Energy, 8% maximum-HP regeneration each turn, triple Movement, a huge green aura, and synthesized bass. It grants no invulnerability, so anti-heal and lethal burst remain real counters.
+- Train Door is a solid, destructible battlefield object with a one-turn warning. Its closing threshold damages and Stuns caught hostiles, then remains as cover.
+- The Codex includes seven explicit, mechanics-backed cinematic previews across the normal and Jackpot movesets.
+- Jackpot bass can be disabled independently in Accessibility settings.
+
+The balance contract and implementation record are in [UPDATE-V32-RESTLESS-GAMBLER.md](UPDATE-V32-RESTLESS-GAMBLER.md).
 
 ## V31 Codex Ascendant
 
@@ -36,7 +51,7 @@ The V31 roadmap and implementation record are in [UPDATE-V31-CODEX-ASCENDANT.md]
 
 ### V31.1 preview accuracy
 
-The Codex tactical preview no longer uses the V24 text classifier. Every one of the 248 displayed techniques now has an explicit mechanics-backed visual contract covering acquisition, origin, target, travel path, actual range, actual radius, contact shape, timing, and persistent aftermath. Those contracts drive the original stable V31 cinematic DOM renderer, preserving its working layout while correcting which ability shape each card depicts. The preview verifier rejects missing contracts, generic fallbacks, and any attempt to replace the cinematic renderer with the broken SVG stage.
+The Codex tactical preview no longer uses the V24 text classifier. All 255 displayed techniques now have explicit mechanics-backed visual contracts covering acquisition, origin, target, travel path, actual range, actual radius, contact shape, timing, and persistent aftermath. Those contracts drive the original stable V31 cinematic DOM renderer, preserving its working layout while correcting which ability shape each card depicts. The preview verifier rejects missing contracts, generic fallbacks, and any attempt to replace the cinematic renderer with the broken SVG stage.
 
 ## V21-V30 Remastered release
 
@@ -94,6 +109,7 @@ npm run verify:v20
 npm run verify:v30
 npm run verify:v31
 npm run verify:previews
+npm run verify:v32
 npm run verify:coop
 npm run verify:release
 ```
