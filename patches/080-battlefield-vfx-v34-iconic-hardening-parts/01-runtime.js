@@ -1,6 +1,7 @@
 const RIFT_V34_HARDENING_MARKER=`Riftbound Battlefield VFX V34 Iconic Hardening`;
 const RIFT_V34_SUPPLEMENTAL_ICONICS=Object.freeze({
  [`Limitless|Purple`]:`annihilation-corridor`,
+ [`Ki Warrior|Kamehameha!`]:`charged-beam`,
  [`The World|ROADO ROLLAR DAA!`]:`falling-crush`,
  [`Star Platinum|7-Page Ora`]:`advancing-barrage`,
  [`Gold Experience|Muda Barrage`]:`advancing-barrage`,
