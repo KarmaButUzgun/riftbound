@@ -15,6 +15,7 @@ await import(`${pathToFileURL(bundlePath).href}?verify-v32=${Date.now()}`);
 const api=globalThis.RIFTBOUND_RESTLESS_GAMBLER;
 const manifest=globalThis.RIFTBOUND_MANIFEST;
 const codex=globalThis.RIFTBOUND_CODEX;
+const tactical=globalThis.RIFTBOUND_TACTICAL_GRAMMAR;
 
 assert.equal(api?.version,32);
 assert.deepEqual(api.constants,{feverMax:6,domainTurns:12,domainCap:18,jackpotTurns:20,jackpotRegen:.08});
@@ -61,11 +62,17 @@ assert.equal(profile.moves.length,7);
 assert.deepEqual(profile.groups.map(group=>group.label),['Technique Array','Jackpot Override']);
 assert.ok(profile.moves.every(move=>move.preview?.explicit&&!move.preview?.fallback));
 assert.deepEqual(profile.moves.map(move=>move.preview.pattern),['projectile-multi','wall-point-delayed','melee-rising-wave','self-domain','melee-barrage-multi','teleport-strike-area','melee-charge-strike-wave']);
+assert.ok(profile.moves.every(move=>move.tactical?.explicit),'V33 must live-type every Restless Gambler technique');
+assert.deepEqual(profile.moves.map(move=>move.tactical.id),['ricochet-projectile','closing-construct-trap','rising-launch-strike','gambling-domain','advancing-rough-barrage','blink-slam-shockwave','committed-guardbreak-punch']);
+assert.equal(tactical?.version,33);
 
-assert.equal(manifest.schemaVersion,32);
-assert.equal(manifest.release,'V32 · Restless Gambler');
+assert.equal(manifest.schemaVersion,33);
+assert.equal(manifest.release,'V33 · Tactical Grammar');
 assert.deepEqual(manifest.restlessGambler,{rarity:'Legendary',feverMax:6,domainTurns:12,domainCap:18,jackpotTurns:20,jackpotRegen:.08,tripleMovement:true,infiniteEnergy:true,antiHealCounterplay:true,oneShotCounterplay:true,jackpotMusicSetting:true,baseMoves:['Chromatic Balls','Train Door','Rough Blast','Private Pure Love Train'],jackpotMoves:['Lucky Shot','Relentless Luck','Fever Punch']});
 assert.deepEqual(api.constitution(),{ok:true,expected:'3684c969',actual:'3684c969',counts:{abilities:58,moves:225},baseHash:'7598b438',basePreserved:true});
+assert.equal(manifest.tacticalGrammar?.version,33);
+assert.equal(manifest.tacticalGrammar?.moves,255);
+assert.equal(manifest.tacticalGrammar?.fallbacks,0);
 
 const [bundle,css,publishedText]=await Promise.all([readFile(bundlePath,'utf8'),readFile(cssPath,'utf8'),readFile(manifestPath,'utf8')]);
 for(const marker of ['Riftbound Restless Gambler V32','RIFT_V32_START_DOMAIN','RIFT_V32_START_JACKPOT','RIFT_V32_PROCESS_DOORS','RIFT_V32_GAMBLER_HUD','RIFTBOUND_RESTLESS_GAMBLER','RIFT_V16_BUILD_GUIDES[RIFT_V32_POWER_NAME]'])assert.ok(bundle.includes(marker),`bundle missing ${marker}`);
@@ -74,7 +81,8 @@ assert.match(bundle,/jackpotMusic/);
 assert.match(bundle,/RIFT_V32_JACKPOT_REGEN=\.08/);
 assert.ok(!bundle.includes('RIFT_V31_MOVE_VISUAL=RIFT_V311_MOVE_VISUAL'),'broken SVG preview renderer reclaimed the Codex seam');
 const published=JSON.parse(publishedText);
-assert.equal(published.schemaVersion,32);
+assert.equal(published.schemaVersion,33);
 assert.deepEqual(published.restlessGambler,manifest.restlessGambler);
+assert.equal(published.tacticalGrammar?.version,33);
 
-console.log('Riftbound V32 Restless Gambler verification passed: Fever, domain, guaranteed Jackpot, solid Train Door, seven explicit previews, and optional bass are certified.');
+console.log('Riftbound V32 Restless Gambler verification passed beneath V33: Fever, domain, Jackpot, Train Door, previews, and all seven live tactical types are certified.');

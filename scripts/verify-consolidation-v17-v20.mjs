@@ -12,8 +12,8 @@ assert.ok(existsSync(bundlePath),'built runtime is missing');
 await import(`${pathToFileURL(bundlePath).href}?verify-v20=${Date.now()}`);
 
 const manifest=globalThis.RIFTBOUND_MANIFEST;
-assert.equal(manifest?.schemaVersion,32,'V17-V20 compatibility must survive the additive V32 schema');
-assert.equal(manifest?.release,'V32 · Restless Gambler');
+assert.equal(manifest?.schemaVersion,33,'V17-V20 compatibility must survive the additive V33 tactical schema');
+assert.equal(manifest?.release,'V33 · Tactical Grammar');
 assert.deepEqual(manifest?.counts,{items:210,powers:51,routes:30,arenas:20,legendary:70,mythical:26});
 assert.equal(new Set(manifest.items.map(item=>item.id)).size,manifest.items.length,'catalog ids are not unique');
 const itemIds=new Set(manifest.items.map(item=>item.id));
@@ -23,6 +23,9 @@ assert.ok(manifest.effectPriority.damage>manifest.effectPriority.presentation);
 assert.equal(manifest.coop.protocolVersion,3);
 assert.equal(manifest.coop.authority,'host');
 assert.deepEqual(manifest.accessibility,['reducedMotion','highContrast','largeText','effectDensity','jackpotMusic']);
+assert.equal(manifest.tacticalGrammar?.version,33,'V33 tactical grammar manifest missing from compatibility surface');
+assert.equal(manifest.tacticalGrammar?.moves,255,'V33 tactical grammar move coverage drifted');
+assert.equal(manifest.tacticalGrammar?.fallbacks,0,'V33 public tactical grammar must remain explicit');
 
 const balance=globalThis.RIFTBOUND_BALANCE_LAB;
 assert.equal(balance?.version,18);
@@ -62,6 +65,7 @@ assert.ok(bundle.includes('(0,r.useEffect)(()=>{persist()},[mode,query,category,
 assert.ok(!bundle.includes('(0,r.useEffect)(persist,[mode,query,category,rarity,stat,sort,selectedId,archetypeId,owner])'),'Armory persistence effect still returns a non-function cleanup value');
 for(const marker of ['--rift-v17-marker','--rift-v19-marker','--rift-v20-marker','.rift-reduced-motion','.rift-high-contrast','.rift-fx-low'])assert.ok(css.includes(marker),`styles missing ${marker}`);
 const publishedManifest=JSON.parse(await readFile(resolve(root,'_site/riftbound-manifest.json'),'utf8'));
-assert.equal(publishedManifest.schemaVersion,32);
+assert.equal(publishedManifest.schemaVersion,33);
 assert.deepEqual(publishedManifest.counts,manifest.counts);
-console.log('Riftbound V17-V20 compatibility verification passed under V32.');
+assert.equal(publishedManifest.tacticalGrammar?.types,manifest.tacticalGrammar.types);
+console.log('Riftbound V17-V20 compatibility verification passed under V33.');

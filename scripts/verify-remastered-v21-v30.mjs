@@ -12,9 +12,12 @@ for(const path of [bundlePath,cssPath,resolve(root,'_site/index.html'),resolve(r
 
 await import(`${pathToFileURL(bundlePath).href}?verify-v30=${Date.now()}`);
 const manifest=globalThis.RIFTBOUND_MANIFEST;
-assert.equal(manifest?.schemaVersion,32,'V30 foundation must remain certified beneath the additive V32 schema');
-assert.equal(manifest?.release,'V32 · Restless Gambler');
+assert.equal(manifest?.schemaVersion,33,'V30 foundation must remain certified beneath the additive V33 tactical schema');
+assert.equal(manifest?.release,'V33 · Tactical Grammar');
 assert.deepEqual(manifest.counts,{items:210,powers:51,routes:30,arenas:20,legendary:70,mythical:26});
+assert.equal(manifest.tacticalGrammar?.version,33,'V33 tactical grammar manifest missing above V30 foundation');
+assert.equal(manifest.tacticalGrammar?.moves,255,'V33 public tactical coverage drifted above V30 foundation');
+assert.equal(manifest.tacticalGrammar?.fallbacks,0,'V33 tactical grammar regressed to public fallback typing');
 
 const preservation=globalThis.RIFTBOUND_PRESERVATION;
 assert.equal(preservation?.version,32);
@@ -143,10 +146,13 @@ const published=JSON.parse(publishedText);
 const webManifest=JSON.parse(await readFile(resolve(root,'_site/manifest.webmanifest'),'utf8'));
 assert.equal(webManifest.display,'standalone');
 assert.equal(webManifest.icons[0].purpose,'any maskable');
-assert.equal(published.schemaVersion,32);
+assert.equal(published.schemaVersion,33);
 assert.equal(published.preservation.constitutionHash,'3684c969');
 assert.equal(published.spatialGrammar.moves,225);
 assert.equal(published.spatialGrammar.typed,225);
 assert.equal(published.remastered.certified,true);
+assert.equal(published.tacticalGrammar?.version,33);
+assert.equal(published.tacticalGrammar?.moves,255);
+assert.equal(published.tacticalGrammar?.fallbacks,0);
 
-console.log('Riftbound V21-V30 Remastered foundation verification passed beneath V32: the 221-move base remains preserved and spatially typed.');
+console.log('Riftbound V21-V30 Remastered foundation verification passed beneath V33: the protected 225-move constitution remains intact while the 255-technique tactical layer stays additive.');
