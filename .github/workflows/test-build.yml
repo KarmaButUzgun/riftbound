@@ -30,6 +30,9 @@ jobs:
       - name: Prepare V14 verifier compatibility
         run: node scripts/prepare-v14-verifier-compat.mjs
 
+      - name: Prepare V34 verifier compatibility
+        run: node scripts/prepare-v34-verifier-compat.mjs
+
       - name: Verify Bizarre Update runtime
         run: node scripts/verify-bizarre-update.mjs
 
@@ -132,6 +135,9 @@ jobs:
 
       - name: Verify V33 Tactical Grammar
         run: node scripts/verify-tactical-grammar-v33.mjs
+
+      - name: Verify V34 Battlefield VFX Grammar
+        run: node scripts/verify-battlefield-vfx-v34.mjs
 
       - name: Upload built site
         uses: actions/upload-artifact@v4
