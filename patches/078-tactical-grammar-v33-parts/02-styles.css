@@ -1,0 +1,35 @@
+/* Riftbound Tactical Grammar V33 */
+:root{--rift-v33-marker:33}
+.action-range.v33-tactical-type,.action-card .action-range{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tactical-map .map-fx-action.v33-tactical,.map-fx-action.v33-tactical{filter:saturate(1.12) contrast(1.06)}
+.map-fx-action.motion-ricochet i{animation-name:v33-ricochet-beat;transform-origin:center}
+.map-fx-action.motion-fall{transform-origin:100% 50%}
+.map-fx-action.motion-fall i{animation-name:v33-fall-beat}
+.map-fx-action.motion-blink i{animation-name:v33-blink-beat}
+.map-fx-action.motion-drill i{animation-name:v33-drill-beat}
+.map-fx-action.motion-sweep i{animation-name:v33-sweep-beat}
+.map-fx-action.motion-barrage i{animation-name:v33-barrage-beat}
+.map-fx-action.motion-domain .map-fx-field,.map-fx-action.motion-field .map-fx-field{animation:v33-domain-breathe 1.4s ease-in-out infinite alternate}
+.map-fx-action.motion-tether .map-fx-line,.map-fx-action.motion-command .map-fx-line{border-top-style:dashed}
+.map-effect-echo.v33-echo{opacity:.9;mix-blend-mode:screen}
+.map-effect-echo.v33-echo.motion-ricochet .echo-line{border-top-style:dashed;filter:drop-shadow(0 0 5px var(--fx))}
+.map-effect-echo.v33-echo.motion-fall .echo-line{transform-origin:right center;filter:blur(.2px)}
+.map-effect-echo.v33-echo.motion-blink .echo-line{border-top-style:dotted;opacity:.65}
+.map-effect-echo.v33-echo.motion-drill .echo-line{border-top-width:5px;filter:drop-shadow(0 0 7px var(--fx))}
+.map-effect-echo.v33-echo.motion-tether .echo-line{border-top-style:dashed}
+.map-effect-echo.v33-echo.motion-trap .echo-impact{outline:2px dashed color-mix(in srgb,var(--fx) 70%,white);outline-offset:4px}
+.map-effect-echo.v33-echo.motion-domain .echo-impact,.map-effect-echo.v33-echo.motion-field .echo-impact{box-shadow:0 0 0 7px color-mix(in srgb,var(--fx) 16%,transparent),0 0 24px color-mix(in srgb,var(--fx) 42%,transparent)}
+.map-effect-echo.v33-echo.motion-barrage .echo-impact{animation:v33-barrage-impact .46s steps(4,end) 2}
+.map-effect-echo.v33-echo.motion-rise .echo-impact{animation:v33-rise-impact .72s ease-out 1}
+.map-effect-echo.v33-echo.motion-summon .echo-impact{animation:v33-summon-impact .95s ease-out 1}
+@keyframes v33-ricochet-beat{0%{translate:0 0;scale:.65}45%{translate:0 -6px;scale:1.15}100%{translate:0 0;scale:.72}}
+@keyframes v33-fall-beat{0%{translate:-18px -18px;opacity:.2}100%{translate:0 0;opacity:1}}
+@keyframes v33-blink-beat{0%,35%{opacity:.15;scale:.55}50%{opacity:1;scale:1.3}100%{opacity:.3;scale:.8}}
+@keyframes v33-drill-beat{0%{rotate:0deg;scale:.75}100%{rotate:720deg;scale:1.12}}
+@keyframes v33-sweep-beat{0%{translate:-6px 0;opacity:.2}50%{opacity:1}100%{translate:7px 0;opacity:.3}}
+@keyframes v33-barrage-beat{0%,100%{scale:.7;opacity:.25}50%{scale:1.25;opacity:1}}
+@keyframes v33-domain-breathe{from{filter:saturate(.85);opacity:.68}to{filter:saturate(1.35);opacity:1}}
+@keyframes v33-barrage-impact{0%,100%{scale:.86}50%{scale:1.18}}
+@keyframes v33-rise-impact{0%{translate:0 8px;opacity:.2}100%{translate:0 -5px;opacity:1}}
+@keyframes v33-summon-impact{0%{scale:.45;opacity:.15}65%{scale:1.2;opacity:1}100%{scale:1;opacity:.9}}
+@media (prefers-reduced-motion:reduce){.map-fx-action.v33-tactical i,.map-effect-echo.v33-echo .echo-impact,.map-effect-echo.v33-echo .echo-line{animation:none!important;transition:none!important}}
