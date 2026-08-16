@@ -30,8 +30,8 @@ const edits={
 for(const [path,replacements] of Object.entries(edits)){
  let text=await readFile(path,'utf8');
  for(const [from,to] of replacements){
-  if(!text.includes(from))throw new Error(`V34 verifier compatibility anchor missing in ${path}: ${from}`);
-  text=text.replace(from,to);
+  if(text.includes(from))text=text.replace(from,to);
+  else if(!text.includes(to))throw new Error(`V34 verifier compatibility anchor missing in ${path}: ${from}`);
  }
  await writeFile(path,text);
 }
