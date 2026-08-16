@@ -2,7 +2,7 @@
 
 Riftbound is a standalone turn-based ascension RPG rebuilt from an immutable recovered client and evolved through deterministic runtime patches.
 
-Current patch release: **V32 - Restless Gambler**
+Current patch release: **V33 - Tactical Grammar**
 
 Immutable base: **v0.3.0 - Cursed Child**
 
@@ -12,12 +12,28 @@ The current runtime contains:
 - 51 Special Powers
 - 50 public Power profiles and all 7 Stands in the interactive Codex
 - 255 displayed Power and Stand techniques with detailed combat intelligence
+- **150 live tactical ability types**, with all 255 displayed techniques explicitly typed and zero public fallbacks
 - 30 routes
 - 20 arenas
 - 58 preserved ability definitions containing 225 Special Power and Stand moves
-- 29 spatial presentation types, with every one of the 225 moves classified
+- the original 29-type presentation grammar for the protected move constitution, now layered beneath V33's live tactical mechanics
 - a six-slot build system and full Armory workflow
 - host-authoritative two-player LAN co-op with protocol-3 recovery and resync
+
+## V33 Tactical Grammar
+
+V33 turns the per-technique V31.1/V32 spatial contracts into a live combat-mechanics vocabulary instead of leaving them as preview-only labels.
+
+- Every one of the 255 displayed Power and Stand techniques receives an explicit tactical contract; there are no public fallback classifications.
+- The current authored catalog resolves into **150 used tactical types** across input, timing, trajectory, collision, aftermath, and counterplay.
+- Targeting and aim solutions now understand distinctions such as history/timeline selection, equipment targeting, point placement, lines, self-state, selectors, delayed telegraphs, reactions, charges, domains, rewinds, ricochets, falling strikes, teleports, tethers, constructs, summons, advancing barrages, and committed lunges.
+- The tactical map receives technique-specific motion and persistent aftermath language for ricochets, falls, blinks, drills, sweeps, barrages, domains, fields, tethers, traps, summons, launches, and shockwaves.
+- Ability-driven dash, blink, lunge, drill, and advancing techniques can physically reposition their actor when the legacy resolver did not already move them.
+- Canon-specific overrides stop iconic techniques from collapsing into generic shapes: Hollow Purple is not Kamehameha, Road Roller is a falling crush, Time Erasure is an erased route, Master of Time / Revert to Zero use retained combat history, Ora strings advance with their barrage, Giga Drill Break is a committed drill lunge, Train Door is a closing construct trap, and Restless Gambler's Jackpot techniques each use distinct tactical behavior.
+- V33 wraps the final targeting, aim, map-effect, and resolver seams without mutating protected costs, coefficients, hit counts, tags, or the V32 ability constitution.
+- Save schema advances to 33 with a bounded tactical-action history for debugging, replay analysis, and future balance work.
+
+The complete design and verification contract is in [UPDATE-V33-TACTICAL-GRAMMAR.md](UPDATE-V33-TACTICAL-GRAMMAR.md).
 
 ## V32 Restless Gambler
 
@@ -45,13 +61,13 @@ V31 remasters the Special Power and Stand Codex into a cinematic, fully interact
 - Pin one move and select another for a six-metric side-by-side comparison.
 - Navigate with keyboard, mouse, touch, or controller-oriented focus behavior. Reduced motion, high contrast, large text, and responsive layouts remain supported.
 - Reference damage is explicitly labeled as a Tier 10 training estimate. Live output still depends on the active build, defender, statuses, terrain, hit logic, and authored resolver.
-- Ability constitution `7598b438` remains exact: 57 protected definitions, 221 protected moves, and zero mechanical changes.
+- Ability constitution `7598b438` remains exact for the preserved V20.0.1 base; V32's additive constitution remains independently certified above it.
 
 The V31 roadmap and implementation record are in [UPDATE-V31-CODEX-ASCENDANT.md](UPDATE-V31-CODEX-ASCENDANT.md).
 
 ### V31.1 preview accuracy
 
-The Codex tactical preview no longer uses the V24 text classifier. All 255 displayed techniques now have explicit mechanics-backed visual contracts covering acquisition, origin, target, travel path, actual range, actual radius, contact shape, timing, and persistent aftermath. Those contracts drive the original stable V31 cinematic DOM renderer, preserving its working layout while correcting which ability shape each card depicts. The preview verifier rejects missing contracts, generic fallbacks, and any attempt to replace the cinematic renderer with the broken SVG stage.
+The Codex tactical preview no longer uses the V24 text classifier. All 255 displayed techniques now have explicit mechanics-backed visual contracts covering acquisition, origin, target, travel path, actual range, actual radius, contact shape, timing, and persistent aftermath. Those contracts drive the original stable V31 cinematic DOM renderer, preserving its working layout while correcting which ability shape each card depicts. V33 consumes those explicit contracts as the source for live tactical typing without changing the preview constitution itself.
 
 ## V21-V30 Remastered release
 
@@ -60,7 +76,7 @@ The complete V21-V30 roadmap is implemented and certified:
 - **V21 Preservation:** immutable ability constitution `7598b438`, deterministic hashes and replays, automatic recovery points, named save slots, and vault import/export.
 - **V22 Open Core:** typed event bus, canonical state views and hashes, complete content registries, ordered effects, seeded utilities, shadow comparison, and a legacy resolver adapter.
 - **V23 Interface Reborn:** one design language across Ascension, Combat, Workshop, and System, geometric keyboard/controller focus, touch support, remappable bindings, and adaptive input prompts.
-- **V24 Combat Reforged:** presentation-only spatial grammar for all 221 Special Power and Stand moves. Heavy Swing is now a weapon-facing arc, while beams, waves, thrusts, dash cuts, fields, walls, barrages, chains, summons, teleports, and other families read differently on the tactical map.
+- **V24 Combat Reforged:** presentation-only spatial grammar for every protected Special Power and Stand move. Heavy Swing is a weapon-facing arc, while beams, waves, thrusts, dash cuts, fields, walls, barrages, chains, summons, teleports, and other families read differently on the tactical map.
 - **V25 Armory Complete:** exact build-decision context, legal slot and recipe state, stat deltas, path relevance, conflict warnings, and shard-safe sale undo.
 - **V26 Ascension Reframed:** run identity and seed controls, route chronicle, milestone atlas, risk/reward previews, contextual teaching, persistent per-run metrics, and final summaries.
 - **V27 Living Rift:** twenty matched arena identities, layered depth and light, environment scars, fighter stance language, shared effect primitives, and reactive audio categories.
@@ -110,11 +126,12 @@ npm run verify:v30
 npm run verify:v31
 npm run verify:previews
 npm run verify:v32
+npm run verify:v33
 npm run verify:coop
 npm run verify:release
 ```
 
-Both workflows also run the complete historical verifier stack so the remaster remains compatible with Bizarre Update, itemization, Mythicals, Cursed Child, Beneath The Drowning, Combat Fluidity, Wayfarer, Spartan Blood, and the earlier co-op transport.
+Both workflows also run the complete historical verifier stack so the current release remains compatible with Bizarre Update, itemization, Mythicals, Cursed Child, Beneath The Drowning, Combat Fluidity, Wayfarer, Spartan Blood, Restless Gambler, and the earlier co-op transport.
 
 ## Armory Reforged
 
