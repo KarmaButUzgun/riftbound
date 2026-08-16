@@ -137,6 +137,12 @@ jobs:
       - name: Verify V31.1 mechanics-backed Codex previews
         run: node scripts/verify-codex-previews-v311.mjs
 
+      - name: Verify V32 Restless Gambler
+        run: node scripts/verify-restless-gambler-v32.mjs
+
+      - name: Verify V33 Tactical Grammar
+        run: node scripts/verify-tactical-grammar-v33.mjs
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
