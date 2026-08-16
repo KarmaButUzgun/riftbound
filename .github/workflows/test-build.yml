@@ -30,6 +30,9 @@ jobs:
       - name: Prepare V14 verifier compatibility
         run: node scripts/prepare-v14-verifier-compat.mjs
 
+      - name: Prepare V34 verifier compatibility
+        run: node scripts/prepare-v34-verifier-compat.mjs
+
       - name: Verify Bizarre Update runtime
         run: node scripts/verify-bizarre-update.mjs
 
