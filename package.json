@@ -13,7 +13,8 @@
     "verify:previews": "node scripts/verify-codex-previews-v311.mjs _site",
     "verify:v32": "node scripts/verify-restless-gambler-v32.mjs _site",
     "verify:v33": "node scripts/verify-tactical-grammar-v33.mjs _site",
-    "verify:release": "npm run verify:v20 && npm run verify:v30 && npm run verify:v31 && npm run verify:previews && npm run verify:v32 && npm run verify:v33 && npm run verify:coop"
+    "verify:v34": "node scripts/verify-battlefield-vfx-v34.mjs _site",
+    "verify:release": "npm run verify:v20 && npm run verify:v30 && npm run verify:v31 && npm run verify:previews && npm run verify:v32 && npm run verify:v33 && npm run verify:v34 && npm run verify:coop"
   },
   "engines": {
     "node": ">=20"
