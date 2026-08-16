@@ -28,9 +28,10 @@ for(const marker of [
  '.v34-drill-cone',
  '.v34-falling-body',
  '.v34-door-panel',
- '.family-domain-takeover',
- '.family-time-stop-field',
+ '.v34-domain-boundary',
+ '.v34-clock-ring',
  '.v34-summon-silhouette',
+ '.v34-projectile-body',
  '.map-fx-action.v34-replaced',
  '.map-effect-echo.v33-echo{display:none',
  '.rift-reduced-motion .v34-fx',
@@ -78,11 +79,7 @@ try{
  }
  const trueProjectiles=test.RIFT_V34_COVERAGE.filter(entry=>entry.family==='true-projectile').length;
  assert.ok(trueProjectiles<report.moves*.35,`V34 still renders too much of the roster as projectiles: ${trueProjectiles}/${report.moves}`);
- assert.ok(report.familiesUsed.includes('advancing-barrage'));
- assert.ok(report.familiesUsed.includes('domain-takeover'));
- assert.ok(report.familiesUsed.includes('time-stop-field'));
- assert.ok(report.familiesUsed.includes('drill-lunge'));
- assert.ok(report.familiesUsed.includes('falling-crush'));
+ for(const family of ['advancing-barrage','domain-takeover','time-stop-field','rewind-field','drill-lunge','falling-crush','ricochet-chain','construct-trap','pursuit-summon'])assert.ok(report.familiesUsed.includes(family),`V34 missing visual family ${family}`);
 
  const expectFamily=(profile,move,family)=>assert.equal(api.descriptor(profile,move)?.family,family,`${profile} · ${move} visual family drifted`);
  expectFamily('Limitless','Hollow Purple','annihilation-corridor');
