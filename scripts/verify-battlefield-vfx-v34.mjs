@@ -81,11 +81,15 @@ try{
  assert.ok(trueProjectiles<report.moves*.35,`V34 still renders too much of the roster as projectiles: ${trueProjectiles}/${report.moves}`);
  for(const family of ['advancing-barrage','domain-takeover','time-stop-field','rewind-field','drill-lunge','falling-crush','ricochet-chain','construct-trap','pursuit-summon'])assert.ok(report.familiesUsed.includes(family),`V34 missing visual family ${family}`);
 
- const expectFamily=(profile,move,family)=>assert.equal(api.descriptor(profile,move)?.family,family,`${profile} · ${move} visual family drifted`);
- expectFamily('Limitless','Hollow Purple','annihilation-corridor');
+ const expectFamily=(profile,move,family)=>{
+  const tactical=grammar.forMove(profile,move);
+  assert.ok(tactical,`${profile} · ${move} is not an authored catalog move`);
+  assert.equal(api.descriptor(profile,move)?.family,family,`${profile} · ${move} visual family drifted`);
+ };
+ expectFamily('Limitless','Purple','annihilation-corridor');
  expectFamily('Ki Warrior','Kamehameha','charged-beam');
  expectFamily('Spiral Being','Giga Drill Break','drill-lunge');
- expectFamily('The World','Road Roller','falling-crush');
+ expectFamily('The World','ROADO ROLLAR DAA!','falling-crush');
  expectFamily('Restless Gambler','Train Door','closing-construct');
  expectFamily('Restless Gambler','Chromatic Balls','ricochet-chain');
  expectFamily('Restless Gambler','Lucky Shot','advancing-barrage');
@@ -97,10 +101,10 @@ try{
  expectFamily('Cursed Child','Authentic Mutual Love','domain-takeover');
  expectFamily('Soft & Wet','Go Beyond','impossible-path');
 
- const purple=grammar.forMove('Limitless','Hollow Purple');
+ const purple=grammar.forMove('Limitless','Purple');
  const run={turn:7,battlefield:{width:120,height:64,effectEchoes:[{id:'legacy',className:'v33-echo v33-type-annihilation-beam',tacticalType:purple.id}],v34FxQueue:[]}};
  const actor={power:{name:'Limitless',accent:'#8d70ff'}},target={power:{name:'Super Strength'}};
- const event=api.emit(run,actor,target,{name:'Hollow Purple',aim:{target:{x:96,y:32},radius:5}},purple,{actorId:'player',targetId:'enemy',origin:{x:18,y:32},end:{x:18,y:32},target:{x:96,y:32}});
+ const event=api.emit(run,actor,target,{name:'Purple',aim:{target:{x:96,y:32},radius:5}},purple,{actorId:'player',targetId:'enemy',origin:{x:18,y:32},end:{x:18,y:32},target:{x:96,y:32}});
  assert.equal(event.family,'annihilation-corridor');
  assert.equal(run.battlefield.v34FxQueue.length,1,'V34 effect did not enter dedicated battlefield queue');
  assert.equal(run.battlefield.effectEchoes.length,0,'V34 did not suppress matching generic V33 echo');
