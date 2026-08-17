@@ -74,7 +74,13 @@ La=function RIFT_V365_ACTIONS(fighter){RIFT_V365_ENFORCE_TAKEOVER_IDENTITY(fight
 const RIFT_V365_BASE_QO=Qo;
 Qo=function RIFT_V365_TURN_END(run,fighter){RIFT_V365_ENFORCE_TAKEOVER_IDENTITY(fighter);return RIFT_V365_BASE_QO(run,fighter)};
 const RIFT_V365_BASE_RS=rs;
-rs=function RIFT_V365_RESOLVE(run,side,action,ctx={}){const fighter=ctx.attacker||(side===`player`?run?.player:side===`enemy`?run?.enemy:null);RIFT_V365_ENFORCE_TAKEOVER_IDENTITY(fighter);return RIFT_V365_BASE_RS(run,side,action,ctx)};
+rs=function RIFT_V365_RESOLVE(run,side,action,ctx={}){
+ const fighter=ctx.attacker||(side===`player`?run?.player:side===`enemy`?run?.enemy:null);RIFT_V365_ENFORCE_TAKEOVER_IDENTITY(fighter);
+ const possessed=!!fighter?.statuses?.v35Takeover,tags=action?.move?.tags||[],heartbreaker=possessed&&(action?.name===`Heartbreaker`||tags.includes(`v35TakeoverExit`)||tags.includes(`v351FreeHeartbreaker`)||tags.includes(`v36TakeoverHeartbreaker`));
+ const out=RIFT_V365_BASE_RS(run,side,action,ctx),live=side===`player`?run?.player:side===`enemy`?run?.enemy:fighter;
+ if(heartbreaker&&live?.statuses?.v35Takeover)RIFT_V35_RESTORE_TAKEOVER(run,live,`Heartbreaker tears Viego out of the stolen body`);
+ return out;
+};
 
 if(globalThis.RIFTBOUND_V35)globalThis.RIFTBOUND_V35={...globalThis.RIFTBOUND_V35,hotfix:{...globalThis.RIFTBOUND_V35.hotfix,identityHotfix:`36.5`,takeoverIdentityStable:true,borrowedMovesOverlay:true,borrowedPowerNeverOwnsFighter:true}};
 globalThis.RIFTBOUND_V36_5={version:`36.5`,takeoverIdentityStable:true,identityPower:RIFT_V35_RUINED,borrowedSlots:[5,6,7],heartbreakerSlot:8,legacyTakeoverMigration:true};
