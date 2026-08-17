@@ -44,7 +44,8 @@ await patch('scripts/verify-sovereigns-v35.mjs',text=>{
 });
 
 // V36's mechanics verifier is intentionally chained by the V35 gate. Its V36 API and mechanics stay authoritative,
-// while the manifest/Codex values it reads are the final V37 live wrapper.
+// while the manifest/Codex values it reads are the final V37 live wrapper. Keep both links of the constitution chain explicit:
+// dc25a499 is V36's historical previous hash; f35511cd is the immediate V36.8 predecessor recorded by V37.
 await patch('scripts/verify-shadows-converge-v36.mjs',text=>text
  .replace("manifest.release,'V36 · Shadows Converge'","manifest.release,'V37 · The Final Touch'")
  .replace('manifest.counts.items,213','manifest.counts.items,219')
@@ -52,7 +53,8 @@ await patch('scripts/verify-shadows-converge-v36.mjs',text=>text
  .replace('manifest.codex.registeredPowers,55','manifest.codex.registeredPowers,56')
  .replace('manifest.codex.visiblePowers,54','manifest.codex.visiblePowers,56')
  .replace('manifest.codex.displayedMoves,272','manifest.codex.displayedMoves,280')
- .replace('codex.catalog().totals.moves,272','codex.catalog().totals.moves,280'));
+ .replace('codex.catalog().totals.moves,272','codex.catalog().totals.moves,280')
+ .replace("assert.equal(constitution.previousHash,manifest.preservation.previousConstitutionHash);","assert.equal(constitution.previousHash,'dc25a499');assert.equal(manifest.preservation.previousConstitutionHash,'f35511cd');"));
 
 // The V36 post-compat generators rewrite several historical suites into final-live foundation checks.
 // Advance final-live counts/schema to V37 while retaining V36 labels and metrics for foundations V37 reuses unchanged.
@@ -77,4 +79,4 @@ for(const name of await readdir('scripts')){
   .replaceAll('powers.length,55','powers.length,56')
   .replaceAll('g.length,55','g.length,56'));
 }
-console.log('Prepared V37 verifier compatibility: schema/Codex 37, 219 live items, Starter Items excluded from normal Armory offers, inherited V36 preview foundation preserved at its certified legacy coverage, V36 mechanics certified beneath the V37 live wrapper, 56 public powers / 280 live techniques, 63/245 certified additive constitution, and the Final Touch regression gate runs after the historical suites.');
+console.log('Prepared V37 verifier compatibility: schema/Codex 37, 219 live items, Starter Items excluded from normal Armory offers, inherited V36 preview foundation preserved at its certified legacy coverage, V36 mechanics and both constitution-chain links certified beneath the V37 live wrapper, 56 public powers / 280 live techniques, 63/245 certified additive constitution, and the Final Touch regression gate runs after the historical suites.');
