@@ -44,7 +44,7 @@ await patch('scripts/verify-sovereigns-v35.mjs',text=>{
 });
 
 // The V36 post-compat generators rewrite several historical suites into final-live foundation checks.
-// Advance every final-live metadata value they emit while leaving their historical feature assertions intact.
+// Advance final-live counts/schema to V37 while retaining V36 labels for foundations V37 actually reuses, such as the preview engine.
 for(const name of await readdir('scripts')){
  if(!name.startsWith('verify-')||!name.endsWith('.mjs')||name==='verify-v37-final-touch.mjs')continue;
  const path=`scripts/${name}`;await patch(path,text=>text
@@ -62,10 +62,9 @@ for(const name of await readdir('scripts')){
   .replaceAll('cat.totals.registeredPowers,55','cat.totals.registeredPowers,56')
   .replaceAll('cat.totals.visiblePowers,54','cat.totals.visiblePowers,56')
   .replaceAll('cat.totals.moves,272','cat.totals.moves,280')
-  .replaceAll("x.m.codex.previewPatch,'V36'","x.m.codex.previewPatch,'V37'")
   .replaceAll('x.m.codex.previewCoverage,272','x.m.codex.previewCoverage,280')
   .replaceAll('totals.moves,276','totals.moves,280')
   .replaceAll('powers.length,55','powers.length,56')
   .replaceAll('g.length,55','g.length,56'));
 }
-console.log('Prepared V37 verifier compatibility: schema/Codex 37, 219 live items, Starter Items excluded from normal Armory offers, 56 public powers / 280 Codex techniques, 63/245 certified additive constitution, and the Final Touch regression gate runs after the historical suites.');
+console.log('Prepared V37 verifier compatibility: schema/Codex 37, 219 live items, Starter Items excluded from normal Armory offers, V36 preview foundation extended to 280 explicit techniques, 56 public powers, 63/245 certified additive constitution, and the Final Touch regression gate runs after the historical suites.');
