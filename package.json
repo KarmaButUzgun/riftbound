@@ -8,6 +8,7 @@
     "coop:server": "node multiplayer/server.mjs",
     "verify:coop": "node scripts/verify-coop-network.mjs && node scripts/verify-coop-authority-v20.mjs",
     "verify:v34compat": "node scripts/prepare-v34-verifier-compat.mjs",
+    "verify:v35compat": "node scripts/prepare-v35-verifier-compat.mjs",
     "verify:v20": "node scripts/verify-consolidation-v17-v20.mjs _site",
     "verify:v30": "node scripts/verify-remastered-v21-v30.mjs _site",
     "verify:v31": "node scripts/verify-codex-ascendant-v31.mjs _site",
@@ -15,7 +16,8 @@
     "verify:v32": "node scripts/verify-restless-gambler-v32.mjs _site",
     "verify:v33": "node scripts/verify-tactical-grammar-v33.mjs _site",
     "verify:v34": "node scripts/verify-battlefield-vfx-v34.mjs _site",
-    "verify:release": "npm run verify:v34compat && npm run verify:v20 && npm run verify:v30 && npm run verify:v31 && npm run verify:previews && npm run verify:v32 && npm run verify:v33 && npm run verify:v34 && npm run verify:coop"
+    "verify:v35": "node scripts/verify-sovereigns-v35.mjs _site",
+    "verify:release": "npm run verify:v34compat && npm run verify:v35compat && npm run verify:v20 && npm run verify:v30 && npm run verify:v31 && npm run verify:previews && npm run verify:v32 && npm run verify:v33 && npm run verify:v34 && npm run verify:v35 && npm run verify:coop"
   },
   "engines": {
     "node": ">=20"

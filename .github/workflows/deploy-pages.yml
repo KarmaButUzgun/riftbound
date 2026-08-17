@@ -43,6 +43,9 @@ jobs:
       - name: Prepare V34 verifier compatibility
         run: node scripts/prepare-v34-verifier-compat.mjs
 
+      - name: Prepare V35 verifier compatibility
+        run: node scripts/prepare-v35-verifier-compat.mjs
+
       - name: Verify Bizarre Update runtime
         run: node scripts/verify-bizarre-update.mjs
 
@@ -148,6 +151,9 @@ jobs:
 
       - name: Verify V34 Battlefield VFX Grammar
         run: node scripts/verify-battlefield-vfx-v34.mjs
+
+      - name: Verify V35 Sovereigns of Ruin
+        run: node scripts/verify-sovereigns-v35.mjs
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
