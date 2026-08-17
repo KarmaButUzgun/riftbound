@@ -38,7 +38,7 @@ await patch('scripts/verify-v368-aesthetic-codex.mjs',text=>{
 // V35's final gate observes the final live preservation wrapper by design. Keep the historical V35 mechanics assertions,
 // but update only the additive live constitution count and accepted power list.
 await patch('scripts/verify-sovereigns-v35.mjs',text=>{
- text=text.replace(/assert\.deepEqual\(constitution\.counts,\{abilities:\d+,moves:\d+\}\);/,'assert.deepEqual(constitution.counts,{abilities:62,moves:241});');
+ text=text.replace(/assert\.deepEqual\(constitution\.counts,\{abilities:\d+,moves:\d+\}\);/,'assert.deepEqual(constitution.counts,{abilities:63,moves:245});');
  text=text.replace("assert.deepEqual(constitution.addedPowers,['Ruined King','The Unshackled','Ragegod']);","assert.deepEqual(constitution.addedPowers,['Ruined King','The Unshackled','Ragegod','Boogie Woogie']);");
  const marker="await import('./verify-v37-final-touch.mjs');";
  if(!text.includes(marker))text=text.trimEnd()+`\n\n${marker}\n`;
@@ -53,4 +53,4 @@ for(const name of await readdir('scripts')){
   .replaceAll('powers.length,55','powers.length,56')
   .replaceAll('g.length,55','g.length,56'));
 }
-console.log('Prepared V37 verifier compatibility: 219 live items, 56 public powers / 280 Codex techniques, certified additive constitution, and the Final Touch regression gate runs after the historical suites.');
+console.log('Prepared V37 verifier compatibility: 219 live items, 56 public powers / 280 Codex techniques, 63/245 certified additive constitution, and the Final Touch regression gate runs after the historical suites.');
