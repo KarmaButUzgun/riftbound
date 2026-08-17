@@ -41,6 +41,9 @@ await edit('scripts/verify-v363-loadout-stability.mjs',text=>{
  return text;
 });
 
+// V36.7's matrix covers every non-Viego power. V37 contributes one new non-Viego power to that matrix.
+await edit('scripts/verify-v367-takeover-offer-transition.mjs',text=>rep(text,"assert.equal(powers.length,54,'V36.7 roster matrix no longer covers every non-Viego Special Power');","assert.equal(powers.length,55,'V37 roster matrix should include Boogie Woogie alongside every pre-existing non-Viego Special Power');"));
+
 const gate='scripts/verify-sovereigns-v35.mjs';
 let gateText=await readFile(gate,'utf8');
 const marker="await import('./verify-v37-final-touch.mjs');";
