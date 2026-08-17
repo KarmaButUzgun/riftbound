@@ -29,6 +29,9 @@ await patch('scripts/verify-v368-aesthetic-codex.mjs',text=>{
  text=text.replace('api.powerDescriptions,55','api.powerDescriptions,56');
  text=text.replace("test.g.length,55,'Special Power roster changed'","test.g.length,56,'Special Power roster changed'");
  text=text.replaceAll('test.RIFT_V368_CATALOG','test.RIFT_V37_CATALOG');
+ text=text.replace('catalog.totals.registeredPowers,55','catalog.totals.registeredPowers,56');
+ text=text.replace('catalog.totals.visiblePowers,55','catalog.totals.visiblePowers,56');
+ text=text.replace('catalog.totals.moves,276','catalog.totals.moves,280');
  text=text.replace('codex.catalog().powers.length,55','codex.catalog().powers.length,56');
  text=text.replace("test.RIFT_V21_ABILITY_CONSTITUTION().hash,'dc25a499','aesthetic copy changed the ability constitution'","test.RIFT_V21_ABILITY_CONSTITUTION().hash,globalThis.RIFTBOUND_V37.constitution.expected,'V37 ability constitution is not the certified live hash'");
  text=text.replace('all 55 Special Powers','all 56 Special Powers');
@@ -91,4 +94,4 @@ for(const name of await readdir('scripts')){
 // Run this after the broad live-total sweep so `powers.length` cannot be accidentally promoted to 56.
 await patch('scripts/verify-v367-takeover-offer-transition.mjs',text=>text.replace(/assert\.equal\(powers\.length,(?:54|56),'V36\.7(?:\/V37)? roster matrix no longer covers every non-Viego Special Power'\);/,"assert.equal(powers.length,55,'V36.7/V37 roster matrix no longer covers every non-Viego Special Power');"));
 
-console.log('Prepared V37 verifier compatibility: schema/Codex 37, 219 live items, Starter Items excluded from normal Armory offers, inherited V36 preview foundation preserved at its certified legacy coverage, V36 mechanics/resolver/55-power Takeover matrix and both constitution-chain links certified beneath the V37 live wrapper, 56 public powers / 280 live techniques, 63/245 certified additive constitution, and the Final Touch regression gate runs after the historical suites.');
+console.log('Prepared V37 verifier compatibility: schema/Codex 37, 219 live items, Starter Items excluded from normal Armory offers, inherited V36 preview foundation preserved at its certified legacy coverage, V36.8 frozen copy registry preserved while its live catalog reads V37 totals, V36 mechanics/resolver/55-power Takeover matrix and both constitution-chain links certified beneath the V37 live wrapper, 56 public powers / 280 live techniques, 63/245 certified additive constitution, and the Final Touch regression gate runs after the historical suites.');
