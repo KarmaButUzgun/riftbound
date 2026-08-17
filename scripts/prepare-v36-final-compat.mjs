@@ -1,11 +1,20 @@
 import {readFile,writeFile} from 'node:fs/promises';
 async function patch(path,pairs){let text=await readFile(path,'utf8');for(const [from,to] of pairs)text=text.replaceAll(from,to);await writeFile(path,text)}
 await patch('scripts/verify-build-expansion.mjs',[[`size,211`,`size,213`],[`size,71`,`size,72`],[`mythical.length,26`,`mythical.length,27`],[`myths.length,26`,`myths.length,27`]]);
-await patch('scripts/verify-reference-lore-v6.mjs',[
- [`assert.equal(referenced.length,79);`,`assert.equal(referenced.length,81);`],
- [`assert.deepEqual(Object.keys(lore).sort(),referenced.map(item=>item.name).sort());`,`assert.deepEqual(referenced.filter(item=>!lore[item.name]).map(item=>item.name).sort(),['Shadow Crystal','Shadow Mantle']);`],
- [`for(const item of referenced){assert.equal(item.lore,lore[item.name],\`${'${item.name}'} lore should use the explicit V6 entry\`);assert.ok(item.lore.length<=190,\`${'${item.name}'} lore is too long for the V6 detail panel\`);}`,`for(const item of referenced){if(lore[item.name])assert.equal(item.lore,lore[item.name],\`${'${item.name}'} lore should use the explicit V6 entry\`);else assert.ok(['Shadow Crystal','Shadow Mantle'].includes(item.name)&&item.lore.length>20,\`${'${item.name}'} must carry explicit authored V36 lore\`);assert.ok(item.lore.length<=190,\`${'${item.name}'} lore is too long for the V6 detail panel\`);}`],
- [`assert.deepEqual(coverage,{referenced:79,entries:79,fallbackCount:0,uncovered:[]});`,`assert.equal(coverage.referenced,81);assert.equal(coverage.entries,79);assert.ok(coverage.fallbackCount<=2);`],
- [`Reference lore V6 verified for 79 external-reference items.`,`Reference lore V6 verified for 81 external-reference items, including two explicit V36 Dark entries.`]
-]);
-console.log('Applied V36 final live-count and reference-lore compatibility sweep.');
+const v6=[
+"import assert from 'node:assert/strict';",
+"import {existsSync} from 'node:fs';",
+"import {readFile,writeFile,rm} from 'node:fs/promises';",
+"import {resolve,dirname} from 'node:path';",
+"import {pathToFileURL} from 'node:url';",
+"const root=resolve(process.argv[2]||'.build/riftbound-standalone');",
+"const bundlePath=resolve(root,'assets/page-F6OuavDb.js');",
+"const js=await readFile(bundlePath,'utf8');",
+"for(const marker of ['RIFT_REFERENCE_LORE_V6','Reference Lore V6','Riftbound Shadows Converge V36'])assert.ok(js.includes(marker),'missing '+marker);",
+"const exportMarker='export{xs as default};';assert.equal(js.split(exportMarker).length-1,1);",
+"const testPath=resolve(dirname(bundlePath),'page-v36-reference-lore-test.js'),pkg=resolve(dirname(bundlePath),'package.json'),had=existsSync(pkg);",
+"try{if(!had)await writeFile(pkg,'{\"type\":\"module\"}\\n');await writeFile(testPath,js.replace(exportMarker,'globalThis.__V36_LORE={items:RIFT_ITEM_CATALOG,lore:RIFT_REFERENCE_LORE_V6};'+exportMarker));await import(pathToFileURL(testPath).href+'?v='+Date.now());const t=globalThis.__V36_LORE;assert.ok(t);const refs=t.items.filter(i=>i.reference&&i.reference!=='Original');assert.equal(refs.length,81);assert.equal(Object.keys(t.lore).length,79);const historical=refs.filter(i=>t.lore[i.name]);assert.equal(historical.length,79);assert.deepEqual(historical.map(i=>i.name).sort(),Object.keys(t.lore).sort());for(const i of historical){assert.equal(i.lore,t.lore[i.name]);assert.ok(i.lore.length<=190)}const explicit=refs.filter(i=>!t.lore[i.name]);assert.deepEqual(explicit.map(i=>i.name).sort(),['Shadow Crystal','Shadow Mantle']);for(const i of explicit){assert.ok(i.reference.includes('DELTARUNE'));assert.ok(i.lore&&i.lore.length>20&&i.lore.length<=190)}console.log('Reference lore V6/V36 verified: 79 historical entries + 2 explicit Dark items.')}finally{delete globalThis.__V36_LORE;await rm(testPath,{force:true});if(!had)await rm(pkg,{force:true})}
+"
+].join('\n');
+await writeFile('scripts/verify-reference-lore-v6.mjs',v6);
+console.log('Applied V36 final live-count and V6/V36 lore compatibility sweep.');
