@@ -7,7 +7,6 @@ async function patch(path,transform){let text=await readFile(path,'utf8'),next=t
 await patch('scripts/verify-build-expansion.mjs',text=>{
  text=text.replace(/assert\.equal\(catalog\.length,\d+\)/g,'assert.equal(catalog.length,219)');
  text=text.replace(/assert\.equal\(new Set\(catalog\.map\(i=>i\.id\)\)\.size,\d+\)/g,'assert.equal(new Set(catalog.map(i=>i.id)).size,219)');
- // The V9/V13/V14 compatibility chain adds assertion messages around these checks, so patch the expected id declaration itself.
  text=text.replace(/const ids=catalog\.map\(i=>i\.id\);/g,'const ids=catalog.filter(i=>!i.tags?.includes("starterOnly")).map(i=>i.id);');
  return text;
 });
@@ -36,8 +35,6 @@ await patch('scripts/verify-v368-aesthetic-codex.mjs',text=>{
  return text;
 });
 
-// V35's final gate observes the final live preservation wrapper by design. Keep the historical V35 mechanics assertions,
-// but update only the additive live constitution count and accepted power list.
 await patch('scripts/verify-sovereigns-v35.mjs',text=>{
  text=text.replace(/assert\.deepEqual\(constitution\.counts,\{abilities:\d+,moves:\d+\}\);/,'assert.deepEqual(constitution.counts,{abilities:63,moves:245});');
  text=text.replace("assert.deepEqual(constitution.addedPowers,['Ruined King','The Unshackled','Ragegod']);","assert.deepEqual(constitution.addedPowers,['Ruined King','The Unshackled','Ragegod','Boogie Woogie']);");
@@ -46,8 +43,8 @@ await patch('scripts/verify-sovereigns-v35.mjs',text=>{
  return text;
 });
 
-// Late historical suites instrument the final bundle, so final-live totals and schema metadata must see V37.
-// Their historical feature assertions remain unchanged.
+// The V36 post-compat generators rewrite several historical suites into final-live foundation checks.
+// Advance every final-live metadata value they emit while leaving their historical feature assertions intact.
 for(const name of await readdir('scripts')){
  if(!name.startsWith('verify-')||!name.endsWith('.mjs')||name==='verify-v37-final-touch.mjs')continue;
  const path=`scripts/${name}`;await patch(path,text=>text
@@ -58,8 +55,17 @@ for(const name of await readdir('scripts')){
   .replaceAll('size,213','size,219')
   .replaceAll('manifest.schemaVersion,36','manifest.schemaVersion,37')
   .replaceAll('preservation.version,36','preservation.version,37')
+  .replaceAll('x.m.schemaVersion,36','x.m.schemaVersion,37')
+  .replaceAll('x.p.version,36','x.p.version,37')
+  .replaceAll('x.c.version,36','x.c.version,37')
+  .replaceAll('x.m.counts.powers,55','x.m.counts.powers,56')
+  .replaceAll('cat.totals.registeredPowers,55','cat.totals.registeredPowers,56')
+  .replaceAll('cat.totals.visiblePowers,54','cat.totals.visiblePowers,56')
+  .replaceAll('cat.totals.moves,272','cat.totals.moves,280')
+  .replaceAll("x.m.codex.previewPatch,'V36'","x.m.codex.previewPatch,'V37'")
+  .replaceAll('x.m.codex.previewCoverage,272','x.m.codex.previewCoverage,280')
   .replaceAll('totals.moves,276','totals.moves,280')
   .replaceAll('powers.length,55','powers.length,56')
   .replaceAll('g.length,55','g.length,56'));
 }
-console.log('Prepared V37 verifier compatibility: schema 37, 219 live items, Starter Items excluded from normal Armory offers, 56 public powers / 280 Codex techniques, 63/245 certified additive constitution, and the Final Touch regression gate runs after the historical suites.');
+console.log('Prepared V37 verifier compatibility: schema/Codex 37, 219 live items, Starter Items excluded from normal Armory offers, 56 public powers / 280 Codex techniques, 63/245 certified additive constitution, and the Final Touch regression gate runs after the historical suites.');
