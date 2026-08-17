@@ -43,6 +43,17 @@ await patch('scripts/verify-sovereigns-v35.mjs',text=>{
  return text;
 });
 
+// V36's mechanics verifier is intentionally chained by the V35 gate. Its V36 API and mechanics stay authoritative,
+// while the manifest/Codex values it reads are the final V37 live wrapper.
+await patch('scripts/verify-shadows-converge-v36.mjs',text=>text
+ .replace("manifest.release,'V36 · Shadows Converge'","manifest.release,'V37 · The Final Touch'")
+ .replace('manifest.counts.items,213','manifest.counts.items,219')
+ .replace('manifest.counts.powers,55','manifest.counts.powers,56')
+ .replace('manifest.codex.registeredPowers,55','manifest.codex.registeredPowers,56')
+ .replace('manifest.codex.visiblePowers,54','manifest.codex.visiblePowers,56')
+ .replace('manifest.codex.displayedMoves,272','manifest.codex.displayedMoves,280')
+ .replace('codex.catalog().totals.moves,272','codex.catalog().totals.moves,280'));
+
 // The V36 post-compat generators rewrite several historical suites into final-live foundation checks.
 // Advance final-live counts/schema to V37 while retaining V36 labels and metrics for foundations V37 reuses unchanged.
 for(const name of await readdir('scripts')){
@@ -66,4 +77,4 @@ for(const name of await readdir('scripts')){
   .replaceAll('powers.length,55','powers.length,56')
   .replaceAll('g.length,55','g.length,56'));
 }
-console.log('Prepared V37 verifier compatibility: schema/Codex 37, 219 live items, Starter Items excluded from normal Armory offers, inherited V36 preview foundation preserved at its certified legacy coverage, 56 public powers / 280 live techniques, 63/245 certified additive constitution, and the Final Touch regression gate runs after the historical suites.');
+console.log('Prepared V37 verifier compatibility: schema/Codex 37, 219 live items, Starter Items excluded from normal Armory offers, inherited V36 preview foundation preserved at its certified legacy coverage, V36 mechanics certified beneath the V37 live wrapper, 56 public powers / 280 live techniques, 63/245 certified additive constitution, and the Final Touch regression gate runs after the historical suites.');
