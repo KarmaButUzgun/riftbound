@@ -29,6 +29,14 @@ spartanText=spartanText.replace(
   'assert.ok(twinRun.enemy.hp < twinHpBefore, `Ebony & Ivory failed to resolve through the production combat pipeline: ${JSON.stringify(twinRun.logs.slice(-6))}`);',
   'assert.ok(twinRun.logs.some((entry) => /Ebony & Ivory .* physical damage/.test(entry?.text || "")), `Ebony & Ivory failed to emit production damage through the combat pipeline: ${JSON.stringify(twinRun.logs.slice(-6))}`);'
 );
+spartanText=spartanText.replace(
+  'assert.ok(devilRun.enemy.hp < hpBeforeJudgement, "Judgement Cut queued no resolved damage");',
+  'assert.ok(devilRun.enemy.hp < devilRun.enemy.maxHp, "Judgement Cut queued no resolved damage after final Durability HP normalization");'
+);
+spartanText=spartanText.replace(
+  'assert.ok(calmRun.enemy.hp < calmHpBefore, "Judgement Cut could not execute outside Devil Trigger");',
+  'assert.ok(calmRun.enemy.hp < calmRun.enemy.maxHp, "Judgement Cut could not execute outside Devil Trigger after final Durability HP normalization");'
+);
 await writeFile(spartan,spartanText);
 
 const gate='scripts/verify-sovereigns-v35.mjs';
