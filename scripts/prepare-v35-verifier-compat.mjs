@@ -11,6 +11,27 @@ async function edit(path,fn){
  await writeFile(path,fn(text));
 }
 
+/* Earlier item/build regression suites run against the live final catalog. V35 adds
+   exactly one Legendary and intentionally trims V18's AI loadout at Floor 12. */
+await edit('scripts/verify-build-expansion.mjs',text=>{
+ text=must(text,'assert.equal(catalog.length,210);assert.equal(new Set(catalog.map(i=>i.id)).size,210);assert.equal(legendary.length,70);assert.equal(mythical.length,26);','assert.equal(catalog.length,211);assert.equal(new Set(catalog.map(i=>i.id)).size,211);assert.equal(legendary.length,71);assert.equal(mythical.length,26);','build-expansion totals');
+ text=must(text,'assert.equal(new Set(legendary.map(i=>i.passiveId)).size,70);','assert.equal(new Set(legendary.map(i=>i.passiveId)).size,71);','build-expansion legendary passives');
+ text=must(text,'api.RIFT_ASSIGN_AI_BUILD(ai,12,true);assert.equal(api.RIFT_ITEM_INSTANCES(ai).length,6);','api.RIFT_ASSIGN_AI_BUILD(ai,12,true);assert.equal(api.RIFT_ITEM_INSTANCES(ai).length,3);','build-expansion V35 boss budget');
+ return text;
+});
+
+await edit('scripts/verify-shop-performance-v7.mjs',text=>must(text,
+ 'assert.equal(api.RIFT_ITEM_CATALOG.length,210,"catalog size changed outside the intentional V9/V13/V14 item expansions");',
+ 'assert.equal(api.RIFT_ITEM_CATALOG.length,211,"catalog size changed outside the intentional V9/V13/V14/V35 item expansions");',
+ 'shop-performance live catalog'));
+
+await edit('scripts/verify-elemental-cursed-child-v13.mjs',text=>{
+ text=text.replace(/((?:RIFT_ITEM_CATALOG|catalog|items)\.length\s*,\s*)210\b/g,'$1211');
+ text=text.replace(/((?:legendary|legendaries|legendaryItems)\.length\s*,\s*)70\b/g,'$171');
+ text=text.replace(/\b210 items\b/g,'211 items').replace(/\b70 Legendaries\b/g,'71 Legendaries');
+ return text;
+});
+
 await edit('scripts/verify-consolidation-v17-v20.mjs',text=>{
  text=must(text,"manifest?.schemaVersion,34,'V17-V20 compatibility must survive the additive V34 visual schema'","manifest?.schemaVersion,35,'V17-V20 compatibility must survive the additive V35 content and balance schema'",'v20');
  text=must(text,"manifest?.release,'V34 · Battlefield VFX Grammar'","manifest?.release,'V35 · Sovereigns of Ruin'",'v20');
@@ -73,4 +94,4 @@ await edit('scripts/verify-battlefield-vfx-v34.mjs',text=>{
  return text;
 });
 
-console.log('Prepared V20/V30/V31/V31.1/V32/V34 regression verifiers for V35 while preserving their historical foundation coverage.');
+console.log('Prepared legacy catalog/build regressions plus V20/V30/V31/V31.1/V32/V34 suites for V35 while preserving their historical foundation coverage.');
