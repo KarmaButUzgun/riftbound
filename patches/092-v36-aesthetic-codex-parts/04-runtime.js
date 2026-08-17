@@ -32,6 +32,7 @@ function RIFT_V368_HIDDEN_POWER_PROFILE(power,index){
     if(!move.tactical)try{move.tactical=RIFT_V33_CONTRACT(raw,move)}catch{}
     if(!move.battlefieldVfx&&move.tactical)try{move.battlefieldVfx=RIFT_V34_DESCRIPTOR_FROM_TACTICAL(move.tactical)}catch{}
   }
+  raw.tacticalTypes=[...new Set((raw.moves||[]).map(move=>move.tactical?.type).filter(Boolean))];
   return raw
 }
 
