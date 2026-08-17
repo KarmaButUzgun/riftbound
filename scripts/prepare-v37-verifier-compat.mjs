@@ -7,7 +7,8 @@ async function patch(path,transform){let text=await readFile(path,'utf8'),next=t
 await patch('scripts/verify-build-expansion.mjs',text=>{
  text=text.replace(/assert\.equal\(catalog\.length,\d+\)/g,'assert.equal(catalog.length,219)');
  text=text.replace(/assert\.equal\(new Set\(catalog\.map\(i=>i\.id\)\)\.size,\d+\)/g,'assert.equal(new Set(catalog.map(i=>i.id)).size,219)');
- text=text.replace('const ids=catalog.map(i=>i.id);assert.deepEqual(api.RIFT_SHOP_OFFERS(1,fighter()).map(i=>i.id),ids);assert.deepEqual(api.RIFT_SHOP_OFFERS(50,fighter()).map(i=>i.id),ids);','const ids=catalog.filter(i=>!i.tags?.includes("starterOnly")).map(i=>i.id);assert.deepEqual(api.RIFT_SHOP_OFFERS(1,fighter()).map(i=>i.id),ids);assert.deepEqual(api.RIFT_SHOP_OFFERS(50,fighter()).map(i=>i.id),ids);');
+ // The V9/V13/V14 compatibility chain adds assertion messages around these checks, so patch the expected id declaration itself.
+ text=text.replace(/const ids=catalog\.map\(i=>i\.id\);/g,'const ids=catalog.filter(i=>!i.tags?.includes("starterOnly")).map(i=>i.id);');
  return text;
 });
 
@@ -53,4 +54,4 @@ for(const name of await readdir('scripts')){
   .replaceAll('powers.length,55','powers.length,56')
   .replaceAll('g.length,55','g.length,56'));
 }
-console.log('Prepared V37 verifier compatibility: 219 live items, 56 public powers / 280 Codex techniques, 63/245 certified additive constitution, and the Final Touch regression gate runs after the historical suites.');
+console.log('Prepared V37 verifier compatibility: 219 live items, Starter Items excluded from normal Armory offers, 56 public powers / 280 Codex techniques, 63/245 certified additive constitution, and the Final Touch regression gate runs after the historical suites.');
