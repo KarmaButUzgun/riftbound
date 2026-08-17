@@ -1,0 +1,12 @@
+/* Riftbound V36.8 · clean player-facing presentation */
+#rift-v30-release-root{display:none!important}
+.v31-codex-brand>span:last-child>em,.v31-constitution{display:none!important}
+.v31-technical-tags{display:none!important}
+.v368-flavor-copy{font-style:italic;line-height:1.48}
+.v368-power-summary,.v368-obtainment-card{display:grid;gap:8px;padding:14px 16px;border:1px solid color-mix(in srgb,var(--entry) 32%,transparent);background:color-mix(in srgb,var(--entry) 7%,rgba(7,10,18,.84));border-radius:12px}
+.v368-power-summary span,.v368-obtainment-card span{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.v368-power-summary small,.v368-obtainment-card small{font-size:10px;letter-spacing:.14em;opacity:.64}
+.v368-power-summary strong,.v368-obtainment-card strong{font-size:11px;letter-spacing:.08em}
+.v368-power-summary p,.v368-obtainment-card p{margin:0;line-height:1.48;color:rgba(240,246,255,.86)}
+.wheel-result .wheel-flavor{font-style:italic;margin-bottom:8px}
+.wheel-result .wheel-mechanics{opacity:.84;margin-top:0}
