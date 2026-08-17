@@ -34,9 +34,22 @@ for(const name of await readdir('scripts')){
  if(next!==text)await writeFile(path,next);
 }
 
+// V36.8 intentionally brings Mutated Aura Accumulation into the public archive. The mechanics registry is unchanged;
+// public Codex coverage grows by one profile and its four existing techniques.
+{
+ const path='scripts/verify-codex-ascendant-v31.mjs';let text=await readFile(path,'utf8');
+ text=text.replace(/assert\.deepEqual\(catalog\.totals,\{registeredPowers:\d+,visiblePowers:\d+,hiddenPowers:\d+,stands:7,profiles:\d+,moves:\d+,evolvedMoves:3\}\);/,`assert.deepEqual(catalog.totals,{registeredPowers:55,visiblePowers:55,hiddenPowers:0,stands:7,profiles:62,moves:276,evolvedMoves:3});`);
+ text=text.replace(/assert\.equal\(catalog\.profiles\.length,\d+\);/,`assert.equal(catalog.profiles.length,62);`);
+ text=text.replace(/assert\.equal\(catalog\.powers\.length,\d+\);/,`assert.equal(catalog.powers.length,55);`);
+ text=text.replace(/assert\.equal\(catalog\.moves\.length,\d+\);/,`assert.equal(catalog.moves.length,276);`);
+ text=text.replace(/assert\.ok\(!catalog\.profiles\.some\(profile=>profile\.name==='Mutated Aura Accumulation'\),'[^']*'\);/,`assert.ok(catalog.profiles.some(profile=>profile.name==='Mutated Aura Accumulation'),'Mutated Aura Accumulation is missing from the public Codex');`);
+ text=text.replace(`move.summary.includes(move.reference.damage>0?'archive standard':'authored effects')`,`move.summary.includes(move.reference.damage>0?'Estimated damage':'special effects')`);
+ await writeFile(path,text);
+}
+
 const gate='scripts/verify-sovereigns-v35.mjs';
 let gateText=await readFile(gate,'utf8');
 const marker="await import('./verify-v368-aesthetic-codex.mjs');";
 if(!gateText.includes(marker))gateText=gateText.trimEnd()+`\n\n${marker}\n`;
 await writeFile(gate,gateText);
-console.log('Prepared V36.8 last: historical mechanics suites accept 36.8 metadata, presentation assertions follow clean UI labels, and the aesthetic taxonomy regression runs after every prior V36 gate.');
+console.log('Prepared V36.8 last: historical mechanics suites accept 36.8 metadata, presentation assertions follow clean UI labels, V31 covers all 55 public powers, and the aesthetic taxonomy regression runs after every prior V36 gate.');
