@@ -36,4 +36,15 @@ if bundle.count(export)!=1: raise SystemExit('V36.3 export seam changed')
 bundle=bundle.replace(export,runtime+'\n'+export,1)
 css=css.rstrip()+'\n\n'+styles+'\n'
 bundle_path.write_text(bundle); css_path.write_text(css)
+
+# Patch 085 discovers V36 post-compat modules during the build and appends them to
+# this wrapper. Keep V36.3's preparer LAST so no later historical compatibility
+# rewrite can erase the final browser regression import from the V35 release gate.
+wrapper=Path.cwd()/'scripts'/'prepare-v35-verifier-compat.mjs'
+if wrapper.is_file():
+    line="await import('./prepare-v363-verifier-compat.mjs');"
+    wrapper_text=wrapper.read_text()
+    wrapper_text='\n'.join(row for row in wrapper_text.splitlines() if row.strip()!=line)
+    wrapper.write_text(wrapper_text.rstrip()+'\n'+line+'\n')
+
 print('Applied Riftbound V36.3 · Active Loadout + Viego Stability')
