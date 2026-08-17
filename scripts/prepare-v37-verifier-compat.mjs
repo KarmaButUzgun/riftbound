@@ -3,7 +3,7 @@ import {readFile,readdir,writeFile} from 'node:fs/promises';
 async function patch(path,transform){let text=await readFile(path,'utf8'),next=transform(text);if(next!==text)await writeFile(path,next)}
 
 // V37 intentionally expands the live game by six start-only items and one four-move Epic power.
-// Historical suites keep checking their original mechanics, but live-catalog assertions must acknowledge the additive release.
+// Historical suites keep checking their original mechanics, but final-live catalog assertions must acknowledge the additive release.
 await patch('scripts/verify-build-expansion.mjs',text=>{
  text=text.replace(/assert\.equal\(catalog\.length,\d+\)/g,'assert.equal(catalog.length,219)');
  text=text.replace(/assert\.equal\(new Set\(catalog\.map\(i=>i\.id\)\)\.size,\d+\)/g,'assert.equal(new Set(catalog.map(i=>i.id)).size,219)');
@@ -46,10 +46,13 @@ await patch('scripts/verify-sovereigns-v35.mjs',text=>{
  return text;
 });
 
-// Some late compatibility suites hardcode the final public live move or power totals. Update only exact current-live shapes.
+// Late historical suites instrument the final bundle, so their final-live total assertions must see the six Starter Items too.
+// Their historical behavior assertions remain unchanged.
 for(const name of await readdir('scripts')){
  if(!name.startsWith('verify-')||!name.endsWith('.mjs')||name==='verify-v37-final-touch.mjs')continue;
  const path=`scripts/${name}`;await patch(path,text=>text
+  .replaceAll('RIFT_ITEM_CATALOG.length,213','RIFT_ITEM_CATALOG.length,219')
+  .replaceAll('catalog.length,213','catalog.length,219')
   .replaceAll('totals.moves,276','totals.moves,280')
   .replaceAll('powers.length,55','powers.length,56')
   .replaceAll('g.length,55','g.length,56'));
