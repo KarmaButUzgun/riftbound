@@ -34,6 +34,13 @@ for(const path of ['scripts/verify-v363-loadout-stability.mjs','scripts/verify-v
  await edit(path,text=>rep(rep(text,'codex.catalog().totals.moves,276','codex.catalog().totals.moves,280'),'catalog().totals.moves,276','catalog().totals.moves,280'));
 }
 
+// V37 wraps the final resolver. Keep V36.3 checking the same Heartbreaker behavior through V37's preserved delegate.
+await edit('scripts/verify-v363-loadout-stability.mjs',text=>{
+ text=rep(text,'RIFT_V35_UNSHACKLED_POWER,oo,rs};','RIFT_V35_UNSHACKLED_POWER,oo,rs,RIFT_V37_BASE_RS};');
+ text=rep(text,"assert.match(String(test.rs),/RIFT_V35_RESTORE_TAKEOVER/,'final resolver does not enforce post-Heartbreaker Takeover exit');","assert.match(String(test.rs),/RIFT_V37_BASE_RS/,'V37 final resolver no longer delegates through the preserved resolver chain');assert.match(String(test.RIFT_V37_BASE_RS),/RIFT_V35_RESTORE_TAKEOVER/,'preserved resolver beneath V37 no longer enforces post-Heartbreaker Takeover exit');");
+ return text;
+});
+
 const gate='scripts/verify-sovereigns-v35.mjs';
 let gateText=await readFile(gate,'utf8');
 const marker="await import('./verify-v37-final-touch.mjs');";
