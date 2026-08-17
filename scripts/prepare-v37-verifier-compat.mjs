@@ -53,6 +53,9 @@ for(const name of await readdir('scripts')){
  const path=`scripts/${name}`;await patch(path,text=>text
   .replaceAll('RIFT_ITEM_CATALOG.length,213','RIFT_ITEM_CATALOG.length,219')
   .replaceAll('catalog.length,213','catalog.length,219')
+  .replaceAll('manifest.counts.items,213','manifest.counts.items,219')
+  .replaceAll('counts.items,213','counts.items,219')
+  .replaceAll('size,213','size,219')
   .replaceAll('totals.moves,276','totals.moves,280')
   .replaceAll('powers.length,55','powers.length,56')
   .replaceAll('g.length,55','g.length,56'));
