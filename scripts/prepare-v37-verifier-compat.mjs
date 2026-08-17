@@ -57,6 +57,12 @@ await patch('scripts/verify-shadows-converge-v36.mjs',text=>text
  .replace("assert.equal(constitution.previousHash,manifest.preservation.previousConstitutionHash);","assert.equal(constitution.previousHash,'dc25a499');assert.equal(manifest.preservation.previousConstitutionHash,'f35511cd');")
  .replaceAll('constitution.reworkedPowers','manifest.preservation.reworkedPowers'));
 
+// V36.3 introspects the *final* resolver source to prove Heartbreaker exits Takeover. V37 adds one outer resolver wrapper,
+// so certify the wrapper delegation and then inspect the preserved V36 resolver underneath it for the actual restore call.
+await patch('scripts/verify-v363-loadout-stability.mjs',text=>text
+ .replace('RIFT_V35_UNSHACKLED_POWER,oo,rs};','RIFT_V35_UNSHACKLED_POWER,oo,rs,RIFT_V37_BASE_RS};')
+ .replace("assert.match(String(test.rs),/RIFT_V35_RESTORE_TAKEOVER/,'final resolver does not enforce post-Heartbreaker Takeover exit');","assert.match(String(test.rs),/RIFT_V37_BASE_RS/,'V37 final resolver no longer delegates through the preserved resolver chain');assert.match(String(test.RIFT_V37_BASE_RS),/RIFT_V35_RESTORE_TAKEOVER/,'preserved resolver beneath V37 no longer enforces post-Heartbreaker Takeover exit');"));
+
 // The V36 post-compat generators rewrite several historical suites into final-live foundation checks.
 // Advance final-live counts/schema to V37 while retaining V36 labels and metrics for foundations V37 reuses unchanged.
 for(const name of await readdir('scripts')){
@@ -80,4 +86,4 @@ for(const name of await readdir('scripts')){
   .replaceAll('powers.length,55','powers.length,56')
   .replaceAll('g.length,55','g.length,56'));
 }
-console.log('Prepared V37 verifier compatibility: schema/Codex 37, 219 live items, Starter Items excluded from normal Armory offers, inherited V36 preview foundation preserved at its certified legacy coverage, V36 mechanics and both constitution-chain links certified beneath the V37 live wrapper, 56 public powers / 280 live techniques, 63/245 certified additive constitution, and the Final Touch regression gate runs after the historical suites.');
+console.log('Prepared V37 verifier compatibility: schema/Codex 37, 219 live items, Starter Items excluded from normal Armory offers, inherited V36 preview foundation preserved at its certified legacy coverage, V36 mechanics/resolver chain and both constitution-chain links certified beneath the V37 live wrapper, 56 public powers / 280 live techniques, 63/245 certified additive constitution, and the Final Touch regression gate runs after the historical suites.');
