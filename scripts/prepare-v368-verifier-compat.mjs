@@ -48,10 +48,17 @@ for(const name of await readdir('scripts')){
  text=text.replace(`assert.equal(cat.totals.moves,272);assert.equal(cat.totals.registeredPowers,55);assert.equal(cat.totals.visiblePowers,54);`,`assert.equal(cat.totals.moves,276);assert.equal(cat.totals.registeredPowers,55);assert.equal(cat.totals.visiblePowers,55);`);
  await writeFile(path,text);
 }
+{
+ const path='scripts/verify-tactical-grammar-v33.mjs';let text=await readFile(path,'utf8');
+ // V36 post02 checks tactical integrity and separately hardcodes the public Codex move total.
+ // V36.8 exposes four existing Mutated Aura techniques without changing tactical mechanics or manifest preview coverage.
+ text=text.replace(`assert.equal(t.codex.catalog().totals.moves,272);`,`assert.equal(t.codex.catalog().totals.moves,276);`);
+ await writeFile(path,text);
+}
 
 const gate='scripts/verify-sovereigns-v35.mjs';
 let gateText=await readFile(gate,'utf8');
 const marker="await import('./verify-v368-aesthetic-codex.mjs');";
 if(!gateText.includes(marker))gateText=gateText.trimEnd()+`\n\n${marker}\n`;
 await writeFile(gate,gateText);
-console.log('Prepared V36.8 last: historical mechanics suites accept 36.8 metadata, presentation assertions follow clean UI labels, final V31 covers all 55 public powers / 276 techniques, and the aesthetic taxonomy regression runs after every prior V36 gate.');
+console.log('Prepared V36.8 last: historical mechanics suites accept 36.8 metadata, presentation assertions follow clean UI labels, public Codex covers all 55 powers / 276 techniques, and the aesthetic taxonomy regression runs after every prior V36 gate.');
