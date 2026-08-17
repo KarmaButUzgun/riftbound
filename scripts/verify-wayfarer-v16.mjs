@@ -8,8 +8,10 @@ const here=dirname(fileURLToPath(import.meta.url));
 const raw=(await readFile(resolve(here,'verify-wayfarer-v16-payload.gz.b64'),'utf8')).trim();
 const legacySource=gunzipSync(Buffer.from(raw,'base64')).toString('utf8');
 const catalogAnchor="assert.equal(api.g.length,50,'Special Power catalog unexpectedly changed');";
-assert.equal(legacySource.split(catalogAnchor).length-1,1,'V32 Wayfarer compatibility anchor changed');
-const source=legacySource.replace(catalogAnchor,"assert.equal(api.g.length,51,'Special Power catalog unexpectedly changed outside the additive V32 release');");
+assert.equal(legacySource.split(catalogAnchor).length-1,1,'V35 Wayfarer compatibility anchor changed');
+const source=legacySource
+ .replace(catalogAnchor,"assert.equal(api.g.length,54,'Special Power catalog unexpectedly changed outside the additive V32/V35 releases');")
+ .replace("assert.equal(api.RIFT_ITEM_CATALOG.length,210,'item catalog unexpectedly changed');","assert.equal(api.RIFT_ITEM_CATALOG.length,211,'item catalog unexpectedly changed outside the V35 BORK addition');");
 const data='data:text/javascript;base64,'+Buffer.from(source).toString('base64');
 process.argv[2]=process.argv[2]||'.build/riftbound-standalone';
 await import(data);
