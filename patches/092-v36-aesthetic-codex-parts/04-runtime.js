@@ -40,7 +40,7 @@ const RIFT_V368_PROFILE_BY_NAME=new Map((RIFT_V368_BASE_CATALOG.profiles||[]).ma
 const RIFT_V368_POWERS=g.map((power,index)=>RIFT_V368_POWER_PROFILE_FROM(RIFT_V368_PROFILE_BY_NAME.get(power.name)||RIFT_V368_HIDDEN_POWER_PROFILE(power,index),power));
 const RIFT_V368_STANDS=h.map((stand,index)=>RIFT_V368_STAND_PROFILE_FROM(RIFT_V368_PROFILE_BY_NAME.get(stand.name)||RIFT_V31_STAND_PROFILE(stand,index),stand));
 const RIFT_V368_PROFILES=[...RIFT_V368_POWERS,...RIFT_V368_STANDS],RIFT_V368_MOVES=RIFT_V368_PROFILES.flatMap(profile=>profile.moves||[]);
-const RIFT_V368_CATALOG={...RIFT_V368_BASE_CATALOG,version:36.8,profiles:RIFT_V368_PROFILES,powers:RIFT_V368_POWERS,stands:RIFT_V368_STANDS,moves:RIFT_V368_MOVES,totals:{...RIFT_V368_BASE_CATALOG.totals,registeredPowers:g.length,visiblePowers:g.length,hiddenPowers:0,stands:h.length,profiles:RIFT_V368_PROFILES.length,moves:RIFT_V368_MOVES.length}};
+const RIFT_V368_CATALOG={...RIFT_V368_BASE_CATALOG,profiles:RIFT_V368_PROFILES,powers:RIFT_V368_POWERS,stands:RIFT_V368_STANDS,moves:RIFT_V368_MOVES,totals:{...RIFT_V368_BASE_CATALOG.totals,registeredPowers:g.length,visiblePowers:g.length,hiddenPowers:0,stands:h.length,profiles:RIFT_V368_PROFILES.length,moves:RIFT_V368_MOVES.length}};
 RIFT_V31_BUILD_CATALOG=function RIFT_V368_BUILD_CATALOG(){return RIFT_V368_CATALOG};
 
 RIFT_V31_PROFILE_STAGE=function RIFT_V368_PROFILE_STAGE({profile,move,onMove}){
@@ -58,7 +58,7 @@ RIFT_V31_PROFILE_STAGE=function RIFT_V368_PROFILE_STAGE({profile,move,onMove}){
   ]})
 };
 
-globalThis.RIFTBOUND_CODEX={...globalThis.RIFTBOUND_CODEX,version:36.8,release:`Rift Codex`,build:RIFT_V31_BUILD_CATALOG,catalog:()=>RIFT_V368_CATALOG,filter:criteria=>RIFT_V31_FILTER_CATALOG(RIFT_V368_CATALOG,criteria),profile:value=>RIFT_V368_CATALOG.profiles.find(profile=>profile.id===value||profile.name===value)||null,move:value=>RIFT_V368_CATALOG.moves.find(move=>move.id===value||move.name===value)||null};
+globalThis.RIFTBOUND_CODEX={...globalThis.RIFTBOUND_CODEX,release:`Rift Codex`,build:RIFT_V31_BUILD_CATALOG,catalog:()=>RIFT_V368_CATALOG,filter:criteria=>RIFT_V31_FILTER_CATALOG(RIFT_V368_CATALOG,criteria),profile:value=>RIFT_V368_CATALOG.profiles.find(profile=>profile.id===value||profile.name===value)||null,move:value=>RIFT_V368_CATALOG.moves.find(move=>move.id===value||move.name===value)||null};
 
 function RIFT_V368_CLEAN_DOM(){
   try{document.getElementById(`rift-v30-release-root`)?.remove()}catch{}
