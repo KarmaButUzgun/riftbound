@@ -1,0 +1,2 @@
+/* V36 item ownership must be literal equipped ownership; never catalog lookup. */
+RIFT_V36_ITEM=function RIFT_V36_OWNS_ITEM(fighter,id){const pools=[fighter?.inventory,fighter?.items,fighter?.equipment,fighter?.loadout];for(const pool of pools)if(Array.isArray(pool))for(const slot of pool){if(slot===id||slot?.id===id||slot?.itemId===id||slot?.item?.id===id||slot?.item===id)return true}return false};
