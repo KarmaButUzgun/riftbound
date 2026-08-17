@@ -28,7 +28,7 @@ try{
  assert.equal(api.version,35);assert.equal(manifest.schemaVersion,35);assert.equal(manifest.release,'V35 · Sovereigns of Ruin');
  assert.deepEqual(api.report().powers,['Ruined King','The Unshackled','Ragegod']);
  assert.equal(api.report().newDisplayedTechniques,13);assert.equal(api.report().catalogMoves,268);
- assert.equal(manifest.codex.displayedMoves,268);assert.equal(manifest.v35.takeoverTurns,5);assert.equal(manifest.v35.wrathTurns,5);
+ assert.equal(manifest.codex.displayedMoves,268);assert.equal(manifest.v35.takeoverTurns,5);assert.equal(manifest.v35.wrathTurns,5);assert.equal(manifest.v35.buildGuides,true);
 
  const ruined=api.powers.ruinedKing,unshackled=api.powers.unshackled,ragegod=api.powers.ragegod;
  assert.equal(ruined.rarity,'Legendary');assert.deepEqual(ruined.moves.map(move=>move.name),['Blade of the Ruined King','Spectral Maw','Harrowed Path','Heartbreaker']);
@@ -37,7 +37,7 @@ try{
  const superStrength=test.g.find(power=>power.name==='Super Strength');assert.ok(superStrength,'Super Strength missing');assert.deepEqual(ragegod.moves.slice(0,3).map(move=>move.name),superStrength.moves.slice(0,3).map(move=>move.name),'Ragegod must inherit Super Strength 1/2/3 exactly');
  assert.deepEqual(ragegod.moves.slice(0,3).map(move=>move.rageCost),[0,18,24]);
 
- const bork=test.RIFT_ITEM('blade-ruined-king');assert.ok(bork,'Blade of The Ruined King item missing');assert.equal(bork.rarity,'Legendary');assert.equal(bork.category,'Weapon');assert.deepEqual(bork.recipe,['riftsteel-sabre','duelist-grip']);assert.equal(bork.combineCost,220);assert.equal(bork.cooldown,3);assert.match(bork.passive,/9%/);assert.match(bork.passive,/10%/);assert.match(bork.passive,/Clawing Shadows/i);assert.match(bork.passive,/30%/);
+ const bork=test.RIFT_ITEM('blade-ruined-king');assert.ok(bork,'Blade of The Ruined King item missing');assert.equal(bork.rarity,'Legendary');assert.equal(bork.category,'Weapon');assert.equal(bork.price,980);assert.deepEqual(bork.recipe,['riftsteel-sabre','duelist-grip']);assert.equal(bork.combineCost,810,'BORK combine cost must follow Riftbound price-minus-direct-components recipe economics');assert.equal(bork.cooldown,3);assert.match(bork.passive,/9%/);assert.match(bork.passive,/10%/);assert.match(bork.passive,/Clawing Shadows/i);assert.match(bork.passive,/30%/);
 
  const catalog=codex.catalog();assert.equal(catalog.totals.moves,268);for(const name of ['Ruined King','The Unshackled','Ragegod']){const profile=codex.profile(name);assert.ok(profile,`${name} Codex profile missing`);for(const move of profile.moves){assert.ok(move.preview?.explicit&&!move.preview?.fallback,`${name} · ${move.name} preview fallback`);assert.ok(move.tactical?.explicit,`${name} · ${move.name} tactical contract missing`);assert.ok(move.battlefieldVfx,`${name} · ${move.name} V34-compatible VFX descriptor missing`)}}
  const sylasProfile=codex.profile('The Unshackled');assert.ok(sylasProfile.moves.some(move=>move.name==='Abduct'),'Abduct recast missing from Codex');
