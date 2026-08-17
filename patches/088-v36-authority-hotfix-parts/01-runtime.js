@@ -2,12 +2,13 @@
 const RIFT_V364_BASE_REFRESH_ITEM_POOLS=RIFT_REFRESH_ITEM_POOLS;
 RIFT_REFRESH_ITEM_POOLS=function RIFT_V364_REFRESH_ITEM_POOLS(fighter){
  if(!fighter)return fighter;
+ const hadDurabilityPool=Number(fighter.v35DurabilityHp||0)>0;
  const oldMax=Number(fighter.maxHp),oldHp=Number(fighter.hp),wasAlive=oldHp>0;
  const missingHp=Number.isFinite(oldMax)&&Number.isFinite(oldHp)?Math.max(0,oldMax-oldHp):0;
  const out=RIFT_V364_BASE_REFRESH_ITEM_POOLS(fighter),target=out||fighter;
- /* V35 temporarily removes its prior Durability contribution before recalculating it. Preserve damage across that
-    bookkeeping pass instead of letting the temporary lower maxHp permanently clamp current HP. */
- if(Number.isFinite(target.maxHp)&&Number.isFinite(oldMax)&&Number.isFinite(oldHp))target.hp=wasAlive?Math.max(0,Math.min(target.maxHp,target.maxHp-missingHp)):0;
+ /* V35 temporarily removes an existing Durability contribution before recalculating it. Preserve damage only on
+    those repeat-normalization passes; first-time pool application keeps its historical semantics. */
+ if(hadDurabilityPool&&Number.isFinite(target.maxHp)&&Number.isFinite(oldMax)&&Number.isFinite(oldHp))target.hp=wasAlive?Math.max(0,Math.min(target.maxHp,target.maxHp-missingHp)):0;
  return target;
 };
 
