@@ -55,6 +55,12 @@ for(const name of await readdir('scripts')){
  text=text.replace(`assert.equal(t.codex.catalog().totals.moves,272);`,`assert.equal(t.codex.catalog().totals.moves,276);`);
  await writeFile(path,text);
 }
+{
+ const path='scripts/verify-shadows-converge-v36.mjs';let text=await readFile(path,'utf8');
+ // Keep V36's historical manifest counts (54 public / 272 manifest previews) intact; only the live Codex archive grows.
+ text=text.replace(`assert.equal(codex.catalog().totals.moves,272);`,`assert.equal(codex.catalog().totals.moves,276);`);
+ await writeFile(path,text);
+}
 
 const gate='scripts/verify-sovereigns-v35.mjs';
 let gateText=await readFile(gate,'utf8');
