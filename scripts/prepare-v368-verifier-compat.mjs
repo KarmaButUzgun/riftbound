@@ -44,6 +44,8 @@ for(const name of await readdir('scripts')){
  text=text.replace(/assert\.equal\(catalog\.moves\.length,\d+\);/,`assert.equal(catalog.moves.length,276);`);
  text=text.replace(/assert\.ok\(!catalog\.profiles\.some\(profile=>profile\.name==='Mutated Aura Accumulation'\),'[^']*'\);/,`assert.ok(catalog.profiles.some(profile=>profile.name==='Mutated Aura Accumulation'),'Mutated Aura Accumulation is missing from the public Codex');`);
  text=text.replace(`move.summary.includes(move.reference.damage>0?'archive standard':'authored effects')`,`move.summary.includes(move.reference.damage>0?'Estimated damage':'special effects')`);
+ // V36 post03 replaces the historical V31 file with a compact final foundation gate. Update that exact final shape too.
+ text=text.replace(`assert.equal(cat.totals.moves,272);assert.equal(cat.totals.registeredPowers,55);assert.equal(cat.totals.visiblePowers,54);`,`assert.equal(cat.totals.moves,276);assert.equal(cat.totals.registeredPowers,55);assert.equal(cat.totals.visiblePowers,55);`);
  await writeFile(path,text);
 }
 
@@ -52,4 +54,4 @@ let gateText=await readFile(gate,'utf8');
 const marker="await import('./verify-v368-aesthetic-codex.mjs');";
 if(!gateText.includes(marker))gateText=gateText.trimEnd()+`\n\n${marker}\n`;
 await writeFile(gate,gateText);
-console.log('Prepared V36.8 last: historical mechanics suites accept 36.8 metadata, presentation assertions follow clean UI labels, V31 covers all 55 public powers, and the aesthetic taxonomy regression runs after every prior V36 gate.');
+console.log('Prepared V36.8 last: historical mechanics suites accept 36.8 metadata, presentation assertions follow clean UI labels, final V31 covers all 55 public powers / 276 techniques, and the aesthetic taxonomy regression runs after every prior V36 gate.');
