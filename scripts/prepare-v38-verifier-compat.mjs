@@ -31,6 +31,16 @@ const rep=(text,a,b,path)=>{
  await writeFile(packedPath,gzipSync(Buffer.from(source)).toString('base64')+'\n');
 }
 
+/* V38.1 intentionally corrects Mandom's live firearm range. Keep the V38 mechanics
+   suite running against the fixed live registry instead of retaining the bad zero-range assertion. */
+{
+ const packedPath='scripts/verify-v38-another-jojo.mjs.gz.b64';
+ const packed=(await readFile(packedPath,'utf8')).trim();
+ let source=gunzipSync(Buffer.from(packed,'base64')).toString('utf8');
+ source=rep(source,"assert.equal(stand('Mandom').range,0)","assert.equal(stand('Mandom').range,48)",packedPath);
+ await writeFile(packedPath,gzipSync(Buffer.from(source)).toString('base64')+'\n');
+}
+
 /* The V31/V33/V36 families intentionally inspect the live additive Codex after their
    historical mechanics checks. V38 adds six Stand profiles and 34 authored techniques. */
 const liveEdits={
@@ -63,7 +73,9 @@ for(const [path,replacements] of Object.entries(liveEdits))await edit(path,text=
 
 const gate='scripts/verify-sovereigns-v35.mjs';
 let gateText=await readFile(gate,'utf8');
-const marker="await import('./verify-v38-another-jojo.mjs');";
-if(!gateText.includes(marker))gateText=gateText.trimEnd()+`\n\n${marker}\n`;
+const v38="await import('./verify-v38-another-jojo.mjs');";
+const v381="await import('./verify-v381-mandom-tusk-hotfix.mjs');";
+if(!gateText.includes(v38))gateText=gateText.trimEnd()+`\n\n${v38}\n`;
+if(!gateText.includes(v381))gateText=gateText.replace(v38,`${v38}\n${v381}`);
 await writeFile(gate,gateText);
-console.log('Prepared V38 verifier compatibility: V37 retains an exact historical bundle view; live Codex regressions advance to 13 Stands / 69 profiles / 314 techniques; V38 regression runs last.');
+console.log('Prepared V38/V38.1 verifier compatibility: V37 retains an exact historical bundle view; live Codex stays at 13 Stands / 69 profiles / 314 techniques; Mandom range is corrected; V38.1 regression runs last.');
