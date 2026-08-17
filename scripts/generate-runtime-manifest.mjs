@@ -22,7 +22,7 @@ if(manifest.tacticalGrammar?.version!==33)throw new Error(`Expected V33 tactical
 if(manifest.battlefieldVfx?.version!==34)throw new Error(`Expected V34 battlefield VFX foundation, received ${manifest.battlefieldVfx?.version}`);
 const required=[['items',manifest.counts.items,219],['registered powers',manifest.codex.registeredPowers,56],['visible power profiles',manifest.codex.visiblePowers,56],['displayed techniques',manifest.codex.displayedMoves,280],['mutations',manifest.v36?.mutations,10]];
 for(const [label,actual,expected] of required)if(actual!==expected)throw new Error(`Expected ${expected} ${label}, received ${actual}`);
-if(preservation.counts?.abilities!==62||preservation.counts?.moves!==241)throw new Error(`V37 constitution count drifted: ${JSON.stringify(preservation.counts)}`);
+if(preservation.counts?.abilities!==63||preservation.counts?.moves!==245)throw new Error(`V37 constitution count drifted: ${JSON.stringify(preservation.counts)}`);
 if(preservation.baseHash!=="7598b438"||preservation.basePreserved!==true)throw new Error("V20.0.1 foundation hash changed unexpectedly");
 if(!manifest.v36?.takeoverHeartbreakerStructural)throw new Error("V36 structural Takeover Heartbreaker guard missing");
 if(!manifest.v37?.starterItems||!manifest.v37?.boogieWoogie||!manifest.v37?.singleUltimateCinematic)throw new Error(`V37 Final Touch manifest flags missing: ${JSON.stringify(manifest.v37)}`);
