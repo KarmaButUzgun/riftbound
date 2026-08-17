@@ -47,7 +47,7 @@ const liveEdits={
  'scripts/verify-shadows-converge-v36.mjs':[
   ['codex.catalog().totals.moves,280','codex.catalog().totals.moves,314'],
  ],
- 'scripts/verify-v363-loadout-stability.mjs':[['codex.catalog().totals.moves,280','codex.catalog().totals.moves,314'],['catalog().totals.moves,280','catalog().totals.moves,314']],
+ 'scripts/verify-v363-loadout-stability.mjs':[['codex.catalog().totals.moves,280','codex.catalog().totals.moves,314'],['catalog().totals.moves,280','catalog().totals.moves,314'],["/RIFT_V37_BASE_RS/,'V37 final resolver no longer delegates through the preserved resolver chain'","/RIFT_V38_BASE_RS/,'V38 final resolver no longer delegates through the preserved resolver chain'"]],
  'scripts/verify-v364-authority-hotfix.mjs':[['codex.catalog().totals.moves,280','codex.catalog().totals.moves,314'],['catalog().totals.moves,280','catalog().totals.moves,314']],
  'scripts/verify-v365-takeover-identity.mjs':[['codex.catalog().totals.moves,280','codex.catalog().totals.moves,314'],['catalog().totals.moves,280','catalog().totals.moves,314']],
  'scripts/verify-v366-takeover-live-deck.mjs':[['codex.catalog().totals.moves,280','codex.catalog().totals.moves,314'],['catalog().totals.moves,280','catalog().totals.moves,314']],
