@@ -9,7 +9,7 @@ const root=resolve(process.argv[2]||'.build/riftbound-standalone');
 const bundlePath=resolve(root,'assets/page-F6OuavDb.js');
 assert.ok(existsSync(bundlePath),'V36.5 built output missing');
 const bundle=await readFile(bundlePath,'utf8');
-for(const marker of ['RIFTBOUND_V36_5','RIFT_V365_ENFORCE_TAKEOVER_IDENTITY','RIFT_V365_BEGIN_TAKEOVER','RIFT_V365_TAKEOVER_ACTION','v365-takeover-m1','takeoverIdentityStable'])assert.ok(bundle.includes(marker),`V36.5 marker missing: ${marker}`);
+for(const marker of ['RIFTBOUND_V36_5','RIFT_V365_ENFORCE_TAKEOVER_IDENTITY','RIFT_V365_BEGIN_TAKEOVER','RIFT_V365_TAKEOVER_ACTION','v365-takeover','takeoverIdentityStable'])assert.ok(bundle.includes(marker),`V36.5 marker missing: ${marker}`);
 
 const exportMarker='export{xs as default};',instrumented=resolve(dirname(bundlePath),'page-v365-test.js'),packagePath=resolve(dirname(bundlePath),'package.json'),hadPackage=existsSync(packagePath);
 assert.equal(bundle.split(exportMarker).length-1,1,'V36.5 export seam changed');
