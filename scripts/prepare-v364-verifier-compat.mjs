@@ -5,9 +5,8 @@ let priorText=await readFile(prior,'utf8');
 priorText=priorText.replace("assert.equal(manifest.v36.hotfix,'36.3');","assert.equal(manifest.v36.hotfix,'36.4');");
 await writeFile(prior,priorText);
 
-// Historical Bizarre fixtures predate V35's Durability HP pool. Their hardcoded 100-HP expectations accidentally
-// captured the repeat-normalization clamp that V36.4 fixes. Keep the behavioral assertions, but compare against the
-// authoritative final max HP instead of the temporary pre-normalization 100-HP shell.
+// Historical fixtures predate V35's Durability HP pool. Their hardcoded/pre-normalization HP baselines accidentally
+// captured the repeat-normalization clamp that V36.4 fixes. Keep the behavioral assertions against final HP state.
 const bizarre='scripts/verify-bizarre-update.mjs';
 let bizarreText=await readFile(bizarre,'utf8');
 bizarreText=bizarreText.replace(
@@ -20,9 +19,17 @@ bizarreText=bizarreText.replace(
 );
 await writeFile(bizarre,bizarreText);
 
+const spartan='scripts/verify-spartan-blood.mjs';
+let spartanText=await readFile(spartan,'utf8');
+spartanText=spartanText.replace(
+  'assert.ok(blitzRun.enemy.hp < blitzHpBefore, "Over Here! did not damage targets inside the selected area");',
+  'assert.ok(blitzRun.enemy.hp < blitzRun.enemy.maxHp, "Over Here! did not damage targets inside the selected area after final Durability HP normalization");'
+);
+await writeFile(spartan,spartanText);
+
 const gate='scripts/verify-sovereigns-v35.mjs';
 let gateText=await readFile(gate,'utf8');
 const marker="await import('./verify-v364-authority-hotfix.mjs');";
 if(!gateText.includes(marker))gateText=gateText.trimEnd()+`\n\n${marker}\n`;
 await writeFile(gate,gateText);
-console.log('Prepared V36.4 compatibility last: corrected Bizarre final-max-HP expectations and chained authoritative HP/Takeover/SWOON regression verifier.');
+console.log('Prepared V36.4 compatibility last: corrected historical final-max-HP expectations and chained authoritative HP/Takeover/SWOON regression verifier.');
