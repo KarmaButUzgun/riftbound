@@ -73,6 +73,8 @@ await edit('scripts/verify-codex-ascendant-v31.mjs',text=>{
  text=must(text,"codex.release,'Tactical Grammar'","codex.release,'Sovereigns of Ruin'",'v31');
  text=must(text,'const catalog=codex.catalog();','const catalog=tactical.catalog();','v31');
  text=must(text,"assert.deepEqual(constitution,{ok:true,expected:'3684c969',actual:'3684c969',counts:{abilities:58,moves:225},baseHash:'7598b438',basePreserved:true});","assert.equal(constitution.ok,true);\nassert.equal(constitution.baseHash,'7598b438');\nassert.equal(constitution.basePreserved,true);\nassert.deepEqual(constitution.counts,{abilities:61,moves:237});",'v31');
+ text=must(text,'assert.equal(globalThis.RIFTBOUND_SPATIAL.coverage().total,225);','assert.equal(globalThis.RIFTBOUND_SPATIAL.coverage().total,237);','v31 spatial live total');
+ text=must(text,'assert.equal(globalThis.RIFTBOUND_SPATIAL.coverage().typed,225);','assert.equal(globalThis.RIFTBOUND_SPATIAL.coverage().typed,237);','v31 spatial live typed');
  text=must(text,'manifest.codex.abilityChanges,4','manifest.codex.abilityChanges,16','v31');
  text=must(text,"manifest.codex.constitutionHash,'3684c969'","manifest.codex.constitutionHash,constitution.actual",'v31');
  text=must(text,'manifest.codex.displayedMoves,255','manifest.codex.displayedMoves,268','v31');
