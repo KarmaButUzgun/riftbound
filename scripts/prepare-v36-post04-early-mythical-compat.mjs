@@ -1,4 +1,4 @@
-import {writeFile} from 'node:fs/promises';
+import {readFile,writeFile} from 'node:fs/promises';
 
 const verifier = [
   `import assert from 'node:assert/strict';`,
@@ -41,4 +41,8 @@ const verifier = [
 
 await writeFile('scripts/verify-mythical-canon-v10.mjs',verifier);
 await writeFile('scripts/verify-early-curve-hardening-v121.mjs',verifier);
-console.log('Prepared stable V10 and V12.1 compatibility verifiers for V36.');
+const v14Path='scripts/verify-btd-v14.mjs';
+let v14=await readFile(v14Path,'utf8');
+v14=v14.replaceAll('size,211','size,213');
+await writeFile(v14Path,v14);
+console.log('Prepared stable V10/V12.1 compatibility plus V14 catalog uniqueness for V36.');
