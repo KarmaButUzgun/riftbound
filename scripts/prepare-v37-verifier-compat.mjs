@@ -63,10 +63,6 @@ await patch('scripts/verify-v363-loadout-stability.mjs',text=>text
  .replace('RIFT_V35_UNSHACKLED_POWER,oo,rs};','RIFT_V35_UNSHACKLED_POWER,oo,rs,RIFT_V37_BASE_RS};')
  .replace("assert.match(String(test.rs),/RIFT_V35_RESTORE_TAKEOVER/,'final resolver does not enforce post-Heartbreaker Takeover exit');","assert.match(String(test.rs),/RIFT_V37_BASE_RS/,'V37 final resolver no longer delegates through the preserved resolver chain');assert.match(String(test.RIFT_V37_BASE_RS),/RIFT_V35_RESTORE_TAKEOVER/,'preserved resolver beneath V37 no longer enforces post-Heartbreaker Takeover exit');"));
 
-// V36.7 matrices every non-Viego power through an accepted Takeover and next-floor transition. Boogie Woogie is a real
-// V37 power and must join that matrix, so the certified non-Viego roster grows from 54 to 55 instead of being excluded.
-await patch('scripts/verify-v367-takeover-offer-transition.mjs',text=>text.replace("assert.equal(powers.length,54,'V36.7 roster matrix no longer covers every non-Viego Special Power');","assert.equal(powers.length,55,'V36.7/V37 roster matrix no longer covers every non-Viego Special Power');"));
-
 // The V36 post-compat generators rewrite several historical suites into final-live foundation checks.
 // Advance final-live counts/schema to V37 while retaining V36 labels and metrics for foundations V37 reuses unchanged.
 for(const name of await readdir('scripts')){
@@ -90,4 +86,9 @@ for(const name of await readdir('scripts')){
   .replaceAll('powers.length,55','powers.length,56')
   .replaceAll('g.length,55','g.length,56'));
 }
-console.log('Prepared V37 verifier compatibility: schema/Codex 37, 219 live items, Starter Items excluded from normal Armory offers, inherited V36 preview foundation preserved at its certified legacy coverage, V36 mechanics/resolver/Takeover matrix and both constitution-chain links certified beneath the V37 live wrapper, 56 public powers / 280 live techniques, 63/245 certified additive constitution, and the Final Touch regression gate runs after the historical suites.');
+
+// The V36.7 matrix excludes only Viego/Ruined King, so with 56 total powers its final live matrix is exactly 55.
+// Run this after the broad live-total sweep so `powers.length` cannot be accidentally promoted to 56.
+await patch('scripts/verify-v367-takeover-offer-transition.mjs',text=>text.replace(/assert\.equal\(powers\.length,(?:54|56),'V36\.7(?:\/V37)? roster matrix no longer covers every non-Viego Special Power'\);/,"assert.equal(powers.length,55,'V36.7/V37 roster matrix no longer covers every non-Viego Special Power');"));
+
+console.log('Prepared V37 verifier compatibility: schema/Codex 37, 219 live items, Starter Items excluded from normal Armory offers, inherited V36 preview foundation preserved at its certified legacy coverage, V36 mechanics/resolver/55-power Takeover matrix and both constitution-chain links certified beneath the V37 live wrapper, 56 public powers / 280 live techniques, 63/245 certified additive constitution, and the Final Touch regression gate runs after the historical suites.');
