@@ -46,6 +46,6 @@ rs=function RIFT_V364_RESOLVE(run,side,action,ctx={}){
  return result;
 };
 
-if(globalThis.RIFTBOUND_V35)globalThis.RIFTBOUND_V35={...globalThis.RIFTBOUND_V35,hotfix:{...globalThis.RIFTBOUND_V35.hotfix,version:`36.4`,heartbreakerExitLiveBody:true,takeoverTurnAuthority:true,durabilityPoolIdempotent:true}};
+if(globalThis.RIFTBOUND_V35)globalThis.RIFTBOUND_V35={...globalThis.RIFTBOUND_V35,hotfix:{...globalThis.RIFTBOUND_V35.hotfix,authorityHotfix:`36.4`,heartbreakerExitLiveBody:true,takeoverTurnAuthority:true,durabilityPoolIdempotent:true}};
 globalThis.RIFTBOUND_V36_4={version:`36.4`,durabilityPoolIdempotent:true,freshRunStartsFull:true,debugFullHpStable:true,takeoverTurnAuthority:true,heartbreakerExitLiveBody:true,swoonVisible:true};
 globalThis.RIFTBOUND_MANIFEST={...globalThis.RIFTBOUND_MANIFEST,v36:{...globalThis.RIFTBOUND_MANIFEST.v36,hotfix:`36.4`,durabilityPoolIdempotent:true,freshRunStartsFull:true,takeoverTurnAuthority:true,heartbreakerExitLiveBody:true,swoonVisible:true}};
