@@ -28,7 +28,6 @@ await patch('scripts/verify-v368-aesthetic-codex.mjs',text=>{
  text=text.replace('RIFT_V368_PASSIVE_TITLE,RIFT_V368_CATALOG};','RIFT_V368_PASSIVE_TITLE,RIFT_V368_CATALOG,RIFT_V37_CATALOG};');
  text=text.replace('api.powerDescriptions,55','api.powerDescriptions,56');
  text=text.replace("test.g.length,55,'Special Power roster changed'","test.g.length,56,'Special Power roster changed'");
- text=text.replace("Object.keys(test.RIFT_V368_POWER_COPY).length,55","Object.keys(test.RIFT_V368_POWER_COPY).length,56");
  text=text.replaceAll('test.RIFT_V368_CATALOG','test.RIFT_V37_CATALOG');
  text=text.replace('codex.catalog().powers.length,55','codex.catalog().powers.length,56');
  text=text.replace("test.RIFT_V21_ABILITY_CONSTITUTION().hash,'dc25a499','aesthetic copy changed the ability constitution'","test.RIFT_V21_ABILITY_CONSTITUTION().hash,globalThis.RIFTBOUND_V37.constitution.expected,'V37 ability constitution is not the certified live hash'");
