@@ -5,6 +5,7 @@ path=root/'assets/page-F6OuavDb.js'
 text=path.read_text()
 old='accent:`#9b5cff`,passiveId:`v36HoldBreath`'
 new='accent:`#9b5cff`,cooldown:1,passiveId:`v36HoldBreath`'
-if text.count(old)!=1: raise SystemExit(f'V36 Shadow Crystal contract anchor changed: {text.count(old)}')
-path.write_text(text.replace(old,new,1))
-print('Hardened Shadow Crystal Legendary cooldown metadata; once-per-fight Hold Breath remains authoritative.')
+count=text.count(old)
+if count not in {1,2}: raise SystemExit(f'V36 Shadow Crystal contract anchor changed: {count}')
+path.write_text(text.replace(old,new))
+print(f'Hardened Shadow Crystal cooldown metadata in {count} V36 descriptor(s); once-per-fight Hold Breath remains authoritative.')
