@@ -55,7 +55,7 @@ await patch('scripts/verify-shadows-converge-v36.mjs',text=>text
  .replace('manifest.codex.displayedMoves,272','manifest.codex.displayedMoves,280')
  .replace('codex.catalog().totals.moves,272','codex.catalog().totals.moves,280')
  .replace("assert.equal(constitution.previousHash,manifest.preservation.previousConstitutionHash);","assert.equal(constitution.previousHash,'dc25a499');assert.equal(manifest.preservation.previousConstitutionHash,'f35511cd');")
- .replaceAll('constitution.reworkedPowers','api.reworkedPowers'));
+ .replaceAll('constitution.reworkedPowers','manifest.preservation.reworkedPowers'));
 
 // The V36 post-compat generators rewrite several historical suites into final-live foundation checks.
 // Advance final-live counts/schema to V37 while retaining V36 labels and metrics for foundations V37 reuses unchanged.
