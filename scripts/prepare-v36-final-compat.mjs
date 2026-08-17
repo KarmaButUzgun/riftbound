@@ -1,6 +1,12 @@
 import {readFile,writeFile} from 'node:fs/promises';
 async function patch(path,pairs){let text=await readFile(path,'utf8');for(const [from,to] of pairs)text=text.replaceAll(from,to);await writeFile(path,text)}
 await patch('scripts/verify-build-expansion.mjs',[[`size,211`,`size,213`],[`size,71`,`size,72`],[`mythical.length,26`,`mythical.length,27`],[`myths.length,26`,`myths.length,27`]]);
+await patch('scripts/verify-major-balance-mythical-v9.mjs',[
+ [`assert.equal(mythics.length,25,'25 total Mythicals including legacy Sparda');`,`assert.equal(mythics.length,27,'27 total Mythicals including post-V9 additions');`],
+ [`assert.equal(visibleMythics.length,25);assert.equal(new Set(visibleMythics.map(item=>item.id)).size,25);`,`assert.equal(visibleMythics.length,27);assert.equal(new Set(visibleMythics.map(item=>item.id)).size,27);`],
+ [`const newMythics=mythics.filter(item=>item.id!=='sparda-devil-sword');assert.equal(newMythics.length,24,'24 new Mythicals');`,`const newMythics=mythics.filter(item=>item.id!=='sparda-devil-sword'&&api.RIFT_V9_MYTHIC_PROFILE[item.id]);assert.equal(newMythics.length,24,'V9 still owns exactly 24 authored Mythical mechanic profiles');`],
+ [`Major Balance + Mythical V9 verified: 25 Mythicals, distinct mechanics, one-slot ownership, responsive Mythical shop, balanced branch budgets, and full portrait coverage.`,`Major Balance + Mythical V9 compatibility verified: 27 live Mythicals while the original 24 V9 mechanic profiles remain exact; one-slot ownership and portrait coverage survive V36.`]
+]);
 const v6=[
 "import assert from 'node:assert/strict';",
 "import {existsSync} from 'node:fs';",
@@ -16,4 +22,4 @@ const v6=[
 "try{if(!had)await writeFile(pkg,'{\"type\":\"module\"}\\n');await writeFile(testPath,js.replace(exportMarker,'globalThis.__V36_LORE_ITEMS=RIFT_ITEM_CATALOG;'+exportMarker));await import(pathToFileURL(testPath).href+'?v='+Date.now());const items=globalThis.__V36_LORE_ITEMS;assert.ok(Array.isArray(items));for(const name of ['Shadow Crystal','Shadow Mantle']){const item=items.find(i=>i.name===name);assert.ok(item,name+' missing');assert.ok(item.reference&&item.reference.includes('DELTARUNE'),name+' reference missing');assert.ok(item.lore&&item.lore.length>20&&item.lore.length<=190,name+' authored lore missing')}console.log('Reference lore compatibility verified for V36 Dark items.')}finally{delete globalThis.__V36_LORE_ITEMS;await rm(testPath,{force:true});if(!had)await rm(pkg,{force:true})}"
 ].join('\n');
 await writeFile('scripts/verify-reference-lore-v6.mjs',v6);
-console.log('Applied V36 final live-count and reference-lore compatibility sweep.');
+console.log('Applied V36 final live-count, V9 Mythical, and reference-lore compatibility sweep.');
