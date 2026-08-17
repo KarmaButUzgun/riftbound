@@ -1,0 +1,2 @@
+/* V36 extends the canonical external-reference lore registry for its two Dark items. */
+if(globalThis.RIFT_REFERENCE_LORE_V6){const additions={"Shadow Crystal":"A Dark crystal that catches one final breath and refuses to let it become the last.","Shadow Mantle":"A mantle made for a battle that normal armor was never supposed to survive."},lore=globalThis.RIFT_REFERENCE_LORE_V6;globalThis.RIFT_REFERENCE_LORE_V6=Object.isFrozen(lore)?Object.freeze({...lore,...additions}):Object.assign(lore,additions)}
